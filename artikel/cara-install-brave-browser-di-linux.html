@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+	<head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Cara Install Brave Browser di Linux - Jeannes Bryan</title>
+		<link rel="icon" href="../icon.png" type="image/x-icon">
+		<meta name="theme-color" content="#212529">
+		<meta property="og:title" content="Cara Install Brave Browser di Linux">
+		<meta property="og:type" content="article">
+		<meta property="og:site_name" content="Jeannes Bryan">
+		<meta property="og:image" content="https://jeannesbryan.github.io/icon.png">
+		<meta property="og:url" content="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:creator" content="@jeannesbryan">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.css">
+		<script src="https://cdn.jsdelivr.net/npm/sharer.js@latest/sharer.min.js"></script>
+	</head>
+	<nav class="bg-dark text-center font-monospace">
+		<div class="vstack gap-3">
+			<div class="pt-2 pb-0"><a class="navbar-brand" href="/"><img src="../icon.png" alt="Jeannes Bryan" width="40" height="auto"></a></div>
+			<div class="d-flex justify-content-center flex-wrap gap-3 pb-2">
+				<div class="d-inline-flex">
+					<a class="btn btn-link p-0 text-decoration-none text-white" href="/" role="button">Home</a>
+				</div>
+				<div class="d-inline-flex">
+					<button type="button" class="btn btn-link p-0 text-decoration-none text-white" data-bs-toggle="modal" data-bs-target="#aboutModal">About</button>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content rounded-0 p-4">
+					Who I am is not important.
+				</div>
+			</div>
+		</div>
+	</nav>
+	<body class="bg-dark d-flex flex-column vh-100">
+		<div class="container border-top border-4 border-success mb-4">
+			<div class="text-center text-white mt-3 mb-4 font-monospace">
+				<h1>Cara Install Brave Browser di Linux</h1>
+				<small>26 November 2022</small>
+			</div>
+			<p class="text-white font-monospace">
+				Brave Browser hanya mendukung arsitektur AMD/Intel 64-bit (amd64/x86_64). Kunci penandatanganan juga tersedia di <a href="https://brave.com/signing-keys/" rel="nofollow" class="text-decoration-none text-success">https://brave.com/signing-keys/</a>.
+			</p>
+			<p>
+				<strong class="text-white font-monospace">Debian, Ubuntu, Mint</strong>
+				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">sudo apt install apt-transport-https curl
+ 
+sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+ 
+<span style="color: #ffffff">echo</span> <span style="color: #0086d2">&quot;deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main&quot;</span>|sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+ 
+sudo apt update
+ 
+sudo apt install brave-browser
+</pre></div>
+			</p>
+			<p>
+				<strong class="text-white font-monospace">Fedora, CentOS Stream/RHEL</strong>
+				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">sudo dnf install dnf-plugins-core
+ 
+sudo dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/x86_64/
+ 
+sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+ 
+sudo dnf install brave-browser
+</pre></div>
+
+			</p>
+			<p>
+				<strong class="text-white font-monospace">OpenSUSE</strong>
+				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">sudo zypper install curl
+ 
+sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+ 
+sudo zypper addrepo --refresh https://brave-browser-rpm-release.s3.brave.com/x86_64/ brave-browser
+ 
+sudo zypper install brave-browser
+</pre></div>
+
+			</p>
+			<div class="d-flex flex-wrap text-white font-monospace mt-5">
+				<div class="p-1">Bagikan: </div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="twitter" data-title="Cara Install Brave Browser di Linux" data-via="jeannesbryan" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html" title="Twitter"><i class="bi bi-twitter"></i></button></div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="facebook" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html" title="Facebook"><i class="bi bi-facebook"></i></button></div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="linkedin" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html" title="LinkedIn"><i class="bi bi-linkedin"></i></button></div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="telegram" data-title="Cara Install Brave Browser di Linux" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html" title="Telegram"><i class="bi bi-telegram"></i></button></div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="reddit" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html" title="Reddit"><i class="bi bi-reddit"></i></button></div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="line" data-title="Cara Install Brave Browser di Linux" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html" title="LINE"><i class="bi bi-line"></i></button></div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="skype" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html" data-title="Cara Install Brave Browser di Linux" title="Skype"><i class="bi bi-skype"></i></button></div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="trello" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux.html" data-title="Cara Install Brave Browser di Linux" title="Trello"><i class="bi bi-trello"></i></button></div>
+				<div class="p-1"><button type="button" class="btn btn-sm btn-success" data-sharer="email" data-title="Cara Install Brave Browser di Linux" data-url="https://jeannesbryan.github.io/artikel/cara-install-brave-browser-di-linux" title="Email"><i class="bi bi-envelope-fill"></i></button></div>
+			</div>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+	<footer class="mt-auto container bg-dark p-2 border-top border-3 border-success">
+        <div class="text-center text-white small">
+            <div>&copy; Jeannes Bryan</div>
+        </div>
+    </footer>
+</html>
