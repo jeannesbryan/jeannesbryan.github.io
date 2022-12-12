@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Cara Install Vivaldi Browser di Linux - Jeannes Bryan</title>
-		<link rel="icon" href="../icon.png" type="image/x-icon">
+		<link rel="icon" href="https://jeannesbryan.github.io/icon.png" type="image/x-icon">
 		<meta name="theme-color" content="#212529">
 		<meta property="og:title" content="Cara Install Vivaldi Browser di Linux">
 		<meta property="og:type" content="article">
@@ -19,7 +19,7 @@
 	</head>
 	<nav class="bg-dark text-center font-monospace">
 		<div class="vstack gap-3">
-			<div class="pt-2 pb-0"><a class="navbar-brand" href="/"><img src="../icon.png" alt="Jeannes Bryan" width="40" height="auto"></a></div>
+			<div class="pt-2 pb-0"><a class="navbar-brand" href="/"><img src="https://jeannesbryan.github.io/icon.png" alt="Jeannes Bryan" width="40" height="auto"></a></div>
 			<div class="d-flex justify-content-center flex-wrap gap-3 pb-2">
 				<div class="d-inline-flex">
 					<a class="btn btn-link p-0 text-decoration-none text-white" href="/" role="button">Home</a>
@@ -33,25 +33,11 @@
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content rounded-0 p-4">
 					<div class="text-center">
-						<p><img src="jeannesbryan.webp" class="img-fluid w-25" alt="jeannesbryan"></p>
-						<h4 class="font-monospace fw-bold">Jeannes Bryan</h4>
+						<p><img src="https://jeannesbryan.github.io/jeannesbryan.webp" class="img-fluid w-25" alt="jeannesbryan"></p>
+						<h4 class="font-monospace fw-bold">Jeannes Bryan</h4><hr>
 						<a href="https://twitter.com/jeannesbryan"><i class="bi bi-twitter me-1 text-dark" title="Twitter" style="font-size: 2rem;"></i></a>
-						<a rel="me" href="https://social.vivaldi.net/@jeannesbryan"><i class="bi bi-mastodon ms-1 text-dark" title="Mastodon" style="font-size: 2rem;"></i></a><hr>
-						<div class="font-monospace">Special thanks to:</div>
-						<div class="row mt-3">
-							<div class="col">
-								<a href="https://github.com/" rel="nofollow"><img src="https://jeannesbryan.github.io/github.svg" class="img-fluid" alt="GitHub"></a>
-							</div>
-							<div class="col">
-								<a href="https://getbootstrap.com/" rel="nofollow"><img src="https://jeannesbryan.github.io/bootstrap.svg" class="img-fluid" alt="Bootstrap"></a>
-							</div>
-							<div class="col">
-								<a href="https://notepad-plus-plus.org/" rel="nofollow"><img src="https://jeannesbryan.github.io/notepad++.svg" class="img-fluid" alt="Notepad++"></a>
-							</div>
-							<div class="col">
-								<a href="https://vivaldi.com/" rel="nofollow"><img src="https://jeannesbryan.github.io/vivaldi.svg" class="img-fluid" alt="Vivaldi Browser"></a>
-							</div>
-						</div>
+						<a rel="me" href="https://social.vivaldi.net/@jeannesbryan"><i class="bi bi-mastodon mx-1 text-dark" title="Mastodon" style="font-size: 2rem;"></i></a>
+						<a href="https://linkedin.com/in/jeannesbryan"><i class="bi bi-linkedin ms-1 text-dark" title="LinkedIn" style="font-size: 2rem;"></i></a>
 					</div>
 				</div>
 			</div>
@@ -68,44 +54,37 @@
 			</p>
 			<p class="text-white font-monospace">
 				Impor kunci publik (untuk memungkinkan verifikasi repositori APT)
-				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">wget -qO- https://repo.vivaldi.com/archive/linux_signing_key.pub | gpg --dearmor | sudo dd <span style="color: #fb660a">of</span><span style="color: #ffffff">=</span>/usr/share/keyrings/vivaldi-browser.gpg
-</pre></div>
+				<script src="https://pastebin.com/embed_js/cWAXjP2z?theme=dark"></script>
 			</p>
 			<p class="text-white font-monospace">
 				Tambahkan repositori
-				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">echo</span> <span style="color: #0086d2">&quot;deb [signed-by=/usr/share/keyrings/vivaldi-browser.gpg arch=$(dpkg --print-architecture)] https://repo.vivaldi.com/archive/deb/ stable main&quot;</span> | sudo dd <span style="color: #fb660a">of</span><span style="color: #ffffff">=</span>/etc/apt/sources.list.d/vivaldi-archive.list
-</pre></div>
+				<script src="https://pastebin.com/embed_js/Mn3z48R9?theme=dark"></script>
 			</p>
 			<p class="text-white font-monospace">
 				Install Vivaldi
-				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">sudo apt update <span style="color: #ffffff">&amp;&amp;</span> sudo apt install vivaldi-stable
-</pre></div>
+				<script src="https://pastebin.com/embed_js/jrfgmCWd?theme=dark"></script>
 			</p><br>
 			<p class="font-monospace text-white h5 fw-bold">
 				DNF (Fedora)
 			</p>
 			<p class="text-white font-monospace">
 				Tambahkan repositori
-				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">sudo dnf config-manager --add-repo https://repo.vivaldi.com/archive/vivaldi-fedora.repo
-</pre></div>
+				<script src="https://pastebin.com/embed_js/zj5mh4Dj?theme=dark"></script>
 			</p>
 			<p class="text-white font-monospace">
 				Install Vivaldi
-				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">sudo dnf install vivaldi-stable
-</pre></div>
+				<script src="https://pastebin.com/embed_js/bNub1px2?theme=dark"></script>
 			</p><br>
 			<p class="font-monospace text-white h5 fw-bold">
 				ZYpp (OpenSUSE)
 			</p>
 			<p class="text-white font-monospace">
 				Tambahkan repositori
-				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">sudo zypper ar https://repo.vivaldi.com/archive/vivaldi-suse.repo
-</pre></div>
+				<script src="https://pastebin.com/embed_js/GwhgfchN?theme=dark"></script>
 			</p>
 			<p class="text-white font-monospace">
 				Install Vivaldi
-				<div style="background: #111111; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">sudo zypper in vivaldi-stable
-</pre></div>
+				<script src="https://pastebin.com/embed_js/9YVbP88M?theme=dark"></script>
 			</p>
 			<div class="d-flex flex-wrap text-white font-monospace mt-5">
 				<div class="p-1">Bagikan: </div>
