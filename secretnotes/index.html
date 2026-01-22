@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <title>SecretNotes</title>
+  <link rel="icon" type="image/svg+xml" href="image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><rect width='32' height='32' fill='%23000'/><path d='M8 6v8h16V6H8zm-4 0c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 12c-2.2 0-4 1.8-4 4v8c0 2.2 1.8 4 4 4s4-1.8 4-4v-8c0-2.2-1.8-4-4-4zm4 16h-4v4h4v-4zm-4 8h4v4h-4v-4zm16-28h-4v4h4v-4zm-4 8h4v4h-4v-4zm4 8h-4v4h4v-4zm-4 8h4v4h-4v-4z' fill='%2300ff00'/></svg>">
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg: #000000;
+      --sidebar-bg: #000000;
+      --card: #000000;
+      --text: #00ff00;
+      --border: #005500;
+      --hover: #003300;
+    }
+    body {
+      font-family: 'Courier New', monospace;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      width: 100vw;
+    }
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow-x: hidden;
+    }
+    .sidebar {
+      width: 300px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 15px 16px;
+      background: #001100;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .sidebar-title {
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 5px var(--text);
+      margin: 0 0 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sidebar-buttons {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0 8px;
+      margin: 0 8px 10px;
+    }
+    .btn-hacker {
+      background: #001100;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      min-width: 36px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-hacker:hover {
+      background: #002200;
+      box-shadow: 0 0 8px var(--text);
+    }
+    .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      color: #00ff00;
+      padding: 4px 8px;
+      border: 1px solid #005500;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .btn-hacker:hover .tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+    .search-box {
+      width: calc(100% - 32px);
+      margin: 16px 16px 10px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #001100;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .tabs {
+      display: flex;
+      padding: 0 16px 10px;
+      border-bottom: 1px solid var(--border);
+      justify-content: space-around;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 6px 12px;
+      color: #00aa00;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tab-btn.active {
+      color: var(--text);
+      font-weight: bold;
+      border-bottom: 2px solid var(--text);
+      text-shadow: 0 0 5px var(--text);
+    }
+    .note-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 0 8px;
+    }
+    .note-item {
+      padding: 12px 12px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s;
+      overflow: hidden;
+    }
+    .note-item:hover {
+      background: var(--hover);
+    }
+    .note-item.selected {
+      background: #002200;
+      border-left: 4px solid var(--text);
+    }
+    .note-title {
+      font-weight: bold;
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .note-preview {
+      font-size: 13px;
+      color: #00aa00;
+      line-height: 1.4;
+      max-height: 2.8em;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+    }
+    .note-meta {
+      font-size: 0.85em;
+      color: #007700;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+    .empty-state {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00aa00;
+      font-size: 18px;
+    }
+    .note-detail {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      min-width: 0;
+    }
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .note-title-input {
+      font-size: 20px;
+      font-weight: bold;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      flex-grow: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .note-actions .btn-hacker {
+      padding: 6px 12px;
+      font-size: 12px;
+      min-width: auto;
+    }
+    #editor-toolbar {
+      background: #000000;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      overflow-x: auto;
+    }
+    .toolbar-btn {
+      background: #001100;
+      color: #00aa00;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      white-space: nowrap;
+      min-width: 40px;
+    }
+    .toolbar-btn:hover {
+      background: #002200;
+      box-shadow: 0 0 5px #00ff00;
+    }
+    #editor-container {
+      flex-grow: 1;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      overflow: hidden;
+      background: #000000;
+    }
+    #editor {
+      width: 100%;
+      height: 100%;
+      padding: 12px;
+      background: #000000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      outline: none;
+      caret-color: #00ff55;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .note-footer {
+      margin-top: 15px;
+      font-size: 0.9em;
+      color: #007700;
+      display: flex;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 300px;
+      right: 0;
+      background: #001100;
+      padding: 6px 15px;
+      font-size: 0.9em;
+      color: #00aa00;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+    @media (max-width: 768px) {
+      .app-container { 
+        flex-direction: column; 
+        height: auto; 
+        min-height: 100vh; 
+        width: 100vw;
+      } 
+      .sidebar { 
+        width: 100%; 
+        border-right: none; 
+        border-bottom: 1px solid var(--border); 
+        max-height: 50vh; 
+        order: 2; 
+      } 
+      .main-content { 
+        order: 1; 
+        padding: 15px; 
+      }    
+      .status-bar { 
+        left: 0; 
+        position: static; 
+        order: 3; 
+      }    
+      .sidebar-buttons .btn-hacker {
+        min-width: 40px;
+        padding: 8px 6px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">SecretNotes</div>
+        <div class="sidebar-buttons">
+          <button class="btn-hacker" id="newNoteBtn" title="Buat catatan baru">+ NEW NOTE<span class="tooltip">Buat catatan baru</span></button>
+          <button class="btn-hacker" id="exportBtn" title="Ekspor backup terenkripsi">📤<span class="tooltip">Ekspor backup terenkripsi</span></button>
+          <button class="btn-hacker" id="importBtn" title="Impor backup terenkripsi">📥<span class="tooltip">Impor backup terenkripsi</span></button>
+          <button class="btn-hacker" id="syncGithubBtn" title="Sync ke GitHub Gist">☁️ GITHUB<span class="tooltip">Sync ke GitHub Gist</span></button>
+          <button class="btn-hacker" id="clearLocalBtn" title="Hapus semua data lokal">🗑️<span class="tooltip">Hapus semua data lokal</span></button>
+        </div>
+      </div>
+      <input type="text" id="searchInput" class="search-box" placeholder="SEARCH NOTES..." />
+      <div class="tabs">
+        <button class="tab-btn active" id="tabActive">ACTIVE NOTES</button>
+        <button class="tab-btn" id="tabRecycle">🗑️ RECYCLE BIN</button>
+      </div>
+      <div class="note-list" id="noteList"></div>
+    </div>
+    <div class="main-content">
+      <div class="empty-state" id="emptyState">🔍 SELECT OR CREATE A NEW NOTE.</div>
+      <div class="note-detail" id="noteDetail">
+        <div class="note-header">
+          <input type="text" class="note-title-input" id="noteTitleInput" placeholder="NOTE TITLE..." />
+          <div class="note-actions">
+            <button class="btn-hacker" id="deleteNoteBtn">🗑️ DELETE</button>
+          </div>
+        </div>
+        <div id="editor-toolbar">
+          <button class="toolbar-btn" data-command="bold" title="Bold"><b>B</b><span class="tooltip">Bold</span></button>
+          <button class="toolbar-btn" data-command="italic" title="Italic"><i>I</i><span class="tooltip">Italic</span></button>
+          <button class="toolbar-btn" data-command="underline" title="Underline"><u>U</u><span class="tooltip">Underline</span></button>
+          <button class="toolbar-btn" data-command="strikeThrough" title="Strikethrough"><s>S</s><span class="tooltip">Strikethrough</span></button>
+          <button class="toolbar-btn" data-command="subscript" title="Subscript">X<sub>2</sub><span class="tooltip">Subscript</span></button>
+          <button class="toolbar-btn" data-command="superscript" title="Superscript">X<sup>2</sup><span class="tooltip">Superscript</span></button>
+          <button class="toolbar-btn" data-command="justifyLeft" title="Align Left">←<span class="tooltip">Align Left</span></button>
+          <button class="toolbar-btn" data-command="justifyCenter" title="Align Center">↔<span class="tooltip">Align Center</span></button>
+          <button class="toolbar-btn" data-command="justifyRight" title="Align Right">→<span class="tooltip">Align Right</span></button>
+          <button class="toolbar-btn" data-command="justifyFull" title="Justify">≡<span class="tooltip">Justify</span></button>
+          <button class="toolbar-btn" data-command="insertUnorderedList" title="Bullet List">•<span class="tooltip">Bullet List</span></button>
+          <button class="toolbar-btn" data-command="insertOrderedList" title="Numbered List">1.<span class="tooltip">Numbered List</span></button>
+          <button class="toolbar-btn" data-command="createLink" title="Insert Link">🔗<span class="tooltip">Insert Link</span></button>
+          <button class="toolbar-btn" data-command="insertHorizontalRule" title="Horizontal Line">―<span class="tooltip">Horizontal Line</span></button>
+          <button class="toolbar-btn" data-command="insertTable" title="Insert Table">▦<span class="tooltip">Insert Table</span></button>
+          <button class="toolbar-btn" id="codeViewBtn" title="Code View">{"{}"}<span class="tooltip">Code View</span></button>
+          <button class="toolbar-btn" data-command="undo" title="Undo">↩️<span class="tooltip">Undo</span></button>
+          <button class="toolbar-btn" data-command="redo" title="Redo">↪️<span class="tooltip">Redo</span></button>
+          <button class="toolbar-btn" data-command="removeFormat" title="Remove Formatting">∅<span class="tooltip">Remove Formatting</span></button>
+        </div>
+        <div id="editor-container">
+          <div id="editor" contenteditable="true" placeholder="Start typing your secret note..."></div>
+        </div>
+        <div class="note-footer">
+          <span id="createdAt">CREATED: —</span>
+          <span id="updatedAt">UPDATED: —</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="status-bar" id="statusBar">LOADING SQLITE ENGINE...</div>
+  <input type="file" id="fileInput" accept=".sqlite,.encrypted,.db" style="display:none;" />
+  <div id="githubModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#001100; border:1px solid #005500; padding:20px; width:90%; max-width:500px; font-family:'Courier New',monospace; color:#00ff00;">
+      <h3 style="margin-top:0;">☁️ GITHUB SYNC</h3>
+      <p style="color:#00aa00; font-size:14px;">Backup/restore encrypted notes to your GitHub Gist.</p>
+      <label style="display:block; margin:10px 0 5px; color:#00aa00;">PERSONAL ACCESS TOKEN</label>
+      <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxx" style="width:100%; padding:8px; background:#000; border:1px solid #005500; color:#00ff00;" />
+      <div style="margin-top:20px; display:flex; gap:10px;">
+        <button class="btn-hacker" id="syncUploadBtn" style="flex:1;">📤 UPLOAD</button>
+        <button class="btn-hacker" id="syncDownloadBtn" style="flex:1;">📥 DOWNLOAD</button>
+      </div>
+      <button class="btn-hacker" id="closeModalBtn" style="margin-top:15px; width:100%;">❌ CLOSE</button>
+    </div>
+  </div>
+  <div id="confirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#001100; border:1px solid #005500; padding:20px; width:90%; max-width:400px; font-family:'Courier New',monospace; color:#00ff00;">
+      <h3 id="confirmTitle" style="margin-top:0;">🗑️ KONFIRMASI</h3>
+      <p id="confirmMessage" style="color:#00aa00; font-size:14px;">Apakah Anda yakin?</p>      
+      <div style="margin-top:20px; display:flex; gap:10px;">
+        <button class="btn-hacker" id="confirmYesBtn" style="flex:1;">✅ YA</button>
+        <button class="btn-hacker" id="confirmNoBtn" style="flex:1;">❌ TIDAK</button>
+      </div>
+    </div>
+  </div>
+  <script src="../assets/sql-wasm.min.js"></script>
+  <script>
+    let db = null;
+    let currentNoteId = null;
+    let currentTab = 'active';
+    let autoSaveTimer = null;
+    let isLoadingNote = false;
+    let isCodeView = false;
+    let isEventListenersAttached = false;
+
+    const els = {
+      noteList: document.getElementById('noteList'),
+      emptyState: document.getElementById('emptyState'),
+      noteDetail: document.getElementById('noteDetail'),
+      titleInput: document.getElementById('noteTitleInput'),
+      deleteBtn: document.getElementById('deleteNoteBtn'),
+      newBtn: document.getElementById('newNoteBtn'),
+      exportBtn: document.getElementById('exportBtn'),
+      importBtn: document.getElementById('importBtn'),
+      syncGithubBtn: document.getElementById('syncGithubBtn'),
+      clearLocalBtn: document.getElementById('clearLocalBtn'),
+      searchInput: document.getElementById('searchInput'),
+      statusBar: document.getElementById('statusBar'),
+      tabActive: document.getElementById('tabActive'),
+      tabRecycle: document.getElementById('tabRecycle'),
+      createdAt: document.getElementById('createdAt'),
+      updatedAt: document.getElementById('updatedAt'),
+      githubModal: document.getElementById('githubModal'),
+      closeModalBtn: document.getElementById('closeModalBtn'),
+      syncUploadBtn: document.getElementById('syncUploadBtn'),
+      syncDownloadBtn: document.getElementById('syncDownloadBtn'),
+      githubToken: document.getElementById('githubToken'),
+      editor: document.getElementById('editor'),
+      toolbar: document.getElementById('editor-toolbar'),
+      codeViewBtn: document.getElementById('codeViewBtn'),
+      fileInput: document.getElementById('fileInput'),
+    };
+
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmMessage = document.getElementById('confirmMessage');
+    const confirmYesBtn = document.getElementById('confirmYesBtn');
+    const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+    function showConfirm(title, message, onYes) {
+      confirmTitle.textContent = title;
+      confirmMessage.textContent = message;
+      confirmModal.style.display = 'flex';
+      
+      confirmYesBtn.onclick = null;
+      confirmNoBtn.onclick = null;
+      
+      confirmYesBtn.onclick = () => {
+        confirmModal.style.display = 'none';
+        onYes();
+      };
+      
+      confirmNoBtn.onclick = () => {
+        confirmModal.style.display = 'none';
+      };
+    }
+
+    function initToolbar() {
+      if (!els.toolbar) return;
+      
+      els.toolbar.querySelectorAll('.toolbar-btn[data-command]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const cmd = btn.dataset.command;
+          let value = null;
+          
+          if (cmd === 'createLink') {
+            value = prompt('Masukkan URL:');
+            if (!value) return;
+          } else if (cmd === 'insertTable') {
+            const rows = prompt('Jumlah baris:', '2');
+            const cols = prompt('Jumlah kolom:', '2');
+            if (!rows || !cols) return;
+            value = `<table border="1">${'<tr>' + '<td>&nbsp;</td>'.repeat(cols) + '</tr>'.repeat(rows)}</table>`;
+            if (isCodeView) {
+              let currentText = els.editor.textContent;
+              els.editor.textContent = currentText + '\n' + value;
+              triggerAutoSave();
+            } else {
+              document.execCommand('insertHTML', false, value);
+              triggerAutoSave();
+            }
+            return;
+          }
+          
+          if (isCodeView) {
+            return;
+          }
+          
+          if (cmd === 'undo') {
+            document.execCommand('undo', false, null);
+          } else if (cmd === 'redo') {
+            document.execCommand('redo', false, null);
+          } else {
+            document.execCommand(cmd, false, value);
+          }
+          triggerAutoSave();
+        });
+      });
+
+      if (els.codeViewBtn) {
+        els.codeViewBtn.addEventListener('click', () => {
+          if (isCodeView) {
+            try {
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = els.editor.textContent;
+              els.editor.innerHTML = tempDiv.innerHTML || '<br>';
+            } catch (e) {
+              els.editor.innerHTML = els.editor.textContent || '<br>';
+            }
+            els.editor.contentEditable = "true";
+            els.codeViewBtn.innerHTML = '{"{}"}<span class="tooltip">Code View</span>';
+            isCodeView = false;
+          } else {
+            // Masuk mode code
+            els.editor.textContent = els.editor.innerHTML;
+            els.editor.contentEditable = "true";
+            els.codeViewBtn.innerHTML = '{"<>"}<span class="tooltip">Visual View</span>';
+            isCodeView = true;
+          }
+          triggerAutoSave();
+          
+          const toolbarBtns = els.toolbar.querySelectorAll('.toolbar-btn:not(#codeViewBtn)');
+          toolbarBtns.forEach(btn => {
+            if (isCodeView) {
+              btn.disabled = true;
+              btn.style.opacity = '0.5';
+              btn.style.cursor = 'not-allowed';
+            } else {
+              btn.disabled = false;
+              btn.style.opacity = '1';
+              btn.style.cursor = 'pointer';
+            }
+          });
+        });
+      }
+
+      function handleInput() {
+        if (currentNoteId && !isLoadingNote) {
+          clearTimeout(autoSaveTimer);
+          autoSaveTimer = setTimeout(autoSave, 1800);
+        }
+      }
+
+      if (els.editor) {
+        els.editor.addEventListener('input', handleInput);
+        els.editor.addEventListener('keyup', handleInput);
+        els.editor.addEventListener('paste', handleInput);
+      }
+
+      if (els.editor) {
+        els.editor.addEventListener('focus', () => {
+          if (els.editor.innerHTML === '<br>' || els.editor.innerHTML === '') {
+            els.editor.innerHTML = '';
+          }
+        });
+
+        els.editor.addEventListener('blur', () => {
+          if (els.editor.innerHTML.trim() === '') {
+            els.editor.innerHTML = '<br>';
+          }
+        });
+      }
+    }
+
+    function triggerAutoSave() {
+      if (currentNoteId && !isLoadingNote) {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(autoSave, 1800);
+      }
+    }
+
+    function getEditorContent() {
+      if (!els.editor) return '';
+      if (isCodeView) {
+        return els.editor.textContent;
+      }
+      let content = els.editor.innerHTML;
+      if (content === '<br>') content = '';
+      return content;
+    }
+
+    function setEditorContent(html) {
+      if (!els.editor) return;
+      if (isCodeView) {
+        els.editor.textContent = html || '';
+      } else {
+        els.editor.innerHTML = html || '<br>';
+      }
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      return new Date(dateStr).toLocaleString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
+    function stripHtml(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return div.textContent || div.innerText || '';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    async function encryptData(data, password) {
+      const encoder = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]);
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, data);
+      const result = new Uint8Array(29 + encrypted.byteLength);
+      result[0] = 1;
+      result.set(salt, 1);
+      result.set(iv, 17);
+      result.set(new Uint8Array(encrypted), 29);
+      return result;
+    }
+
+    async function decryptData(encryptedData, password) {
+      if (encryptedData[0] !== 1) throw new Error("Format tidak didukung");
+      const salt = encryptedData.slice(1, 17);
+      const iv = encryptedData.slice(17, 29);
+      const encrypted = encryptedData.slice(29);
+      const encoder = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]);
+      const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+      const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, encrypted);
+      return new Uint8Array(decrypted);
+    }
+
+    const DB_NAME = 'sqlite-notes-db';
+    const STORE_NAME = 'database';
+
+    function saveToIndexedDB(data) {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
+        req.onsuccess = () => {
+          const tx = req.result.transaction(STORE_NAME, 'readwrite');
+          tx.objectStore(STORE_NAME).put(data, 'main');
+          tx.oncomplete = resolve;
+          tx.onerror = () => reject(tx.error);
+        };
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function loadFromIndexedDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
+        req.onsuccess = () => {
+          const tx = req.result.transaction(STORE_NAME, 'readonly');
+          const getReq = tx.objectStore(STORE_NAME).get('main');
+          getReq.onsuccess = () => resolve(getReq.result || null);
+          getReq.onerror = () => reject(getReq.error);
+        };
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function clearIndexedDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.deleteDatabase(DB_NAME);
+        req.onsuccess = resolve;
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function autoSave() {
+      if (!db || !currentNoteId || isLoadingNote) return;
+      try {
+        const title = els.titleInput.value.trim() || '(untitled)';
+        const content = getEditorContent();
+        const now = new Date().toISOString();
+        
+        db.run("UPDATE notes SET title = ?, content = ?, updated_at = ? WHERE id = ?", [title, content, now, currentNoteId]);
+        saveToIndexedDB(db.export()).catch(console.error);
+        
+        els.updatedAt.textContent = `UPDATED: ${formatDate(now)}`;
+        els.statusBar.textContent = '✅ SAVED';
+        setTimeout(() => { els.statusBar.textContent = ''; }, 1200);
+        
+        renderNoteList(els.searchInput.value);
+        
+      } catch (err) {
+        console.error('Auto-save error:', err);
+        els.statusBar.textContent = '❌ SAVE FAILED';
+        setTimeout(() => { els.statusBar.textContent = ''; }, 2000);
+      }
+    }
+
+    async function ensureSchema(SQL) {
+      let hasTable = false;
+      try {
+        const stmt = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='notes'");
+        hasTable = !!stmt.step();
+        stmt.free();
+      } catch {}
+
+      if (!hasTable) {
+        db.run(`
+          CREATE TABLE notes (
+            id INTEGER PRIMARY KEY,
+            title TEXT NOT NULL,
+            content TEXT,
+            created_at DATETIME,
+            updated_at DATETIME,
+            deleted_at DATETIME
+          )
+        `);
+        return;
+      }
+
+      const pragma = db.prepare("PRAGMA table_info(notes)");
+      const columns = new Set();
+      while (pragma.step()) columns.add(pragma.getAsObject().name);
+      pragma.free();
+
+      if (!columns.has('updated_at')) {
+        db.run("ALTER TABLE notes ADD COLUMN updated_at DATETIME");
+        db.run("UPDATE notes SET updated_at = created_at WHERE updated_at IS NULL");
+      }
+      if (!columns.has('deleted_at')) {
+        db.run("ALTER TABLE notes ADD COLUMN deleted_at DATETIME");
+      }
+    }
+
+    function renderNoteList(search = '') {
+      if (!db) return;
+      
+      let where = currentTab === 'active' ? "deleted_at IS NULL" : "deleted_at IS NOT NULL";
+      let query = `SELECT id, title, content, updated_at FROM notes WHERE ${where}`;
+      const params = [];
+      if (search.trim()) {
+        query += " AND (title LIKE ? OR content LIKE ?)";
+        const term = `%${search.trim()}%`;
+        params.push(term, term);
+      }
+      query += " ORDER BY updated_at DESC";
+
+      const stmt = db.prepare(query);
+      if (params.length) stmt.bind(params);
+      const rows = [];
+      while (stmt.step()) rows.push(stmt.getAsObject());
+      stmt.free();
+
+      els.noteList.innerHTML = '';
+      if (rows.length === 0) {
+        els.noteList.innerHTML = `<div style="padding:40px;text-align:center;color:#00aa00;">
+          ${currentTab === 'active' ? 'NO NOTES FOUND' : 'RECYCLE BIN IS EMPTY'}
+        </div>`;
+        return;
+      }
+
+      rows.forEach(row => {
+        const item = document.createElement('div');
+        item.className = `note-item${row.id == currentNoteId ? ' selected' : ''}`;
+        item.dataset.id = row.id;
+        const preview = stripHtml(row.content || '');
+        item.innerHTML = `
+          <div class="note-title">${escapeHtml(row.title)}</div>
+          <div class="note-preview">${escapeHtml(preview)}</div>
+          <div class="note-meta"><span></span><span>${formatDate(row.updated_at)}</span></div>
+        `;
+        els.noteList.appendChild(item);
+      });
+
+      document.querySelectorAll('.note-item').forEach(item => {
+        item.removeEventListener('click', handleNoteItemClick);
+        item.addEventListener('click', handleNoteItemClick);
+      });
+    }
+
+    function handleNoteItemClick(e) {
+      const id = parseInt(e.currentTarget.dataset.id);
+      loadNote(id);
+    }
+
+    function loadNote(id) {
+      clearTimeout(autoSaveTimer);
+      const stmt = db.prepare("SELECT * FROM notes WHERE id = ?");
+      stmt.bind([id]);
+      if (stmt.step()) {
+        const row = stmt.getAsObject();
+        currentNoteId = id;
+        els.titleInput.value = row.title;
+        isLoadingNote = true;
+        setEditorContent(row.content || '');
+        isLoadingNote = false;
+        els.createdAt.textContent = `CREATED: ${formatDate(row.created_at)}`;
+        els.updatedAt.textContent = `UPDATED: ${formatDate(row.updated_at)}`;
+        els.emptyState.style.display = 'none';
+        els.noteDetail.style.display = 'flex';
+        renderNoteList(els.searchInput.value);
+      }
+      stmt.free();
+    }
+
+    function hideNoteDetail() {
+      els.emptyState.style.display = 'flex';
+      els.noteDetail.style.display = 'none';
+      currentNoteId = null;
+      els.titleInput.value = '';
+      setEditorContent('');
+      els.createdAt.textContent = 'CREATED: —';
+      els.updatedAt.textContent = 'UPDATED: —';
+      renderNoteList(els.searchInput.value);
+    }
+
+    function deleteCurrentNote() {
+      if (!currentNoteId) return;
+      
+      if (currentTab === 'recycle') {
+        // Hapus permanen
+        showConfirm(
+          '❌ HAPUS PERMANEN',
+          'Catatan ini akan dihapus selamanya. Lanjutkan?',
+          () => {
+            db.run("DELETE FROM notes WHERE id = ?", [currentNoteId]);
+            autoSave();
+            hideNoteDetail();
+            els.statusBar.textContent = '❌ PERMANENTLY DELETED.';
+            setTimeout(() => { els.statusBar.textContent = ''; }, 2000);
+            renderNoteList(els.searchInput.value);
+          }
+        );
+      } else {
+        showConfirm(
+          '🗑️ PINDAH KE RECYCLE BIN',
+          'Catatan ini akan dipindahkan ke Recycle Bin.',
+          () => {
+            const now = new Date().toISOString();
+            db.run("UPDATE notes SET deleted_at = ? WHERE id = ?", [now, currentNoteId]);
+            autoSave();
+            hideNoteDetail();
+            els.statusBar.textContent = '🗑️ MOVED TO RECYCLE BIN.';
+            setTimeout(() => { els.statusBar.textContent = ''; }, 2000);
+            renderNoteList(els.searchInput.value);
+          }
+        );
+      }
+    }
+
+    function initModal() {
+      if (els.githubModal) els.githubModal.style.display = 'none';
+
+      if (els.syncGithubBtn) {
+        els.syncGithubBtn.addEventListener('click', () => {
+          if (els.githubModal) els.githubModal.style.display = 'flex';
+        });
+      }
+
+      if (els.closeModalBtn) {
+        els.closeModalBtn.addEventListener('click', () => {
+          if (els.githubModal) els.githubModal.style.display = 'none';
+        });
+      }
+
+      if (els.githubModal) {
+        els.githubModal.addEventListener('click', (e) => {
+          if (e.target === els.githubModal) {
+            els.githubModal.style.display = 'none';
+          }
+        });
+      }
+    }
+
+    function handleNewNote() {
+      const now = new Date().toISOString();
+      db.run("INSERT INTO notes (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)", ['NEW NOTE', '', now, now]);
+      
+      const stmt = db.prepare("SELECT last_insert_rowid() as id");
+      stmt.step();
+      const id = stmt.getAsObject().id;
+      stmt.free();
+      
+      renderNoteList(els.searchInput.value);
+      
+      setTimeout(() => {
+        loadNote(id);
+      }, 100);
+    }
+
+    async function handleExport() {
+      if (!db) return;
+      try {
+        const data = db.export();
+        const password = prompt("ENTER PASSWORD FOR ENCRYPTED BACKUP:");
+        if (!password) return;
+        const encrypted = await encryptData(data, password);
+        const blob = new Blob([encrypted], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'secretnotes.encrypted';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 0);
+        els.statusBar.textContent = '✅ ENCRYPTED FILE SAVED!';
+        setTimeout(() => { els.statusBar.textContent = ''; }, 2000);
+      } catch (err) {
+        alert('EXPORT FAILED: ' + err.message);
+      }
+    }
+
+    async function handleFileImport(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        let dbData;
+        
+        const uint8 = new Uint8Array(arrayBuffer);
+        const isEncrypted = file.name.endsWith('.encrypted') || uint8[0] === 1;
+        
+        if (isEncrypted) {
+          const password = prompt("ENTER PASSWORD TO DECRYPT:");
+          if (!password) return;
+          dbData = await decryptData(uint8, password);
+        } else {
+          dbData = uint8;
+        }
+        
+        const SQL = await initSqlJs({
+          locateFile: filename => `../assets/${filename}`
+        });
+        db = new SQL.Database(dbData);
+        await ensureSchema(SQL);
+        await saveToIndexedDB(dbData);
+        autoSave();
+        renderNoteList();
+        els.statusBar.textContent = '✅ DATABASE LOADED & SAVED!';
+        setTimeout(() => { els.statusBar.textContent = ''; }, 2000);
+      } catch (err) {
+        console.error('Import error:', err);
+        els.statusBar.textContent = '❌ FAILED: ' + (err.message || 'WRONG PASSWORD / CORRUPT FILE');
+        setTimeout(() => { els.statusBar.textContent = ''; }, 3000);
+      }
+      e.target.value = '';
+    }
+
+    async function handleDestroy() {
+      if (confirm('DESTROY ALL LOCAL DATA? THIS WILL CREATE A FRESH DATABASE.\n\nBACKUP FILES (.encrypted) REMAIN SAFE.')) {
+        try {
+          await clearIndexedDB();
+          
+          const SQL = await initSqlJs({
+            locateFile: filename => `../assets/${filename}`
+          });
+          
+          db = new SQL.Database();
+          await ensureSchema(SQL);
+          const data = db.export();
+          await saveToIndexedDB(data);
+          
+          currentNoteId = null;
+          els.titleInput.value = '';
+          setEditorContent('');
+          els.createdAt.textContent = 'CREATED: —';
+          els.updatedAt.textContent = 'UPDATED: —';
+          
+          els.noteList.innerHTML = '';
+          els.emptyState.style.display = 'flex';
+          els.noteDetail.style.display = 'none';
+          
+          renderNoteList();
+          
+          els.statusBar.textContent = '✅ LOCAL DATA DESTROYED. NEW DATABASE READY.';
+          setTimeout(() => { els.statusBar.textContent = ''; }, 3000);
+        } catch (err) {
+          console.error('Destroy failed:', err);
+          alert('FAILED TO DESTROY DATA: ' + err.message);
+        }
+      }
+    }
+
+    function handleSearch(e) {
+      renderNoteList(e.target.value.trim());
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      els.tabActive.classList.toggle('active', tab === 'active');
+      els.tabRecycle.classList.toggle('active', tab === 'recycle');
+      renderNoteList(els.searchInput.value);
+    }
+
+    function handleTitleInput() {
+      if (currentNoteId) {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(autoSave, 1800);
+      }
+    }
+
+    function closeModal() {
+      if (els.githubModal) els.githubModal.style.display = 'none';
+    }
+
+    const GITHUB_API_URL = 'https://api.github.com';
+    let gistId = localStorage.getItem('secretnotes_gist_id');
+
+    async function uploadToGitHub(token, data) {
+      const password = prompt("ENTER PASSWORD TO ENCRYPT BACKUP:");
+      if (!password) throw new Error("Password required");
+      
+      const encryptedData = await encryptData(data, password);
+      const fileName = 'secretnotes.db.encrypted';
+      const base64Data = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
+      
+      let response;
+      if (gistId) {
+        const updateUrl = `${GITHUB_API_URL}/gists/${gistId}`;
+        response = await fetch(updateUrl, {
+          method: 'PATCH',
+          headers: { 
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            description: "SecretNotes Backup",
+            files: {
+              [fileName]: {
+                content: base64Data
+              }
+            }
+          })
+        });
+      } else {
+        const createUrl = `${GITHUB_API_URL}/gists`;
+        response = await fetch(createUrl, {
+          method: 'POST',
+          headers: { 
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            description: "SecretNotes Backup",
+            public: false,
+            files: {
+              [fileName]: {
+                content: base64Data
+              }
+            }
+          })
+        });
+      }
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Upload failed: ${error.message || response.status}`);
+      }
+      
+      const gistData = await response.json();
+      gistId = gistData.id;
+      localStorage.setItem('secretnotes_gist_id', gistId);
+      return true;
+    }
+
+    async function downloadFromGitHub(token) {
+      if (!gistId) {
+        throw new Error('No backup found. Please upload first.');
+      }
+      
+      const url = `${GITHUB_API_URL}/gists/${gistId}`;
+      const response = await fetch(url, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      
+      if (!response.ok) {
+        if (response.status === 404) throw new Error('Backup not found');
+        if (response.status === 401) throw new Error('Invalid token');
+        throw new Error(`Download failed: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const fileName = 'secretnotes.db.encrypted';
+      const file = data.files[fileName];
+      
+      if (!file) throw new Error('Backup file not found in Gist');
+      
+      const binaryString = atob(file.content);
+      const encryptedData = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        encryptedData[i] = binaryString.charCodeAt(i);
+      }
+      
+      const password = prompt("ENTER PASSWORD TO DECRYPT BACKUP:");
+      if (!password) throw new Error("Password required");
+      
+      return await decryptData(encryptedData, password);
+    }
+
+    async function handleUpload() {
+      const token = els.githubToken.value.trim();
+      
+      if (!token) {
+        alert('Please enter your token!');
+        return;
+      }
+      
+      try {
+        els.statusBar.textContent = '☁️ Uploading to GitHub...';
+        const data = db.export();
+        await uploadToGitHub(token, data);
+        els.statusBar.textContent = '✅ Successfully synced to GitHub!';
+        setTimeout(() => { els.statusBar.textContent = ''; }, 3000);
+        els.githubModal.style.display = 'none';
+      } catch (err) {
+        console.error('Sync error:', err);
+        els.statusBar.textContent = `❌ Sync failed: ${err.message}`;
+        setTimeout(() => { els.statusBar.textContent = ''; }, 5000);
+      }
+    }
+
+    function handleDownload() {
+      const token = els.githubToken.value.trim();
+      
+      if (!token) {
+        alert('Please enter your token!');
+        return;
+      }
+      
+      els.statusBar.textContent = '☁️ Downloading from GitHub...';
+      
+      downloadFromGitHub(token)
+        .then(async (dbData) => {
+          try {
+            const SQL = await initSqlJs({ 
+              locateFile: (filename) => `../assets/${filename}` 
+            });
+            
+            db = new SQL.Database(dbData);
+            await ensureSchema(SQL);
+            await saveToIndexedDB(dbData);
+            autoSave();
+            renderNoteList();
+            
+            els.statusBar.textContent = '✅ Restored from GitHub!';
+            setTimeout(() => { els.statusBar.textContent = ''; }, 3000);
+            els.githubModal.style.display = 'none';
+          } catch (err) {
+            throw err;
+          }
+        })
+        .catch(err => {
+          console.error('Restore error:', err);
+          els.statusBar.textContent = `❌ Restore failed: ${err.message}`;
+          setTimeout(() => { els.statusBar.textContent = ''; }, 5000);
+        });
+    }
+
+    function attachEventListeners() {
+      if (isEventListenersAttached) return;
+      
+      els.newBtn.addEventListener('click', handleNewNote);
+      els.deleteBtn.addEventListener('click', deleteCurrentNote);
+      els.exportBtn.addEventListener('click', handleExport);
+      els.importBtn.addEventListener('click', () => els.fileInput.click());
+      els.clearLocalBtn.addEventListener('click', handleDestroy);
+      els.syncGithubBtn.addEventListener('click', () => {
+        if (els.githubModal) els.githubModal.style.display = 'flex';
+      });
+      
+      els.searchInput.addEventListener('input', handleSearch);
+      els.tabActive.addEventListener('click', () => switchTab('active'));
+      els.tabRecycle.addEventListener('click', () => switchTab('recycle'));
+      els.titleInput.addEventListener('input', handleTitleInput);
+      
+      els.closeModalBtn.addEventListener('click', closeModal);
+      els.githubModal?.addEventListener('click', (e) => {
+        if (e.target === els.githubModal) closeModal();
+      });
+      
+      els.fileInput.addEventListener('change', handleFileImport);
+      
+      els.syncUploadBtn.addEventListener('click', handleUpload);
+      els.syncDownloadBtn.addEventListener('click', handleDownload);
+      
+      isEventListenersAttached = true;
+    }
+
+    async function initApp() {
+      try {
+        els.statusBar.textContent = 'Memuat engine SQLite...';
+        
+        const SQL = await initSqlJs({ 
+          locateFile: (filename) => `../assets/${filename}` 
+        });
+        
+        let savedData = null;
+        try {
+          savedData = await loadFromIndexedDB();
+        } catch (err) {
+          console.warn('No saved data found, creating new database');
+        }
+        
+        if (savedData) {
+          db = new SQL.Database(savedData);
+        } else {
+          db = new SQL.Database();
+          db.run(`
+            CREATE TABLE IF NOT EXISTS notes (
+              id INTEGER PRIMARY KEY,
+              title TEXT NOT NULL,
+              content TEXT,
+              created_at DATETIME,
+              updated_at DATETIME,
+              deleted_at DATETIME
+            )
+          `);
+        }
+        
+        renderNoteList();
+        initToolbar();
+        attachEventListeners();
+        
+        els.statusBar.textContent = '✅ SecretNotes siap!';
+        
+      } catch (err) {
+        console.error('Init error:', err);
+        els.statusBar.textContent = '❌ Gagal: ' + (err.message || 'Unknown error');
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(console.error);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        initApp();
+      }, 100);
+    });
+  </script>
+</body>
+</html>
