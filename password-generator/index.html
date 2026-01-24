@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <title>Password Generator</title>
+  
+  <!-- FAVICON INISIAL JB -->
+  <link rel="icon" type="image/svg+xml" href="image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><rect width='32' height='32' fill='%23000'/><text x='16' y='22' font-family='Courier New' font-size='18' fill='%2300ff00' text-anchor='middle'>PG</text></svg>">
+
+  <style>
+    :root {
+      --bg: #000000;
+      --card: #000000;
+      --text: #00ff00;
+      --border: #005500;
+      --hover: #003300;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: #001100;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 30px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 0 5px var(--text);
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #00aa00;
+      font-size: 14px;
+    }
+
+    .password-display {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    #passwordOutput {
+      width: 100%;
+      padding: 12px 15px;
+      background: #000000;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      letter-spacing: 1px;
+      word-break: break-all;
+      min-height: 24px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #001100;
+      color: #00aa00;
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .copy-btn:hover {
+      background: #002200;
+      box-shadow: 0 0 5px #00ff00;
+    }
+
+    .controls {
+      margin-bottom: 25px;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    .control-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #00aa00;
+    }
+
+    .length-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #lengthInput {
+      width: 60px;
+      padding: 6px 8px;
+      background: #000000;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+
+    #lengthValue {
+      min-width: 30px;
+      text-align: center;
+      color: #00aa00;
+    }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-item input {
+      accent-color: #00ff00;
+    }
+
+    .checkbox-item label {
+      font-size: 14px;
+      color: #00aa00;
+      cursor: pointer;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-hacker {
+      flex: 1;
+      background: #001100;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .btn-hacker:hover {
+      background: #002200;
+      box-shadow: 0 0 8px var(--text);
+    }
+
+    .strength-meter {
+      margin-top: 20px;
+    }
+
+    .strength-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #00aa00;
+    }
+
+    .meter-container {
+      height: 8px;
+      background: #001100;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: #ff0000;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .strength-text {
+      text-align: right;
+      font-size: 12px;
+      color: #007700;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+      }
+      
+      .checkbox-group {
+        grid-template-columns: 1fr;
+      }
+      
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔐 PASSWORD GENERATOR</h1>
+      <p>Generate strong & secure passwords</p>
+    </div>
+
+    <div class="password-display">
+      <div id="passwordOutput">Click "GENERATE" to create a password</div>
+      <button class="copy-btn" id="copyBtn">📋 COPY</button>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-label">LENGTH</label>
+        <div class="length-control">
+          <input type="range" id="lengthSlider" min="8" max="128" value="20" />
+          <span id="lengthValue">20</span>
+        </div>
+        <input type="number" id="lengthInput" min="8" max="128" value="20" />
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">CHARACTER SETS</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="uppercase" checked />
+            <label for="uppercase">Uppercase (A-Z)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="lowercase" checked />
+            <label for="lowercase">Lowercase (a-z)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="numbers" checked />
+            <label for="numbers">Numbers (0-9)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="symbols" checked />
+            <label for="symbols">Symbols (!@#$%^&*)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="checkbox-item">
+          <input type="checkbox" id="excludeAmbiguous" />
+          <label for="excludeAmbiguous">Exclude ambiguous characters (0, O, l, 1, I)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn-hacker" id="generateBtn">⚡ GENERATE</button>
+      <button class="btn-hacker" id="resetBtn">🔄 RESET</button>
+    </div>
+
+    <div class="strength-meter">
+      <label class="strength-label">STRENGTH</label>
+      <div class="meter-container">
+        <div class="meter-fill" id="strengthFill"></div>
+      </div>
+      <div class="strength-text" id="strengthText">-</div>
+    </div>
+  </div>
+
+  <script>
+    // DOM elements
+    const passwordOutput = document.getElementById('passwordOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    const lengthSlider = document.getElementById('lengthSlider');
+    const lengthInput = document.getElementById('lengthInput');
+    const lengthValue = document.getElementById('lengthValue');
+    const uppercase = document.getElementById('uppercase');
+    const lowercase = document.getElementById('lowercase');
+    const numbers = document.getElementById('numbers');
+    const symbols = document.getElementById('symbols');
+    const excludeAmbiguous = document.getElementById('excludeAmbiguous');
+    const generateBtn = document.getElementById('generateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthText = document.getElementById('strengthText');
+
+    // Character sets
+    const charSets = {
+      uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      lowercase: 'abcdefghijklmnopqrstuvwxyz',
+      numbers: '0123456789',
+      symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+    };
+
+    const ambiguousChars = '0O1lI';
+
+    // Update length display
+    function updateLengthDisplay() {
+      const length = lengthSlider.value;
+      lengthInput.value = length;
+      lengthValue.textContent = length;
+    }
+
+    // Sync slider and input
+    lengthSlider.addEventListener('input', updateLengthDisplay);
+    lengthInput.addEventListener('change', () => {
+      let value = parseInt(lengthInput.value);
+      if (value < 8) value = 8;
+      if (value > 128) value = 128;
+      lengthInput.value = value;
+      lengthSlider.value = value;
+      updateLengthDisplay();
+    });
+
+    // Generate password
+    function generatePassword() {
+      let selectedChars = '';
+      
+      // Build character set
+      if (uppercase.checked) selectedChars += charSets.uppercase;
+      if (lowercase.checked) selectedChars += charSets.lowercase;
+      if (numbers.checked) selectedChars += charSets.numbers;
+      if (symbols.checked) selectedChars += charSets.symbols;
+      
+      // Remove ambiguous characters if needed
+      if (excludeAmbiguous.checked && selectedChars) {
+        for (let char of ambiguousChars) {
+          selectedChars = selectedChars.replace(new RegExp(char, 'g'), '');
+        }
+      }
+      
+      // Validation
+      if (!selectedChars) {
+        passwordOutput.textContent = 'Please select at least one character set';
+        updateStrength(0, 'None');
+        return;
+      }
+      
+      const length = parseInt(lengthSlider.value);
+      let password = '';
+      
+      // Ensure at least one character from each selected set
+      const setsToInclude = [];
+      if (uppercase.checked) setsToInclude.push(charSets.uppercase);
+      if (lowercase.checked) setsToInclude.push(charSets.lowercase);
+      if (numbers.checked) setsToInclude.push(charSets.numbers);
+      if (symbols.checked) setsToInclude.push(charSets.symbols);
+      
+      // Add one character from each required set
+      for (let set of setsToInclude) {
+        if (excludeAmbiguous.checked) {
+          let cleanSet = set;
+          for (let char of ambiguousChars) {
+            cleanSet = cleanSet.replace(new RegExp(char, 'g'), '');
+          }
+          if (cleanSet) {
+            password += cleanSet.charAt(Math.floor(Math.random() * cleanSet.length));
+          }
+        } else {
+          password += set.charAt(Math.floor(Math.random() * set.length));
+        }
+      }
+      
+      // Fill remaining length
+      while (password.length < length) {
+        password += selectedChars.charAt(Math.floor(Math.random() * selectedChars.length));
+      }
+      
+      // Shuffle password
+      password = password.split('').sort(() => Math.random() - 0.5).join('');
+      
+      passwordOutput.textContent = password;
+      calculateStrength(password);
+    }
+
+    // Calculate password strength
+    function calculateStrength(password) {
+      if (!password || password.includes('Please select')) {
+        updateStrength(0, 'None');
+        return;
+      }
+      
+      let score = 0;
+      let feedback = '';
+      
+      // Length
+      if (password.length >= 12) score += 25;
+      else if (password.length >= 8) score += 15;
+      
+      // Character variety
+      const hasUpper = /[A-Z]/.test(password);
+      const hasLower = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSymbol = /[^A-Za-z0-9]/.test(password);
+      
+      let varietyCount = 0;
+      if (hasUpper) varietyCount++;
+      if (hasLower) varietyCount++;
+      if (hasNumber) varietyCount++;
+      if (hasSymbol) varietyCount++;
+      
+      score += varietyCount * 15;
+      
+      // No repeating characters
+      const uniqueChars = new Set(password).size;
+      if (uniqueChars === password.length) score += 15;
+      
+      // Determine strength level
+      let strengthLevel = 'Weak';
+      let color = '#ff0000';
+      
+      if (score >= 80) {
+        strengthLevel = 'Very Strong';
+        color = '#00ff00';
+      } else if (score >= 60) {
+        strengthLevel = 'Strong';
+        color = '#00aa00';
+      } else if (score >= 40) {
+        strengthLevel = 'Good';
+        color = '#aaaa00';
+      } else if (score >= 20) {
+        strengthLevel = 'Fair';
+        color = '#ffaa00';
+      }
+      
+      updateStrength(score, strengthLevel, color);
+    }
+
+    // Update strength meter
+    function updateStrength(score, level, color = '#ff0000') {
+      strengthFill.style.width = `${score}%`;
+      strengthFill.style.background = color;
+      strengthText.textContent = level;
+    }
+
+    // Copy to clipboard
+    async function copyToClipboard() {
+      try {
+        await navigator.clipboard.writeText(passwordOutput.textContent);
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✅ COPIED!';
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+        }, 2000);
+      } catch (err) {
+        console.error('Copy failed:', err);
+        alert('Failed to copy password');
+      }
+    }
+
+    // Reset to defaults
+    function resetDefaults() {
+      lengthSlider.value = 20;
+      lengthInput.value = 20;
+      lengthValue.textContent = '20';
+      uppercase.checked = true;
+      lowercase.checked = true;
+      numbers.checked = true;
+      symbols.checked = true;
+      excludeAmbiguous.checked = false;
+      passwordOutput.textContent = 'Click "GENERATE" to create a password';
+      updateStrength(0, '-');
+    }
+
+    // Event listeners
+    generateBtn.addEventListener('click', generatePassword);
+    copyBtn.addEventListener('click', copyToClipboard);
+    resetBtn.addEventListener('click', resetDefaults);
+
+    // Initialize
+    updateLengthDisplay();
+    generatePassword();
+  </script>
+</body>
+</html>

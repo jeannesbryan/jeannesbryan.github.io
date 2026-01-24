@@ -31,6 +31,24 @@
       color: var(--text);
     }
 
+    /* Secure Mode */
+    body.secure-mode .note-title,
+    body.secure-mode .note-preview,
+    body.secure-mode #editor,
+    body.secure-mode .note-title-input,
+    body.secure-mode .note-meta {
+      filter: blur(8px);
+      transition: filter 0.3s ease;
+    }
+
+    body.secure-mode .note-item:hover .note-title,
+    body.secure-mode .note-item:hover .note-preview,
+    body.secure-mode #editor-container:hover #editor,
+    body.secure-mode .note-header:hover .note-title-input,
+    body.secure-mode .note-footer:hover .note-meta {
+      filter: blur(0);
+    }
+
     .app-container {
       display: flex;
       height: 100vh;
@@ -427,6 +445,9 @@
           <button class="btn-hacker" id="syncGithubBtn" title="Sync to GitHub Gist">
             ☁️ GITHUB<span class="tooltip">Sync to GitHub Gist</span>
           </button>
+          <button class="btn-hacker" id="secureModeBtn" title="Toggle Secure Mode">
+            👁️ SECURE<span class="tooltip">Toggle Secure Mode</span>
+          </button>
           <button class="btn-hacker" id="clearLocalBtn" title="Destroy all local data (keep database structure)">
             🗑️<span class="tooltip">Destroy all local data</span>
           </button>
@@ -612,6 +633,7 @@
       exportHtmlBtn: document.getElementById('exportHtmlBtn'),
       importBtn: document.getElementById('importBtn'),
       syncGithubBtn: document.getElementById('syncGithubBtn'),
+      secureModeBtn: document.getElementById('secureModeBtn'),
       clearLocalBtn: document.getElementById('clearLocalBtn'),
       destroyDbBtn: document.getElementById('destroyDbBtn'),
       searchInput: document.getElementById('searchInput'),
@@ -1235,6 +1257,14 @@
       setTimeout(() => { els.statusBar.textContent = ''; }, 2000);
     }
 
+    // Toggle Secure Mode
+    function toggleSecureMode() {
+      document.body.classList.toggle('secure-mode');
+      const isActive = document.body.classList.contains('secure-mode');
+      els.secureModeBtn.textContent = isActive ? '👁️ SECURE ON' : '👁️ SECURE';
+      localStorage.setItem('secretnotes_secure_mode', isActive.toString());
+    }
+
     // Initialize modals
     function initModal() {
       if (els.githubModal) els.githubModal.style.display = 'none';
@@ -1606,6 +1636,7 @@
       els.syncGithubBtn.addEventListener('click', () => {
         if (els.githubModal) els.githubModal.style.display = 'flex';
       });
+      els.secureModeBtn.addEventListener('click', toggleSecureMode);
       
       els.searchInput.addEventListener('input', handleSearch);
       els.tabActive.addEventListener('click', () => switchTab('active'));
@@ -1667,6 +1698,12 @@
         renderNoteList();
         initToolbar();
         attachEventListeners();
+        
+        // Initialize Secure Mode
+        if (localStorage.getItem('secretnotes_secure_mode') === 'true') {
+          document.body.classList.add('secure-mode');
+          els.secureModeBtn.textContent = '👁️ SECURE ON';
+        }
         
         els.statusBar.textContent = '✅ SecretNotes ready!';
         
