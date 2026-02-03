@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Menghosting Situs Web Anonim di Jaringan TOR | Jeannes Bryan</title>
+		<meta name="description" content="Cara menghosting situs web anonim di Jaringan TOR menggunakan OnionShare" />
+		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><rect width='32' height='32' fill='%23000'/><text x='16' y='22' font-family='Courier New' font-size='18' fill='%2300ff00' text-anchor='middle'>NPC</text></svg>" />
+		<link rel="stylesheet" href="../../assets/style.css" />
+	</head>
+	<body>
+		<div class="container">
+			<div class="page-header">
+				<h1><a href="/" title="Non Playable Character">NPC</a></h1>
+				<div class="header-divider"></div>
+			</div>
+			
+			<div class="article-content">
+				<h1 class="article-title">Menghosting Situs Web Anonim di Jaringan TOR</h1>
+				<p class="article-meta">
+					<span class="article-date">📅 September 25, 2025</span>
+					<span class="reading-time">⏱️ 8 min read</span>
+				</p>
+				
+				<p>Kali ini saya akan menuliskan cara menghosting situs web anonim di Jaringan TOR. Kita akan menggunakan OnionShare untuk menghosting situs dan Tor Browser untuk mengakses situs.</p>
+				
+				<p>Jaringan TOR (The Onion Router) adalah sistem jaringan komunikasi terenkripsi yang dirancang untuk menjaga anonimitas pengguna saat berselancar di internet. TOR bekerja dengan mengarahkan lalu lintas internet pengguna melalui serangkaian relay (node) yang tersebar di seluruh dunia, yang masing-masing hanya mengetahui identitas node sebelum dan sesudahnya, sehingga menyulitkan pelacakan asal dan tujuan data. Setiap lapisan enkripsi dalam jaringan ini—seperti lapisan kulit bawang (onion)—dibuka secara bertahap di setiap relay, sehingga identitas pengguna dan aktivitas daringnya tetap terlindungi dari pengawasan, penyadapan, atau sensor. TOR sering digunakan untuk melindungi privasi, mengakses informasi yang diblokir, atau berkomunikasi secara aman di wilayah dengan pembatasan internet yang ketat.</p>
+				
+				<p>OnionShare adalah aplikasi open-source yang memungkinkan pengguna berbagi file, menghosting situs web, atau mengobrol secara aman dan anonim melalui jaringan TOR. Dengan memanfaatkan teknologi TOR, OnionShare membuat layanan lokal di perangkat pengguna tersedia melalui alamat <i>.onion</i> yang hanya bisa diakses melalui Tor Browser, sehingga menjaga identitas dan lokasi pengirim maupun penerima tetap tersembunyi. File tidak diunggah ke server pihak ketiga, melainkan dikirim langsung dari perangkat pengguna ke penerima melalui koneksi terenkripsi, mengurangi risiko penyadapan atau pelacakan. OnionShare sangat berguna bagi jurnalis, aktivis, atau siapa pun yang membutuhkan cara aman untuk bertukar informasi sensitif tanpa meninggalkan jejak digital.</p>
+				
+				<p>Langsung saja kita mulai. Langkah pertama silahkan unduh <a href="https://onionshare.org/" target="_blank">OnionShare</a> kemudian install di komputer Anda. Saya asumsikan Anda sudah paham caranya. Setelah itu buka OnionShare yang sudah diinstall dan akan muncul tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/onionshare.png" 
+					alt="OnionShare" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Setelah itu klik tombol <b>Connect to Tor</b> lalu tunggu beberapa waktu hingga berhasil terhubung ke jaringan TOR. Apabila berhasil terhubung ke jaringan TOR, akan muncul tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/connected.png" 
+					alt="Connected to TOR" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Setelah itu klik tombol <b>Start Hosting</b> lalu akan muncul tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/website.png" 
+					alt="Start Hosting" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Karena saya hanya menghosting satu file html, jadi saya mengklik tombol <b>Add Files</b> dan memilih file <i>index.html</i> yang sudah saya buat sebelumnya. Berikut ini source code <i>index.html</i> yang saya buat.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/code.webp" 
+					alt="HTML Code" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Setelah memilih file <i>index.html</i>, akan muncul tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/option.png" 
+					alt="Hosting Options" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Silahkan centang opsi "Always open this tab when OnionShare is started" agar alamat situs tidak berubah setiap kali membuka OnionShare setelah aplikasi ditutup dan centang juga opsi "This is a public OnionShare service" agar situs bisa diakses tanpa perlu memasukkan kunci. Kemudian klik tombol <b>Start sharing</b>. Tunggu beberapa waktu sampai situs berhasil dihosting di jaringan TOR dan akan muncul tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/hosting.png" 
+					alt="Hosting Started" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Situs web sudah berhasil dihosting dan bisa diakses hanya melalui jaringan TOR. Sekarang silahkan unduh <a href="https://www.torproject.org/" target="_blank">TOR Browser</a> di ponsel Anda. Setelah terunduh silahkan buka dan akan muncul tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/tor-browser.jpg" 
+					alt="TOR Browser" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Kemudian klik tombol <b>Connect</b> dan tunggu beberapa waktu hingga berhasil terhubung ke jaringan TOR. Apabila berhasil terhubung akan muncul tampilan seperti gambar di bawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/tor-connect.jpg" 
+					alt="TOR Connected" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Kemudian tempel alamat <i>.onion</i> Anda di address bar dan pastikan url berawal dengan <i>http</i> dan bukan <i>https</i>. Setelah itu klik enter dan tunggu sejenak hingga situs web Anda berhasil diakses seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/menghosting-situs-web-anonim-di-jaringan-tor/onion-site.jpg" 
+					alt="Onion Site" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Perlu waktu yang lebih lama untuk mengakses situs web di jaringan TOR ketimbang di jaringan internet biasa. Hal ini terjadi karena cara kerja jaringan TOR yang lebih panjang seperti yang sudah dijelaskan diatas.</p>
+				
+				<p>Sebagai informasi, OnionShare juga memiliki beberapa fitur lain disamping untuk menghosting situs web, seperti mengirim file, menerima file, dan obrolan anonim.</p>
+				
+				<p>Tutorial menghosting situs web anonim di jaringan TOR sudah selesai. Terima kasih dan sampai jumpa kembali.</p>
+			</div>
+			
+			<footer>
+				(&#x2184;) Jeannes Bryan
+			</footer>
+		</div>
+		
+		<!-- Back to Top Button -->
+		<button id="backToTop" class="back-to-top-btn">
+			<span class="arrow">↑</span>
+			<span class="text">BACK TO TOP</span>
+		</button>
+		
+		<!-- Auto-Remove Placeholder & Back to Top Script -->
+		<script>
+		  document.addEventListener('DOMContentLoaded', function() {
+		    const images = document.querySelectorAll('.article-image');
+		    
+		    images.forEach(img => {
+		      img.addEventListener('load', function() {
+		        this.setAttribute('loaded', 'true');
+		      });
+		      
+		      img.addEventListener('error', function() {
+		        this.style.background = '#000';
+		        this.style.animation = 'none';
+		        this.setAttribute('loaded', 'true');
+		      });
+		      
+		      if (img.complete) {
+		        img.setAttribute('loaded', 'true');
+		      }
+		    });
+		    
+		    const backToTopBtn = document.getElementById('backToTop');
+		    
+		    window.addEventListener('scroll', () => {
+		      if (window.scrollY > 300) {
+		        backToTopBtn.style.opacity = '1';
+		        backToTopBtn.style.transform = 'translateY(0)';
+		      } else {
+		        backToTopBtn.style.opacity = '0';
+		        backToTopBtn.style.transform = 'translateY(20px)';
+		      }
+		    });
+		    
+		    backToTopBtn.addEventListener('click', () => {
+		      window.scrollTo({
+		        top: 0,
+		        behavior: 'smooth'
+		      });
+		    });
+		  });
+		</script>
+	</body>
+</html>

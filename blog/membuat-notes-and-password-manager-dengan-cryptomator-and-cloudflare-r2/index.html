@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Membuat Notes & Password Manager dengan Cryptomator & Cloudflare R2 | Jeannes Bryan</title>
+		<meta name="description" content="Cara membuat notes & password manager dengan Cryptomator dan Cloudflare R2" />
+		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><rect width='32' height='32' fill='%23000'/><text x='16' y='22' font-family='Courier New' font-size='18' fill='%2300ff00' text-anchor='middle'>NPC</text></svg>" />
+		<link rel="stylesheet" href="../../assets/style.css" />
+	</head>
+	<body>
+		<div class="container">
+			<div class="page-header">
+				<h1><a href="/" title="Non Playable Character">NPC</a></h1>
+				<div class="header-divider"></div>
+			</div>
+			
+			<div class="article-content">
+				<h1 class="article-title">Membuat Notes & Password Manager dengan Cryptomator & Cloudflare R2</h1>
+				<p class="article-meta">
+					<span class="article-date">📅 September 23, 2025</span>
+					<span class="reading-time">⏱️ 10 min read</span>
+				</p>
+				
+				<p>Kali ini saya akan menuliskan cara membuat notes & password manager dengan Cryptomator dan Cloudflare R2. Cryptomator berfungsi sebagai encryptor dan Cloudflare R2 berfungsi sebagai cloud storage untuk menyimpan notes & password.</p>
+				
+				<p>Untuk penyimpanan data, saya memilih menggunakan Cloudflare R2. <a href="https://www.cloudflare.com/developer-platform/r2/" target="_blank">Cloudflare R2</a> memiliki banyak keunggulan, seperti penyimpanan obyek yang kompatibel dengan S3, tanpa biaya keluar, dan migrasi yang mudah. Berikut ini detail biaya di Cloudflare R2.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/cloudflare-r2-pricing.png" 
+					alt="Cloudflare R2 Pricing" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Langsung saja kita mulai. Langkah pertama silahkan buat akun di <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>. Saya asumsikan Anda sudah paham caranya. Setelah selesai membuat akun, Anda akan diarahkan ke halaman dashboard Cloudflare seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/cloudflare-dashboard.png" 
+					alt="Cloudflare Dashboard" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Klik <b>R2</b> di sebelah kiri dan Anda akan diarahkan ke halaman seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/r2-dashboard.png" 
+					alt="R2 Dashboard" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Lalu klik tombol <b>Create bucket</b> untuk membuat bucket tempat penyimpanan notes & password kita nanti. Setelah tombol diklik, Anda akan diarahkan ke halaman seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/create-bucket.png" 
+					alt="Create Bucket" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Silahkan beri nama bucket Anda. Disini saya akan memberi nama bucket saya <b>notpad</b>. Untuk lokasi penyimpanan biarkan <b>Automatic</b> kemudian klik tombol <b>Create bucket</b> dan Anda akan diarahkan ke halaman seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/notpad-bucket.png" 
+					alt="Notpad Bucket" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Bucket berhasil dibuat. Kemudian klik <b>Settings</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/bucket-setting.png" 
+					alt="Bucket Setting" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Saat proses membuat bucket sebelumnya, kita memilih lokasi <b>Automatic</b> sehingga data kita akan ditaruh di region terdekat dari lokasi kita. Disini data kita akan diletakkan di pusat data Asia-Pacific (APAC). Kode APAC ini akan kita gunakan untuk mengakses data kita melalui Cryptomator nanti.</p>
+				
+				<p>Lanjut, klik <b>Objects</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/notpad-bucket.png" 
+					alt="Notpad Bucket Objects" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Kemudian klik <b>S3 Compability API</b> dan Anda akan diarahkan ke halaman seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/s3-api-compability.png" 
+					alt="S3 API Compability" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Kemudian klik <b>Authentication</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/s3-authentication.png" 
+					alt="S3 Authentication" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Kemudian klik <b>Create API Token</b> dan Anda akan diarahkan ke halaman seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/api-token.png" 
+					alt="API Token" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Kemudian klik tombol <b>Create API Token</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/create-api-token.png" 
+					alt="Create API Token" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Silahkan beri nama token yang akan Anda buat. Disini saya memberi nama token saya <b>notpad</b>. Kemudian untuk <b>Permissions</b> pilih <b>Admin Read & Write</b> lalu klik tombol <b>Create API Token</b>. Setelah itu Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/created-api-token.png" 
+					alt="Created API Token" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Token berhasil dibuat dan Anda akan melihat informasi terkait token Anda untuk mengakses bucket Anda nantinya. <b>Salin data-data tersebut dan simpan ditempat yang aman. Jangan sampai hilang ataupun diketahui oleh orang lain.</b></p>
+				
+				<p>Data ini hanya bisa dilihat satu kali, setelah Anda klik Finish, maka Anda tidak bisa melihat informasi ini lagi. Jika sudah menyimpan informasi tersebut, klik Finish dan proses pembuatan bucket sudah selesai.</p>
+				
+				<p>Sebelum memulai langkah kedua, kita bahas tentang <a href="https://cryptomator.org/" target="_blank">Cryptomator</a> terlebih dahulu. Cryptomator adalah perangkat lunak sumber terbuka untuk mengenkripsi data kita di cloud, sehingga penyedia layanan cloud storage tersebut tidak bisa "mengintip" data kita.</p>
+				
+				<p>Cryptomator tersedia untuk Windows, macOS, Linux, Android, dan iOS. Cryptomator gratis untuk Windows, macOS, dan Linux namun berbayar (one-time payment) untuk Android dan iOS.</p>
+				
+				<p>Sekarang kita mulai langkah kedua, yaitu mengakses data kita melalui Cryptomator. Karena saya pengguna ponsel Android, maka saya akan memberikan langkah penggunaan Cryptomator versi Android.</p>
+				
+				<p>Pertama-tama silahkan beli terlebih dahulu aplikasi Cryptomator di Play Store kemudian install. Setelah proses install selesai, buka aplikasi Cryptomator dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/cryptomator.jpeg" 
+					alt="Cryptomator App" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Klik tombol <b>+</b> di pojok kanan bawah dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/create-vault.jpeg" 
+					alt="Create Vault" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Klik <b>Add existing vault</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/add-existing-vault.jpeg" 
+					alt="Add Existing Vault" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Klik <b>S3</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/s3-vault.jpeg" 
+					alt="S3 Vault" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Klik tombol <b>+</b> di pojok kanan bawah dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/s3-vault-api.jpeg" 
+					alt="S3 Vault API" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Silahkan isi sesuai dengan informasi dari token yang kita buat tadi. Setelah selesai kemudian klik tombol <b>Connect</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/vault-location.jpeg" 
+					alt="Vault Location" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Kemudian klik bucket yang berhasil dibuat dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/place-vault.jpeg" 
+					alt="Place Vault" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Klik tombol <b>Place here</b> di pojok kanan bawah dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/vault-password.jpeg" 
+					alt="Vault Password" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Anda diminta untuk membuat kata sandi. Silahkan buat kata sandi yang mudah Anda ingat namun sulit ditebak orang lain karena tidak ada opsi lupa kata sandi. Setelah itu klik tombol <b>Done</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/vault-created.jpeg" 
+					alt="Vault Created" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Klik bucket yang Anda buat dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/input-password.jpeg" 
+					alt="Input Password" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Masukkan kata sandi yang Anda buat tadi kemudian klik <b>Unlock</b>. Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/unlocked-vault.jpeg" 
+					alt="Unlocked Vault" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Bucket Anda berhasil diakses melalui Cryptomator. Sekarang mari kita coba buat sebuah file. Klik tombol <b>+</b> di pojok kanan bawah dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/create-file.jpeg" 
+					alt="Create File" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Ada 3 opsi yang bisa dilakukan, yaitu mengunggah file, membuat folder, dan membuat file teks. Pertama kita coba untuk membuat sebuah file teks. Klik <b>Create text file</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/create-text-file.jpeg" 
+					alt="Create Text File" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Saya akan membuat sebuah file bernama Akun.txt. Klik <b>Create</b> dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/akun-txt.jpeg" 
+					alt="Akun.txt" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Silahkan ketik apapun disitu kemudian klik <b>ikon save</b> di pojok kanan atas dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/akun-txt-new.jpeg" 
+					alt="Akun.txt New" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Terlihat file berhasil dibuat. Silahkan anda mengunggah file, menulis note, atau membuat folder melalui Cryptomator dan secara otomatis akan dienkripsi dan diunggah ke Cloudflare R2 oleh Cryptomator. Tentunya dibutuhkan koneksi internet untuk mengakses file Anda.</p>
+				
+				<p>Sekarang mari kita lihat bagaimana struktur file Anda di Cloudflare R2. Buka dashboard Cloudflare R2 Anda di web browser dan Anda akan melihat tampilan seperti gambar dibawah ini.</p>
+				
+				<img 
+					src="https://npc.on.btfs.io/post/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/notpad-bucket-with-data.png" 
+					alt="Notpad Bucket With Data" 
+					class="article-image"
+					loading="lazy"
+					decoding="async"
+				>
+				
+				<p>Anda akan melihat struktur file yang unik dan sulit karena itu merupakan enkripsi yang dilakukan Cryptomator dan file bernama <b>vault.cryptomator</b> adalah kunci untuk mengakses atau mendekripsi file Anda.</p>
+				
+				<p>Tutorial membuat notes & password manager dengan Cryptomator dan Cloudflare R2 sudah selesai. Terima kasih dan sampai jumpa kembali.</p>
+			</div>
+			
+			<footer>
+				(&#x2184;) Jeannes Bryan
+			</footer>
+		</div>
+		
+		<!-- Back to Top Button -->
+		<button id="backToTop" class="back-to-top-btn">
+			<span class="arrow">↑</span>
+			<span class="text">BACK TO TOP</span>
+		</button>
+		
+		<!-- Auto-Remove Placeholder & Back to Top Script -->
+		<script>
+		  document.addEventListener('DOMContentLoaded', function() {
+		    const images = document.querySelectorAll('.article-image');
+		    
+		    images.forEach(img => {
+		      img.addEventListener('load', function() {
+		        this.setAttribute('loaded', 'true');
+		      });
+		      
+		      img.addEventListener('error', function() {
+		        this.style.background = '#000';
+		        this.style.animation = 'none';
+		        this.setAttribute('loaded', 'true');
+		      });
+		      
+		      if (img.complete) {
+		        img.setAttribute('loaded', 'true');
+		      }
+		    });
+		    
+		    const backToTopBtn = document.getElementById('backToTop');
+		    
+		    window.addEventListener('scroll', () => {
+		      if (window.scrollY > 300) {
+		        backToTopBtn.style.opacity = '1';
+		        backToTopBtn.style.transform = 'translateY(0)';
+		      } else {
+		        backToTopBtn.style.opacity = '0';
+		        backToTopBtn.style.transform = 'translateY(20px)';
+		      }
+		    });
+		    
+		    backToTopBtn.addEventListener('click', () => {
+		      window.scrollTo({
+		        top: 0,
+		        behavior: 'smooth'
+		      });
+		    });
+		  });
+		</script>
+	</body>
+</html>
