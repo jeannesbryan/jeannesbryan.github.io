@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Jeannes Bryan | NPC</title>
+  <link>https://npc.my.id/</link>
+  <description>Tech, privacy, and digital thoughts from a NPC who loves watching sports, a tech enthusiast, and a professional thinker.</description>
+  <language>en-us</language>
+  <atom:link href="https://npc.my.id/feed.xml" rel="self" type="application/rss+xml" />
+  <lastBuildDate>Tue, 03 Feb 2026 12:00:00 GMT</lastBuildDate>
+  <pubDate>Tue, 03 Feb 2026 12:00:00 GMT</pubDate>
+  <ttl>60</ttl>
+
+  <item>
+    <title>Email Aman, Privasi Terjaga dengan DuckDuckGo Email Protection</title>
+    <link>https://npc.my.id/blog/email-aman-privasi-terjaga-dengan-duckduckgo-email-protection/</link>
+    <guid isPermaLink="true">https://npc.my.id/blog/email-aman-privasi-terjaga-dengan-duckduckgo-email-protection/</guid>
+    <pubDate>Sun, 02 Nov 2025 00:00:00 GMT</pubDate>
+    <description><![CDATA[Di era digital, alamat email bukan sekadar sarana komunikasi, tapi juga menjadi identitas utama yang menghubungkan pengguna dengan berbagai layanan online, mulai dari belanja daring hingga media sosial. Sayangnya, identitas ini kerap dieksploitasi tanpa sepengetahuan pengguna. Menurut data dari DuckDuckGo, sekitar 85% email yang diterima selama uji coba Email Protection mengandung pelacak tersembunyi...]]></description>
+  </item>
+
+  <item>
+    <title>Menghosting Situs Web Anonim di Jaringan TOR</title>
+    <link>https://npc.my.id/blog/menghosting-situs-web-anonim-di-jaringan-tor/</link>
+    <guid isPermaLink="true">https://npc.my.id/blog/menghosting-situs-web-anonim-di-jaringan-tor/</guid>
+    <pubDate>Wed, 25 Sep 2025 00:00:00 GMT</pubDate>
+    <description><![CDATA[Kali ini saya akan menuliskan cara menghosting situs web anonim di Jaringan TOR. Kita akan menggunakan OnionShare untuk menghosting situs dan Tor Browser untuk mengakses situs. Jaringan TOR (The Onion Router) adalah sistem jaringan komunikasi terenkripsi yang dirancang untuk menjaga anonimitas pengguna saat berselancar di internet...]]></description>
+  </item>
+
+  <item>
+    <title>Membuat Notes dan Password Manager dengan Cryptomator dan Cloudflare R2</title>
+    <link>https://npc.my.id/blog/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/</link>
+    <guid isPermaLink="true">https://npc.my.id/blog/membuat-notes-and-password-manager-dengan-cryptomator-and-cloudflare-r2/</guid>
+    <pubDate>Wed, 23 Sep 2025 00:00:00 GMT</pubDate>
+    <description><![CDATA[Kali ini saya akan menuliskan cara membuat notes & password manager dengan Cryptomator dan Cloudflare R2. Cryptomator berfungsi sebagai encryptor dan Cloudflare R2 berfungsi sebagai cloud storage untuk menyimpan notes & password. Untuk penyimpanan data, saya memilih menggunakan Cloudflare R2...]]></description>
+  </item>
+</channel>
+</rss>

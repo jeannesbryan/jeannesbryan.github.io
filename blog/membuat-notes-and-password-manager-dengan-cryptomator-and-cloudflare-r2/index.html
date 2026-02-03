@@ -9,6 +9,9 @@
 		<link rel="stylesheet" href="../../assets/style.css" />
 	</head>
 	<body>
+		<div class="progress-container">
+			<div class="progress-bar" id="progressBar"></div>
+		</div>
 		<div class="container">
 			<div class="page-header">
 				<h1><a href="/" title="Non Playable Character">NPC</a></h1>
@@ -323,8 +326,16 @@
 				<p>Tutorial membuat notes & password manager dengan Cryptomator dan Cloudflare R2 sudah selesai. Terima kasih dan sampai jumpa kembali.</p>
 			</div>
 			
+			<!-- BTFS Mirror Badge -->
+			<div style="text-align: center; margin: 30px 0;">
+			  <a href="https://npc.on.btfs.io" class="social-link" title="Mirrored on BTFS" style="width: 50px; height: 50px; background: #001100; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0 auto;">
+				<img src="../../assets/btfs.webp" alt="BTFS Mirror" style="width: 32px; height: 32px;">
+			  </a>
+			  <div style="font-size: 12px; color: #00aa00; margin-top: 8px; font-family: 'Courier New', monospace;">Mirrored on BTFS</div>
+			</div>
+
 			<footer>
-				(&#x2184;) Jeannes Bryan
+			  (&#x2184;) Jeannes Bryan
 			</footer>
 		</div>
 		
@@ -334,45 +345,54 @@
 			<span class="text">BACK TO TOP</span>
 		</button>
 		
-		<!-- Auto-Remove Placeholder & Back to Top Script -->
+		<!-- Combined Scripts: Auto-Remove Placeholder + Back to Top + Progress Bar -->
 		<script>
 		  document.addEventListener('DOMContentLoaded', function() {
-		    const images = document.querySelectorAll('.article-image');
-		    
-		    images.forEach(img => {
-		      img.addEventListener('load', function() {
-		        this.setAttribute('loaded', 'true');
-		      });
-		      
-		      img.addEventListener('error', function() {
-		        this.style.background = '#000';
-		        this.style.animation = 'none';
-		        this.setAttribute('loaded', 'true');
-		      });
-		      
-		      if (img.complete) {
-		        img.setAttribute('loaded', 'true');
-		      }
-		    });
-		    
-		    const backToTopBtn = document.getElementById('backToTop');
-		    
-		    window.addEventListener('scroll', () => {
-		      if (window.scrollY > 300) {
-		        backToTopBtn.style.opacity = '1';
-		        backToTopBtn.style.transform = 'translateY(0)';
-		      } else {
-		        backToTopBtn.style.opacity = '0';
-		        backToTopBtn.style.transform = 'translateY(20px)';
-		      }
-		    });
-		    
-		    backToTopBtn.addEventListener('click', () => {
-		      window.scrollTo({
-		        top: 0,
-		        behavior: 'smooth'
-		      });
-		    });
+			// 1. Auto-remove placeholder untuk gambar
+			const images = document.querySelectorAll('.article-image');
+			images.forEach(img => {
+			  img.addEventListener('load', () => img.setAttribute('loaded', 'true'));
+			  img.addEventListener('error', () => {
+				img.style.background = '#000';
+				img.style.animation = 'none';
+				img.setAttribute('loaded', 'true');
+			  });
+			  if (img.complete) img.setAttribute('loaded', 'true');
+			});
+
+			// 2. Setup elemen (check existence untuk avoid error di halaman tanpa elemen ini)
+			const backToTopBtn = document.getElementById('backToTop');
+			const progressBar = document.getElementById('progressBar');
+
+			// 3. Single scroll listener untuk semua fitur (lebih efisien!)
+			window.addEventListener('scroll', () => {
+			  // Back to Top Button
+			  if (backToTopBtn) {
+				if (window.scrollY > 300) {
+				  backToTopBtn.style.opacity = '1';
+				  backToTopBtn.style.transform = 'translateY(0)';
+				} else {
+				  backToTopBtn.style.opacity = '0';
+				  backToTopBtn.style.transform = 'translateY(20px)';
+				}
+			  }
+
+			  // Progress Bar
+			  if (progressBar) {
+				const scrollTop = document.documentElement.scrollTop;
+				const scrollHeight = document.documentElement.scrollHeight;
+				const clientHeight = document.documentElement.clientHeight;
+				const scrolled = (scrollTop / (scrollHeight - clientHeight)) * 100;
+				progressBar.style.width = `${Math.min(100, scrolled)}%`; // Prevent >100%
+			  }
+			});
+
+			// 4. Back to Top click handler
+			if (backToTopBtn) {
+			  backToTopBtn.addEventListener('click', () => {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			  });
+			}
 		  });
 		</script>
 	</body>

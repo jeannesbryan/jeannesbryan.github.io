@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found | NPC</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><rect width='32' height='32' fill='%23000'/><text x='16' y='22' font-family='Courier New' font-size='18' fill='%2300ff00' text-anchor='middle'>NPC</text></svg>" />
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .error-container {
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 60vh;
+      padding: 20px;
+    }
+    .error-code {
+      font-size: 80px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #00ff00;
+      text-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+    }
+    .error-message {
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: #00cc00;
+    }
+    .error-description {
+      font-size: 18px;
+      color: #00aa00;
+      margin-bottom: 30px;
+    }
+    .home-link {
+      display: inline-block;
+      background: #001100;
+      color: #00ff00;
+      border: 1px solid #005500;
+      padding: 12px 30px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .home-link:hover {
+      background: #003300;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+      transform: translateY(-3px);
+    }
+    @media (max-width: 600px) {
+      .error-code {
+        font-size: 60px;
+      }
+      .error-message {
+        font-size: 20px;
+      }
+      .error-description {
+        font-size: 16px;
+      }
+      .home-link {
+        padding: 10px 25px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1><a href="/" title="Non Playable Character">NPC</a></h1>
+      <div class="header-divider"></div>
+    </div>
+    
+    <div class="error-container">
+      <div class="error-code">404</div>
+      <h1 class="error-message">PAGE NOT FOUND</h1>
+      <p class="error-description">The page you are looking for does not exist in the matrix.</p>
+      <a href="/" class="home-link">← RETURN TO HOME</a>
+    </div>
+    
+    <footer>
+      (&#x2184;) Jeannes Bryan
+    </footer>
+  </div>
+</body>
+</html>

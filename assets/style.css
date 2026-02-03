@@ -579,3 +579,29 @@ footer {
     font-size: 14px;
   }
 }
+
+/* Reading Progress Bar */
+.progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #001100;
+  z-index: 9999;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.progress-bar {
+  height: 100%;
+  background: #00ff00;
+  width: 0%;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  transition: width 0.1s ease-out;
+}
+
+/* Progress bar untuk mobile (lebih tebal) */
+@media (max-width: 600px) {
+  .progress-container {
+    height: 4px;
+  }
+}
