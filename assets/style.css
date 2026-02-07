@@ -104,6 +104,13 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Blog Link Style */
+.blog-link {
+  color: #00ff00;
+  text-decoration: none;
+  font-weight: bold;
+}
+
 .social-links {
   display: flex;
   flex-wrap: wrap;
@@ -298,6 +305,7 @@ footer {
   right: 30px;
   background: #001100;
   border: 1px solid #005500;
+  color: var(--text);
   padding: 12px 20px;
   border-radius: 8px;
   cursor: pointer;
@@ -317,6 +325,7 @@ footer {
   font-size: 20px;
   font-weight: bold;
   line-height: 1;
+  color: var(--text);
 }
 
 .back-to-top-btn span.text {
@@ -324,6 +333,7 @@ footer {
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
+  color: var(--text);
 }
 
 .back-to-top-btn:hover {
@@ -336,6 +346,304 @@ footer {
   transform: translateY(0) scale(0.95);
 }
 
+/* Reading Progress Bar */
+.progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #001100;
+  z-index: 9999;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.progress-bar {
+  height: 100%;
+  background: #00ff00;
+  width: 0%;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  transition: width 0.1s ease-out;
+}
+
+/* Hosting Badge (GitHub + BTFS) */
+.hosting-badge {
+  text-align: center;
+  margin: 30px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.hosting-label {
+  font-size: 12px;
+  color: #00aa00;
+  white-space: nowrap;
+}
+
+.hosting-icon {
+  width: 50px;
+  height: 50px;
+  margin: 0;
+}
+
+.hosting-separator {
+  font-size: 18px;
+  color: #00cc00;
+}
+
+.btfs-icon {
+  background: #001100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.btfs-icon img {
+  width: 32px;
+  height: 32px;
+}
+
+/* BTFS Mirror Badge for Articles */
+.btfs-mirror-badge {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.btfs-mirror-badge .social-link {
+  width: 50px;
+  height: 50px;
+  background: #001100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.btfs-mirror-badge img {
+  width: 32px;
+  height: 32px;
+}
+
+.btfs-mirror-label {
+  font-size: 12px;
+  color: #00aa00;
+  margin-top: 8px;
+  font-family: 'Courier New', monospace;
+}
+
+/* PWA Install Prompt */
+.install-prompt {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: #001100;
+  border: 1px solid #005500;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  z-index: 9999;
+}
+
+.install-prompt-text {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+}
+
+.install-btn {
+  background: #00ff00;
+  color: #000;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cancel-btn {
+  background: transparent;
+  color: #00aa00;
+  border: 1px solid #005500;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+/* Search Styles */
+.search-container {
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 20px;
+  background: #001100;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.search-input::placeholder {
+  color: #006600;
+}
+
+.search-input:focus {
+  border-color: var(--text);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: #00aa00;
+}
+
+.no-results p {
+  margin-bottom: 0;
+}
+
+/* RSS Container */
+.rss-container {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.rss-link {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+}
+
+/* Share Buttons */
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 30px 0;
+  padding: 20px;
+  background: #000800;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.share-title {
+  width: 100%;
+  font-size: 14px;
+  color: #00aa00;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.share-btn {
+  background: #001100;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.share-btn:hover {
+  background: var(--hover);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.share-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* Related Posts */
+.related-posts {
+  margin: 40px 0;
+  padding: 25px;
+  background: #000800;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.related-posts-title {
+  font-size: 18px;
+  color: #00cc00;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.related-post-item {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.related-post-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.related-post-item a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 16px;
+  display: block;
+  transition: all 0.2s;
+}
+
+.related-post-item a:hover {
+  text-shadow: 0 0 8px var(--text);
+  padding-left: 10px;
+}
+
+.related-post-date {
+  font-size: 12px;
+  color: #00aa00;
+  margin-top: 5px;
+}
+
+/* Disqus Container */
+.disqus-container {
+  margin: 40px 0;
+  padding: 25px;
+  background: #000800;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.disqus-title {
+  font-size: 18px;
+  color: #00cc00;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#disqus_thread {
+  color-scheme: dark;
+}
+
+/* Responsive Styles */
 @media (max-width: 1024px) {
   body {
     padding: 18px;
@@ -403,7 +711,7 @@ footer {
 @media (max-width: 600px) {
   body {
     padding: 15px;
-  }     
+  }
   h1 {
     font-size: 26px;
   }
@@ -412,11 +720,11 @@ footer {
   }
   p {
     font-size: 16px;
-  }      
+  }
   .social-link {
     width: 50px;
     height: 50px;
-  }     
+  }
   .social-link svg {
     width: 24px;
     height: 24px;
@@ -452,6 +760,31 @@ footer {
   }
   .back-to-top-btn span.text {
     font-size: 11px;
+  }
+  .progress-container {
+    height: 4px;
+  }
+  .hosting-badge {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .hosting-label {
+    font-size: 10px;
+    white-space: normal;
+  }
+  .hosting-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .hosting-separator {
+    font-size: 16px;
+  }
+  .share-buttons {
+    padding: 15px;
+  }
+  .share-btn {
+    padding: 8px 12px;
+    font-size: 12px;
   }
 }
 
@@ -537,6 +870,10 @@ footer {
   .back-to-top-btn span.text {
     font-size: 10px;
   }
+  .search-input {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 320px) {
@@ -577,81 +914,5 @@ footer {
   }
   .post-excerpt {
     font-size: 14px;
-  }
-}
-
-/* Reading Progress Bar */
-.progress-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: #001100;
-  z-index: 9999;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-.progress-bar {
-  height: 100%;
-  background: #00ff00;
-  width: 0%;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-  transition: width 0.1s ease-out;
-}
-
-/* Progress bar untuk mobile (lebih tebal) */
-@media (max-width: 600px) {
-  .progress-container {
-    height: 4px;
-  }
-}
-
-/* Hosting Badge (GitHub + BTFS) */
-.hosting-badge {
-  text-align: center;
-  margin: 30px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.hosting-badge span {
-  font-size: 12px;
-  color: #00aa00;
-  white-space: nowrap;
-}
-
-.hosting-badge .social-link {
-  width: 50px;
-  height: 50px;
-  margin: 0;
-}
-
-.hosting-badge .separator {
-  font-size: 18px;
-  color: #00cc00;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 600px) {
-  .hosting-badge {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .hosting-badge span {
-    font-size: 10px;
-    white-space: normal;
-  }
-  
-  .hosting-badge .social-link {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .hosting-badge .separator {
-    font-size: 16px;
   }
 }

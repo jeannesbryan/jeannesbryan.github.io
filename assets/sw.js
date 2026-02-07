@@ -1,10 +1,11 @@
-const CACHE_NAME = 'npc-v1';
+const CACHE_NAME = 'npc-v2';
 const urlsToCache = [
   '/',
   '/assets/style.css',
   '/assets/manifest.json',
   '/assets/icon-192.png',
-  '/assets/icon-512.png'
+  '/assets/icon-512.png',
+  '/blog/'
 ];
 
 // Install event - cache files
@@ -43,25 +44,41 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - serve from cache or network
+// Fetch event - serve from cache or network (only cache same-origin requests)
 self.addEventListener('fetch', event => {
+  // Only handle GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
+  // Parse the request URL
+  const requestUrl = new URL(event.request.url);
+  
+  // Only cache same-origin requests to avoid CORS issues
+  if (requestUrl.origin !== location.origin) {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         // Return cached response if found
         if (response) {
-          console.log('Serving from cache:', event.request.url);
           return response;
         }
         
         // Otherwise fetch from network
-        console.log('Fetching from network:', event.request.url);
         return fetch(event.request).then(
           response => {
+            // Check if we received a valid response
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+            
             // Clone response because it's a stream
             const responseClone = response.clone();
             
-            // Cache the response for future use
+            // Cache the response for future use (only for same-origin)
             caches.open(CACHE_NAME)
               .then(cache => {
                 cache.put(event.request, responseClone);
