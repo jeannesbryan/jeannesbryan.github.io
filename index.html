@@ -39,30 +39,6 @@
 
 		<!-- CSS -->
 		<link rel="stylesheet" href="assets/style.css" />
-		<style>
-			.snowflake-section {
-				text-align: center;
-				margin: 40px 0;
-			}
-			.snowflake-label {
-				font-size: 14px;
-				color: #00aa00;
-				margin-bottom: 15px;
-				letter-spacing: 2px;
-			}
-			.snowflake-wrapper {
-				display: inline-block;
-				border: 1px solid #005500;
-				border-radius: 8px;
-				padding: 10px;
-				background: #001100;
-				box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
-			}
-			.snowflake-wrapper iframe {
-				display: block;
-				border-radius: 4px;
-			}
-		</style>
 	</head>
 	<body>
 		<div class="container">
@@ -112,7 +88,7 @@
 					</svg>
 				</a>
 				<!-- Pixels Gallery Link -->
-				<a href="/pixels/" class="social-link" title="Pixels">
+				<a href="/pixels/" class="social-link" title="Pixels - Photo Gallery">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
 						<path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
 					</svg>
@@ -134,14 +110,6 @@
 				<span style="font-size: 12px; color: #00aa00; white-space: nowrap;">Mirrored on BTFS</span>
 			</div>
 
-			<!-- Tor Snowflake -->
-			<div class="snowflake-section">
-				<p class="snowflake-label">// SUPPORT TOR //</p>
-				<div class="snowflake-wrapper">
-					<iframe src="https://snowflake.torproject.org/embed.html" width="320" height="240" frameborder="0" scrolling="no"></iframe>
-				</div>
-			</div>
-
 			<footer>
 				(&#x2184;) Jeannes Bryan
 			</footer>
@@ -153,7 +121,7 @@
 			<button id="installBtn" style="background: #00ff00; color: #000; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Install</button>
 			<button id="cancelBtn" style="background: transparent; color: #00aa00; border: 1px solid #005500; padding: 8px 20px; border-radius: 4px; cursor: pointer; margin-left: 10px;">Cancel</button>
 		</div>
-		<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "95bacfc39747492692ff94ce70bca0ba"}'></script>
+
 		<script>
 		  // Register Service Worker
 		  if ('serviceWorker' in navigator) {
@@ -200,5 +168,6 @@
 		    document.getElementById('installPrompt').style.display = 'none';
 		  });
 		</script>
+		<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "95bacfc39747492692ff94ce70bca0ba"}'></script>
 	</body>
 </html>
