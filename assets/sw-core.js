@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jeannes-bryan-bunker-v2';
+const CACHE_NAME = 'jeannes-bryan-bunker-v3';
 const ASSETS = [
 	'/',
 	'/index.html',
@@ -7,11 +7,13 @@ const ASSETS = [
 	'/bunker/notes.html',
 	'/bunker/contacts.html',
 	'/bunker/ledger.html',
+	'/bunker/board.html',
 	'/assets/terminal.css',
 	'/assets/terminal.js',
 	'/assets/libsodium-wrappers-sumo+esm.js',
 	'/assets/markdown-it.min.js',
 	'/assets/purify.min.js',
+	'/assets/Sortable.min.js',
 	'/assets/manifest.webmanifest',
 	'/assets/npc-icon.svg',
 	'/assets/favicon-16x16.png',

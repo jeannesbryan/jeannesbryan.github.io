@@ -2,7 +2,7 @@
 	"id": "/",
 	"name": "Bunker",
 	"short_name": "Bunker",
-	"description": "A personal terminal-style launcher for offline-first browser tools.",
+	"description": "Encrypted offline-first browser tools by Jeannes Bryan.",
 	"start_url": "/index.html",
 	"scope": "/",
 	"display": "standalone",

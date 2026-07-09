@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Bunker Board</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#000000">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="stylesheet" href="../assets/terminal.css">
+		<style>
+			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
+			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
+			body.t-crt::after { background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%); background-size:100% 2px; }
+			:is(.t-navbar,.t-btn,.t-alert,.t-statusline,.t-card,.t-card-header,.t-border-top,.t-border-bottom,.text-muted,.text-success,.text-warning,.text-danger,.text-info,.text-white,.form-control,.form-select,input,textarea,select) { background:#000000 !important; color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-btn:hover,.t-btn:focus) { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			::placeholder { color:rgba(0,255,65,.55) !important; }
+			.t-shell { max-width:1500px; }
+			.board-hero { display:flex; justify-content:space-between; gap:16px; align-items:flex-end; flex-wrap:wrap; margin-bottom:18px; }
+			.board-title-wrap { min-width:260px; }
+			.board-grid { display:grid; grid-template-columns:360px minmax(0, 1fr); gap:18px; align-items:start; }
+			.side-stack { display:flex; flex-direction:column; gap:18px; }
+			.control-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+			.control-grid.one { grid-template-columns:1fr; }
+			.control-grid.three { grid-template-columns:1fr 1fr 1fr; }
+			.form-row { display:flex; flex-direction:column; gap:7px; }
+			.form-row label { font-weight:bold; font-size:.82rem; text-transform:uppercase; }
+			.form-actions { display:flex; gap:10px; flex-wrap:wrap; }
+			.board-canvas-shell { min-height:520px; overflow-x:auto; padding-bottom:12px; }
+			.board-canvas { display:flex; gap:14px; align-items:flex-start; min-height:500px; }
+			.board-column { min-width:300px; width:300px; border:1px solid #00ff41; background:#000000; display:flex; flex-direction:column; max-height:calc(100vh - 185px); }
+			.column-header { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; border-bottom:1px dashed #00ff41; padding:10px; }
+			.column-title { font-weight:bold; text-transform:uppercase; line-height:1.35; }
+			.column-count { font-size:.82rem; opacity:.85; margin-top:4px; }
+			.column-actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+			.column-actions .t-btn { padding:4px 8px; font-size:.72rem; }
+			.column-grip, .card-grip { cursor:grab; user-select:none; }
+			.board-card-list { flex:1; min-height:95px; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:10px; }
+			.board-card { border:1px dashed #00ff41; padding:10px; background:#000000; }
+			.board-card.is-pinned { border-style:solid; box-shadow:0 0 14px rgba(0,255,65,.18); }
+			.card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+			.card-title { font-weight:bold; line-height:1.35; word-break:break-word; }
+			.card-meta { font-size:.78rem; line-height:1.55; opacity:.9; margin-top:8px; }
+			.card-desc { white-space:pre-wrap; word-break:break-word; margin-top:8px; line-height:1.55; }
+			.card-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+			.tag-pill { border:1px solid #00ff41; padding:2px 6px; font-size:.72rem; }
+			.card-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+			.card-actions .t-btn { padding:4px 8px; font-size:.72rem; }
+			.empty-state { border:1px dashed #00ff41; padding:22px; text-align:center; line-height:1.7; }
+			.status-strip { display:flex; gap:8px; flex-wrap:wrap; }
+			.status-pill { border:1px solid #00ff41; padding:5px 9px; font-size:.78rem; }
+			.hidden { display:none !important; }
+			.sortable-ghost { opacity:.35; }
+			.sortable-chosen { box-shadow:0 0 14px rgba(0,255,65,.34); }
+			@media (max-width:1100px) { .board-grid { grid-template-columns:1fr; } .board-column { max-height:none; } }
+			@media (max-width:680px) { .control-grid, .control-grid.three { grid-template-columns:1fr; } .board-column { min-width:82vw; width:82vw; } }
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">BUNKER_BOARD</div>
+			<div class="t-nav-links">
+				<a href="../index.html" class="t-nav-link">ROOT</a>
+				<a href="./vault.html" class="t-nav-link">VAULT</a>
+				<a href="./auth.html" class="t-nav-link">AUTH</a>
+				<a href="./notes.html" class="t-nav-link">NOTES</a>
+				<a href="./contacts.html" class="t-nav-link">CONTACTS</a>
+				<a href="./ledger.html" class="t-nav-link">LEDGER</a>
+			</div>
+		</nav>
+
+		<main class="t-shell">
+			<section class="board-hero">
+				<div class="board-title-wrap">
+					<h1 class="t-hero-title">BUNKER BOARD</h1>
+					<p class="t-hero-subtitle">Encrypted local Kanban boards for private projects, tasks, recovery plans, and personal workflows.</p>
+				</div>
+				<div class="status-strip">
+					<span id="lockStatus" class="status-pill">LOCKED</span>
+					<span id="dirtyStatus" class="status-pill">CLEAN</span>
+					<span id="itemStatus" class="status-pill">0 CARDS</span>
+				</div>
+			</section>
+
+			<section id="lockedPanel" class="t-card mb-4">
+				<div class="t-card-header">DATABASE</div>
+				<div class="t-card-body">
+					<div class="control-grid">
+						<div class="form-row">
+							<label for="passphrase">Passphrase</label>
+							<input id="passphrase" class="form-control" type="password" autocomplete="current-password" placeholder="Enter passphrase">
+						</div>
+						<div class="form-row">
+							<label for="encFile">Encrypted file</label>
+							<input id="encFile" class="form-control" type="file" accept=".enc,application/json">
+						</div>
+					</div>
+					<div class="form-actions mt-3">
+						<button id="btnNew" class="t-btn" type="button">[ NEW_DATABASE ]</button>
+						<button id="btnOpen" class="t-btn" type="button">[ OPEN_ENC ]</button>
+					</div>
+					<div id="lockMessage" class="t-alert mt-3">> Open an existing <span class="t-code-inline">bunker-board-enc</span> file or create a new local board database.</div>
+				</div>
+			</section>
+
+			<section id="appPanel" class="board-grid hidden">
+				<aside class="side-stack">
+					<section class="t-card">
+						<div class="t-card-header">SESSION</div>
+						<div class="t-card-body">
+							<div class="form-row">
+								<label for="boardSelect">Active board</label>
+								<select id="boardSelect" class="form-select"></select>
+							</div>
+							<div class="form-row mt-3">
+								<label for="boardTitle">Board title</label>
+								<input id="boardTitle" class="form-control" type="text" placeholder="Personal">
+							</div>
+							<div class="form-actions mt-3">
+								<button id="btnSaveBoard" class="t-btn t-btn-sm" type="button">[ SAVE_BOARD ]</button>
+								<button id="btnAddBoard" class="t-btn t-btn-sm" type="button">[ ADD_BOARD ]</button>
+								<button id="btnDeleteBoard" class="t-btn t-btn-sm" type="button">[ DELETE_BOARD ]</button>
+							</div>
+							<div class="form-actions mt-3">
+								<button id="btnExport" class="t-btn" type="button">[ EXPORT_ENC ]</button>
+								<button id="btnLock" class="t-btn" type="button">[ LOCK ]</button>
+							</div>
+						</div>
+					</section>
+
+					<section class="t-card">
+						<div class="t-card-header">FILTER</div>
+						<div class="t-card-body">
+							<div class="control-grid one">
+								<div class="form-row">
+									<label for="searchInput">Search</label>
+									<input id="searchInput" class="form-control" type="search" placeholder="Title, description, tag, priority">
+								</div>
+							</div>
+							<div class="control-grid mt-3">
+								<div class="form-row">
+									<label for="tagFilter">Tag</label>
+									<select id="tagFilter" class="form-select"></select>
+								</div>
+								<div class="form-row">
+									<label for="priorityFilter">Priority</label>
+									<select id="priorityFilter" class="form-select">
+										<option value="">ALL</option>
+										<option value="LOW">LOW</option>
+										<option value="MEDIUM">MEDIUM</option>
+										<option value="HIGH">HIGH</option>
+										<option value="URGENT">URGENT</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-actions mt-3">
+								<button id="btnClearFilters" class="t-btn t-btn-sm" type="button">[ CLEAR_FILTERS ]</button>
+							</div>
+						</div>
+					</section>
+
+					<section class="t-card">
+						<div class="t-card-header">COLUMN</div>
+						<div class="t-card-body">
+							<div class="form-row">
+								<label for="columnTitle">New column title</label>
+								<input id="columnTitle" class="form-control" type="text" placeholder="Backlog">
+							</div>
+							<div class="form-actions mt-3">
+								<button id="btnAddColumn" class="t-btn t-btn-sm" type="button">[ ADD_COLUMN ]</button>
+							</div>
+						</div>
+					</section>
+
+					<section class="t-card">
+						<div class="t-card-header">CARD</div>
+						<div class="t-card-body">
+							<input id="cardId" type="hidden">
+							<div class="form-row">
+								<label for="cardTitle">Title</label>
+								<input id="cardTitle" class="form-control" type="text" placeholder="Build encrypted board">
+							</div>
+							<div class="control-grid mt-3">
+								<div class="form-row">
+									<label for="cardColumn">Column</label>
+									<select id="cardColumn" class="form-select"></select>
+								</div>
+								<div class="form-row">
+									<label for="cardPriority">Priority</label>
+									<select id="cardPriority" class="form-select">
+										<option value="LOW">LOW</option>
+										<option value="MEDIUM" selected>MEDIUM</option>
+										<option value="HIGH">HIGH</option>
+										<option value="URGENT">URGENT</option>
+									</select>
+								</div>
+							</div>
+							<div class="control-grid mt-3">
+								<div class="form-row">
+									<label for="cardDue">Due date</label>
+									<input id="cardDue" class="form-control" type="date">
+								</div>
+								<div class="form-row">
+									<label for="cardTags">Tags</label>
+									<input id="cardTags" class="form-control" type="text" placeholder="bunker, pwa">
+								</div>
+							</div>
+							<div class="form-row mt-3">
+								<label for="cardDescription">Description</label>
+								<textarea id="cardDescription" class="form-control" rows="7" placeholder="Private card details"></textarea>
+							</div>
+							<div class="form-actions mt-3">
+								<button id="btnSaveCard" class="t-btn" type="button">[ SAVE_CARD ]</button>
+								<button id="btnResetCard" class="t-btn" type="button">[ RESET_FORM ]</button>
+							</div>
+						</div>
+					</section>
+				</aside>
+
+				<section class="t-card">
+					<div class="t-card-header">BOARD_CANVAS</div>
+					<div class="t-card-body board-canvas-shell">
+						<div id="boardCanvas" class="board-canvas"></div>
+					</div>
+				</section>
+			</section>
+		</main>
+
+		<script src="../assets/terminal.js" defer></script>
+		<script src="../assets/Sortable.min.js"></script>
+		<script type="module">
+			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
+
+			await sodium.ready;
+
+			const APP_KIND = 'board';
+			const APP_VERSION = 1;
+			const FORMAT = 'bunker-board-enc';
+			const AUTO_LOCK_MS = 10 * 60 * 1000;
+			const CLIPBOARD_CLEAR_MS = 45 * 1000;
+			const KDF_OPSLIMIT = 3;
+			const KDF_MEMLIMIT = 67108864;
+			const state = {
+				unlocked: false,
+				dirty: false,
+				passphrase: '',
+				database: null,
+				currentBoardId: '',
+				autoLockTimer: null,
+				clipboardTimer: null,
+				sortables: []
+			};
+
+			const els = {
+				lockStatus: document.getElementById('lockStatus'),
+				dirtyStatus: document.getElementById('dirtyStatus'),
+				itemStatus: document.getElementById('itemStatus'),
+				lockedPanel: document.getElementById('lockedPanel'),
+				appPanel: document.getElementById('appPanel'),
+				passphrase: document.getElementById('passphrase'),
+				encFile: document.getElementById('encFile'),
+				btnNew: document.getElementById('btnNew'),
+				btnOpen: document.getElementById('btnOpen'),
+				lockMessage: document.getElementById('lockMessage'),
+				boardSelect: document.getElementById('boardSelect'),
+				boardTitle: document.getElementById('boardTitle'),
+				btnSaveBoard: document.getElementById('btnSaveBoard'),
+				btnAddBoard: document.getElementById('btnAddBoard'),
+				btnDeleteBoard: document.getElementById('btnDeleteBoard'),
+				btnExport: document.getElementById('btnExport'),
+				btnLock: document.getElementById('btnLock'),
+				searchInput: document.getElementById('searchInput'),
+				tagFilter: document.getElementById('tagFilter'),
+				priorityFilter: document.getElementById('priorityFilter'),
+				btnClearFilters: document.getElementById('btnClearFilters'),
+				columnTitle: document.getElementById('columnTitle'),
+				btnAddColumn: document.getElementById('btnAddColumn'),
+				cardId: document.getElementById('cardId'),
+				cardTitle: document.getElementById('cardTitle'),
+				cardColumn: document.getElementById('cardColumn'),
+				cardPriority: document.getElementById('cardPriority'),
+				cardDue: document.getElementById('cardDue'),
+				cardTags: document.getElementById('cardTags'),
+				cardDescription: document.getElementById('cardDescription'),
+				btnSaveCard: document.getElementById('btnSaveCard'),
+				btnResetCard: document.getElementById('btnResetCard'),
+				boardCanvas: document.getElementById('boardCanvas')
+			};
+
+			const textEncoder = new TextEncoder();
+			const textDecoder = new TextDecoder();
+
+			function nowIso() {
+				return new Date().toISOString();
+			}
+
+			function makeId(prefix) {
+				const bytes = sodium.randombytes_buf(8);
+				return `${prefix}_${sodium.to_hex(bytes)}`;
+			}
+
+			function aadFor(kind) {
+				return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`);
+			}
+
+			function bytesToBase64(bytes) {
+				return sodium.to_base64(bytes, sodium.base64_variants.ORIGINAL);
+			}
+
+			function base64ToBytes(value) {
+				return sodium.from_base64(value, sodium.base64_variants.ORIGINAL);
+			}
+
+			function requirePassphrase() {
+				const passphrase = els.passphrase.value;
+				if (!passphrase || passphrase.length < 8) throw new Error('Use a passphrase with at least 8 characters.');
+				return passphrase;
+			}
+
+			function deriveKey(passphrase, salt, kdf) {
+				return sodium.crypto_pwhash(
+					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+					passphrase,
+					salt,
+					kdf?.opslimit || KDF_OPSLIMIT,
+					kdf?.memlimit || KDF_MEMLIMIT,
+					sodium.crypto_pwhash_ALG_ARGON2ID13
+				);
+			}
+
+			function normalizeDatabase(input) {
+				const stamp = nowIso();
+				const database = input && typeof input === 'object' ? input : {};
+				database.kind = 'board';
+				database.version = 1;
+				database.createdAt = database.createdAt || stamp;
+				database.updatedAt = database.updatedAt || stamp;
+				database.settings = database.settings && typeof database.settings === 'object' ? database.settings : {};
+				database.boards = Array.isArray(database.boards) ? database.boards : [];
+
+				if (database.boards.length === 0) {
+					database.boards.push(makeDefaultBoard());
+				}
+
+				database.boards.forEach(board => {
+					board.id = board.id || makeId('board');
+					board.title = sanitizeText(board.title || 'Untitled Board');
+					board.createdAt = board.createdAt || stamp;
+					board.updatedAt = board.updatedAt || stamp;
+					board.columns = Array.isArray(board.columns) && board.columns.length ? board.columns : makeDefaultColumns();
+					board.columns.forEach(column => {
+						column.id = column.id || makeId('column');
+						column.title = sanitizeText(column.title || 'Untitled');
+						column.createdAt = column.createdAt || stamp;
+						column.updatedAt = column.updatedAt || stamp;
+						column.cards = Array.isArray(column.cards) ? column.cards : [];
+						column.cards.forEach(card => normalizeCard(card, stamp));
+					});
+				});
+
+				if (!database.settings.defaultBoardId || !database.boards.some(board => board.id === database.settings.defaultBoardId)) {
+					database.settings.defaultBoardId = database.boards[0].id;
+				}
+				return database;
+			}
+
+			function normalizeCard(card, stamp = nowIso()) {
+				card.id = card.id || makeId('card');
+				card.title = sanitizeText(card.title || 'Untitled Card');
+				card.description = sanitizeText(card.description || '');
+				card.priority = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].includes(card.priority) ? card.priority : 'MEDIUM';
+				card.dueDate = sanitizeText(card.dueDate || '');
+				card.tags = normalizeTags(card.tags);
+				card.pinned = Boolean(card.pinned);
+				card.createdAt = card.createdAt || stamp;
+				card.updatedAt = card.updatedAt || stamp;
+				return card;
+			}
+
+			function makeDefaultBoard() {
+				const stamp = nowIso();
+				return {
+					id: makeId('board'),
+					title: 'Personal',
+					createdAt: stamp,
+					updatedAt: stamp,
+					columns: makeDefaultColumns()
+				};
+			}
+
+			function makeDefaultColumns() {
+				const stamp = nowIso();
+				return ['Todo', 'Doing', 'Done'].map(title => ({
+					id: makeId('column'),
+					title,
+					createdAt: stamp,
+					updatedAt: stamp,
+					cards: []
+				}));
+			}
+
+			function sanitizeText(value) {
+				return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim();
+			}
+
+			function escapeHtml(value) {
+				return String(value ?? '').replace(/[&<>'"]/g, char => ({
+					'&': '&amp;',
+					'<': '&lt;',
+					'>': '&gt;',
+					"'": '&#39;',
+					'"': '&quot;'
+				}[char]));
+			}
+
+			function normalizeTags(value) {
+				const raw = Array.isArray(value) ? value.join(',') : String(value || '');
+				return [...new Set(raw.split(',').map(tag => sanitizeText(tag).toLowerCase()).filter(Boolean))].sort();
+			}
+
+			async function encryptDatabase(database, passphrase) {
+				const salt = sodium.randombytes_buf(16);
+				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+				const kdf = {
+					name: 'argon2id',
+					opslimit: KDF_OPSLIMIT,
+					memlimit: KDF_MEMLIMIT,
+					alg: 'argon2id13'
+				};
+				const key = deriveKey(passphrase, salt, kdf);
+				const plaintext = textEncoder.encode(JSON.stringify(database));
+				const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(APP_KIND), null, nonce, key);
+				return {
+					bunker: APP_KIND,
+					version: APP_VERSION,
+					format: FORMAT,
+					kdf,
+					createdAt: database.createdAt,
+					updatedAt: database.updatedAt,
+					salt: bytesToBase64(salt),
+					nonce: bytesToBase64(nonce),
+					ciphertext: bytesToBase64(cipher)
+				};
+			}
+
+			async function decryptEnvelope(envelope, passphrase) {
+				if (!envelope || envelope.format !== FORMAT || envelope.bunker !== APP_KIND) {
+					throw new Error('This is not a Bunker Board encrypted file.');
+				}
+				const salt = base64ToBytes(envelope.salt);
+				const nonce = base64ToBytes(envelope.nonce);
+				const cipher = base64ToBytes(envelope.ciphertext);
+				const key = deriveKey(passphrase, salt, envelope.kdf);
+				const plaintext = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(APP_KIND), nonce, key);
+				return normalizeDatabase(JSON.parse(textDecoder.decode(plaintext)));
+			}
+
+			function currentBoard() {
+				if (!state.database) return null;
+				return state.database.boards.find(board => board.id === state.currentBoardId) || state.database.boards[0] || null;
+			}
+
+			function findCard(cardId) {
+				const board = currentBoard();
+				if (!board) return null;
+				for (const column of board.columns) {
+					const card = column.cards.find(item => item.id === cardId);
+					if (card) return { card, column };
+				}
+				return null;
+			}
+
+			function markDirty() {
+				if (!state.unlocked) return;
+				state.dirty = true;
+				state.database.updatedAt = nowIso();
+				const board = currentBoard();
+				if (board) board.updatedAt = state.database.updatedAt;
+				updateStatus();
+			}
+
+			function updateStatus() {
+				const count = state.database ? state.database.boards.reduce((total, board) => total + board.columns.reduce((sum, column) => sum + column.cards.length, 0), 0) : 0;
+				els.lockStatus.textContent = state.unlocked ? 'UNLOCKED' : 'LOCKED';
+				els.dirtyStatus.textContent = state.dirty ? 'UNSAVED' : 'CLEAN';
+				els.itemStatus.textContent = `${count} CARD${count === 1 ? '' : 'S'}`;
+			}
+
+			function showMessage(message, isError = false) {
+				els.lockMessage.innerHTML = `> ${escapeHtml(message)}`;
+				els.lockMessage.classList.toggle('text-danger', isError);
+			}
+
+			function setUnlocked(database, passphrase) {
+				state.unlocked = true;
+				state.database = normalizeDatabase(database);
+				state.passphrase = passphrase;
+				state.currentBoardId = state.database.settings.defaultBoardId;
+				state.dirty = false;
+				els.lockedPanel.classList.add('hidden');
+				els.appPanel.classList.remove('hidden');
+				resetCardForm();
+				renderAll();
+				resetAutoLock();
+			}
+
+			function lock() {
+				if (state.dirty && !confirm('Unsaved changes are not exported yet. Lock anyway?')) return;
+				state.unlocked = false;
+				state.dirty = false;
+				state.passphrase = '';
+				state.database = null;
+				state.currentBoardId = '';
+				clearTimeout(state.autoLockTimer);
+				clearSortables();
+				els.passphrase.value = '';
+				els.encFile.value = '';
+				els.lockedPanel.classList.remove('hidden');
+				els.appPanel.classList.add('hidden');
+				els.boardCanvas.innerHTML = '';
+				showMessage('Session locked.');
+				updateStatus();
+			}
+
+			function clearSortables() {
+				state.sortables.forEach(item => item.destroy());
+				state.sortables = [];
+			}
+
+			function renderAll() {
+				renderBoardControls();
+				renderFilters();
+				renderCanvas();
+				updateStatus();
+			}
+
+			function renderBoardControls() {
+				const board = currentBoard();
+				els.boardSelect.innerHTML = state.database.boards.map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.title)}</option>`).join('');
+				els.boardSelect.value = board?.id || '';
+				els.boardTitle.value = board?.title || '';
+				els.cardColumn.innerHTML = (board?.columns || []).map(column => `<option value="${escapeHtml(column.id)}">${escapeHtml(column.title)}</option>`).join('');
+			}
+
+			function renderFilters() {
+				const board = currentBoard();
+				const selected = els.tagFilter.value || '';
+				const tags = new Set();
+				if (board) board.columns.forEach(column => column.cards.forEach(card => card.tags.forEach(tag => tags.add(tag))));
+				els.tagFilter.innerHTML = '<option value="">ALL</option>' + [...tags].sort().map(tag => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join('');
+				els.tagFilter.value = [...tags].includes(selected) ? selected : '';
+			}
+
+			function cardMatchesFilters(card) {
+				const q = sanitizeText(els.searchInput.value).toLowerCase();
+				const tag = els.tagFilter.value;
+				const priority = els.priorityFilter.value;
+				const haystack = [card.title, card.description, card.priority, card.dueDate, card.tags.join(' ')].join(' ').toLowerCase();
+				if (q && !haystack.includes(q)) return false;
+				if (tag && !card.tags.includes(tag)) return false;
+				if (priority && card.priority !== priority) return false;
+				return true;
+			}
+
+			function renderCanvas() {
+				clearSortables();
+				const board = currentBoard();
+				if (!board) {
+					els.boardCanvas.innerHTML = '<div class="empty-state">No board available.</div>';
+					return;
+				}
+				els.boardCanvas.innerHTML = board.columns.map(column => renderColumn(column)).join('');
+
+				state.sortables.push(Sortable.create(els.boardCanvas, {
+					animation: 140,
+					direction: 'horizontal',
+					handle: '.column-grip',
+					draggable: '.board-column',
+					onEnd: reorderColumnsFromDom
+				}));
+
+				document.querySelectorAll('.board-card-list').forEach(list => {
+					state.sortables.push(Sortable.create(list, {
+						group: 'bunker-board-cards',
+						animation: 140,
+						handle: '.card-grip',
+						draggable: '.board-card',
+						onEnd: reorderCardsFromDom
+					}));
+				});
+			}
+
+			function renderColumn(column) {
+				const visibleCards = column.cards.filter(cardMatchesFilters);
+				return `
+					<div class="board-column" data-column-id="${escapeHtml(column.id)}">
+						<div class="column-header">
+							<div>
+								<div class="column-title"><span class="column-grip">::</span> ${escapeHtml(column.title)}</div>
+								<div class="column-count">${visibleCards.length}/${column.cards.length} cards</div>
+							</div>
+							<div class="column-actions">
+								<button class="t-btn" type="button" data-action="rename-column" data-column-id="${escapeHtml(column.id)}">[ RENAME ]</button>
+								<button class="t-btn" type="button" data-action="delete-column" data-column-id="${escapeHtml(column.id)}">[ DELETE ]</button>
+							</div>
+						</div>
+						<div class="board-card-list" data-column-id="${escapeHtml(column.id)}">
+							${visibleCards.length ? visibleCards.map(card => renderCard(card)).join('') : '<div class="empty-state">No matching cards.</div>'}
+						</div>
+					</div>`;
+			}
+
+			function renderCard(card) {
+				const tags = card.tags.map(tag => `<span class="tag-pill">${escapeHtml(tag)}</span>`).join('');
+				const desc = card.description ? `<div class="card-desc">${escapeHtml(card.description)}</div>` : '';
+				const pin = card.pinned ? 'PINNED' : 'UNPINNED';
+				return `
+					<div class="board-card ${card.pinned ? 'is-pinned' : ''}" data-card-id="${escapeHtml(card.id)}">
+						<div class="card-top">
+							<div class="card-title"><span class="card-grip">::</span> ${escapeHtml(card.title)}</div>
+							<div>${card.pinned ? '★' : ''}</div>
+						</div>
+						<div class="card-meta">${escapeHtml(card.priority)}${card.dueDate ? ` · DUE ${escapeHtml(card.dueDate)}` : ''} · ${pin}<br>UPDATED ${escapeHtml(formatDate(card.updatedAt))}</div>
+						${desc}
+						${tags ? `<div class="card-tags">${tags}</div>` : ''}
+						<div class="card-actions">
+							<button class="t-btn" type="button" data-action="edit-card" data-card-id="${escapeHtml(card.id)}">[ EDIT ]</button>
+							<button class="t-btn" type="button" data-action="toggle-pin" data-card-id="${escapeHtml(card.id)}">[ PIN ]</button>
+							<button class="t-btn" type="button" data-action="copy-card" data-card-id="${escapeHtml(card.id)}">[ COPY ]</button>
+							<button class="t-btn" type="button" data-action="delete-card" data-card-id="${escapeHtml(card.id)}">[ DELETE ]</button>
+						</div>
+					</div>`;
+			}
+
+			function formatDate(value) {
+				if (!value) return '-';
+				const date = new Date(value);
+				if (Number.isNaN(date.getTime())) return value;
+				return date.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+			}
+
+			function reorderColumnsFromDom() {
+				const board = currentBoard();
+				if (!board) return;
+				const map = new Map(board.columns.map(column => [column.id, column]));
+				const ids = [...els.boardCanvas.querySelectorAll('.board-column')].map(node => node.dataset.columnId);
+				board.columns = ids.map(id => map.get(id)).filter(Boolean);
+				markDirty();
+				renderBoardControls();
+			}
+
+			function reorderCardsFromDom() {
+				const board = currentBoard();
+				if (!board) return;
+				const map = new Map();
+				board.columns.forEach(column => column.cards.forEach(card => map.set(card.id, card)));
+				board.columns.forEach(column => {
+					const list = document.querySelector(`.board-card-list[data-column-id="${CSS.escape(column.id)}"]`);
+					if (!list) return;
+					const ids = [...list.querySelectorAll('.board-card')].map(node => node.dataset.cardId);
+					column.cards = ids.map(id => map.get(id)).filter(Boolean);
+				});
+				markDirty();
+				renderAll();
+			}
+
+			function resetCardForm() {
+				els.cardId.value = '';
+				els.cardTitle.value = '';
+				els.cardPriority.value = 'MEDIUM';
+				els.cardDue.value = '';
+				els.cardTags.value = '';
+				els.cardDescription.value = '';
+				const board = currentBoard();
+				els.cardColumn.value = board?.columns[0]?.id || '';
+				els.btnSaveCard.textContent = '[ SAVE_CARD ]';
+			}
+
+			function saveCard() {
+				const board = currentBoard();
+				if (!board) return;
+				const targetColumn = board.columns.find(column => column.id === els.cardColumn.value);
+				if (!targetColumn) return alert('Choose a valid column.');
+				const title = sanitizeText(els.cardTitle.value);
+				if (!title) return alert('Card title is required.');
+				const stamp = nowIso();
+				const payload = {
+					title,
+					description: sanitizeText(els.cardDescription.value),
+					priority: els.cardPriority.value,
+					dueDate: sanitizeText(els.cardDue.value),
+					tags: normalizeTags(els.cardTags.value),
+					updatedAt: stamp
+				};
+				const existingId = els.cardId.value;
+
+				if (existingId) {
+					const found = findCard(existingId);
+					if (!found) return alert('Card not found.');
+					Object.assign(found.card, payload);
+					if (found.column.id !== targetColumn.id) {
+						found.column.cards = found.column.cards.filter(card => card.id !== existingId);
+						targetColumn.cards.push(found.card);
+					}
+				} else {
+					targetColumn.cards.push(normalizeCard({
+						id: makeId('card'),
+						...payload,
+						pinned: false,
+						createdAt: stamp
+					}, stamp));
+				}
+
+				markDirty();
+				resetCardForm();
+				renderAll();
+			}
+
+			function editCard(cardId) {
+				const found = findCard(cardId);
+				if (!found) return;
+				els.cardId.value = found.card.id;
+				els.cardTitle.value = found.card.title;
+				els.cardPriority.value = found.card.priority;
+				els.cardDue.value = found.card.dueDate || '';
+				els.cardTags.value = found.card.tags.join(', ');
+				els.cardDescription.value = found.card.description || '';
+				els.cardColumn.value = found.column.id;
+				els.btnSaveCard.textContent = '[ UPDATE_CARD ]';
+				els.cardTitle.focus();
+			}
+
+			function deleteCard(cardId) {
+				const found = findCard(cardId);
+				if (!found || !confirm(`Delete card "${found.card.title}"?`)) return;
+				found.column.cards = found.column.cards.filter(card => card.id !== cardId);
+				markDirty();
+				renderAll();
+			}
+
+			function togglePin(cardId) {
+				const found = findCard(cardId);
+				if (!found) return;
+				found.card.pinned = !found.card.pinned;
+				found.card.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			async function copyCard(cardId) {
+				const found = findCard(cardId);
+				if (!found) return;
+				const card = found.card;
+				const text = [
+					`# ${card.title}`,
+					`Column: ${found.column.title}`,
+					`Priority: ${card.priority}`,
+					card.dueDate ? `Due: ${card.dueDate}` : '',
+					card.tags.length ? `Tags: ${card.tags.join(', ')}` : '',
+					'',
+					card.description || ''
+				].filter(line => line !== '').join('\n');
+				await navigator.clipboard.writeText(text);
+				clearTimeout(state.clipboardTimer);
+				state.clipboardTimer = setTimeout(() => navigator.clipboard.writeText('').catch(() => {}), CLIPBOARD_CLEAR_MS);
+			}
+
+			function addColumn() {
+				const board = currentBoard();
+				if (!board) return;
+				const title = sanitizeText(els.columnTitle.value);
+				if (!title) return alert('Column title is required.');
+				const stamp = nowIso();
+				board.columns.push({ id: makeId('column'), title, createdAt: stamp, updatedAt: stamp, cards: [] });
+				els.columnTitle.value = '';
+				markDirty();
+				renderAll();
+			}
+
+			function renameColumn(columnId) {
+				const board = currentBoard();
+				const column = board?.columns.find(item => item.id === columnId);
+				if (!column) return;
+				const title = sanitizeText(prompt('Column title:', column.title));
+				if (!title) return;
+				column.title = title;
+				column.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			function deleteColumn(columnId) {
+				const board = currentBoard();
+				if (!board || board.columns.length <= 1) return alert('A board needs at least one column.');
+				const column = board.columns.find(item => item.id === columnId);
+				if (!column) return;
+				if (column.cards.length && !confirm(`Delete column "${column.title}" and ${column.cards.length} cards?`)) return;
+				if (!column.cards.length && !confirm(`Delete column "${column.title}"?`)) return;
+				board.columns = board.columns.filter(item => item.id !== columnId);
+				markDirty();
+				resetCardForm();
+				renderAll();
+			}
+
+			function saveBoard() {
+				const board = currentBoard();
+				if (!board) return;
+				const title = sanitizeText(els.boardTitle.value);
+				if (!title) return alert('Board title is required.');
+				board.title = title;
+				state.database.settings.defaultBoardId = board.id;
+				markDirty();
+				renderAll();
+			}
+
+			function addBoard() {
+				const board = makeDefaultBoard();
+				board.title = uniqueBoardTitle('New Board');
+				state.database.boards.push(board);
+				state.currentBoardId = board.id;
+				state.database.settings.defaultBoardId = board.id;
+				markDirty();
+				resetCardForm();
+				renderAll();
+			}
+
+			function uniqueBoardTitle(base) {
+				const titles = new Set(state.database.boards.map(board => board.title));
+				if (!titles.has(base)) return base;
+				let index = 2;
+				while (titles.has(`${base} ${index}`)) index++;
+				return `${base} ${index}`;
+			}
+
+			function deleteBoard() {
+				if (state.database.boards.length <= 1) return alert('At least one board is required.');
+				const board = currentBoard();
+				if (!board || !confirm(`Delete board "${board.title}"?`)) return;
+				state.database.boards = state.database.boards.filter(item => item.id !== board.id);
+				state.currentBoardId = state.database.boards[0].id;
+				state.database.settings.defaultBoardId = state.currentBoardId;
+				markDirty();
+				resetCardForm();
+				renderAll();
+			}
+
+			async function exportEncrypted() {
+				try {
+					const envelope = await encryptDatabase(state.database, state.passphrase);
+					const blob = new Blob([JSON.stringify(envelope, null, '\t')], { type: 'application/json' });
+					const url = URL.createObjectURL(blob);
+					const link = document.createElement('a');
+					link.href = url;
+					link.download = `bunker-board-${fileStamp()}.enc`;
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+					URL.revokeObjectURL(url);
+					state.dirty = false;
+					updateStatus();
+				} catch (error) {
+					alert(error.message || String(error));
+				}
+			}
+
+			function fileStamp() {
+				const date = new Date();
+				const pad = value => String(value).padStart(2, '0');
+				return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}`;
+			}
+
+			async function openEncrypted() {
+				try {
+					const passphrase = requirePassphrase();
+					const file = els.encFile.files[0];
+					if (!file) throw new Error('Choose a .enc file first.');
+					const envelope = JSON.parse(await file.text());
+					const database = await decryptEnvelope(envelope, passphrase);
+					setUnlocked(database, passphrase);
+					showMessage('Database opened.');
+				} catch (error) {
+					showMessage(error.message || String(error), true);
+				}
+			}
+
+			function createNewDatabase() {
+				try {
+					const passphrase = requirePassphrase();
+					setUnlocked(normalizeDatabase({}), passphrase);
+					markDirty();
+				} catch (error) {
+					showMessage(error.message || String(error), true);
+				}
+			}
+
+			function resetAutoLock() {
+				clearTimeout(state.autoLockTimer);
+				if (!state.unlocked) return;
+				state.autoLockTimer = setTimeout(() => {
+					state.dirty = false;
+					lock();
+				}, AUTO_LOCK_MS);
+			}
+
+			function handleCanvasClick(event) {
+				const button = event.target.closest('button[data-action]');
+				if (!button) return;
+				const action = button.dataset.action;
+				const cardId = button.dataset.cardId;
+				const columnId = button.dataset.columnId;
+				if (action === 'edit-card') editCard(cardId);
+				if (action === 'delete-card') deleteCard(cardId);
+				if (action === 'toggle-pin') togglePin(cardId);
+				if (action === 'copy-card') copyCard(cardId);
+				if (action === 'rename-column') renameColumn(columnId);
+				if (action === 'delete-column') deleteColumn(columnId);
+			}
+
+			function clearFilters() {
+				els.searchInput.value = '';
+				els.tagFilter.value = '';
+				els.priorityFilter.value = '';
+				renderCanvas();
+			}
+
+			els.btnNew.addEventListener('click', createNewDatabase);
+			els.btnOpen.addEventListener('click', openEncrypted);
+			els.btnExport.addEventListener('click', exportEncrypted);
+			els.btnLock.addEventListener('click', lock);
+			els.btnSaveBoard.addEventListener('click', saveBoard);
+			els.btnAddBoard.addEventListener('click', addBoard);
+			els.btnDeleteBoard.addEventListener('click', deleteBoard);
+			els.boardSelect.addEventListener('change', () => {
+				state.currentBoardId = els.boardSelect.value;
+				state.database.settings.defaultBoardId = state.currentBoardId;
+				resetCardForm();
+				renderAll();
+				markDirty();
+			});
+			els.searchInput.addEventListener('input', renderCanvas);
+			els.tagFilter.addEventListener('change', renderCanvas);
+			els.priorityFilter.addEventListener('change', renderCanvas);
+			els.btnClearFilters.addEventListener('click', clearFilters);
+			els.btnAddColumn.addEventListener('click', addColumn);
+			els.btnSaveCard.addEventListener('click', saveCard);
+			els.btnResetCard.addEventListener('click', resetCardForm);
+			els.boardCanvas.addEventListener('click', handleCanvasClick);
+
+			['click', 'keydown', 'pointermove', 'touchstart'].forEach(type => {
+				window.addEventListener(type, resetAutoLock, { passive: true });
+			});
+
+			window.addEventListener('beforeunload', event => {
+				if (!state.dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			});
+
+			updateStatus();
+		</script>
+	</body>
+</html>
