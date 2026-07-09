@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Bunker Ledger</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#000000">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="stylesheet" href="../assets/terminal.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+		<link rel="icon" type="image/svg+xml" href="../assets/npc-icon.svg">
+		<style>
+			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
+			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
+			body.t-crt::after { background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%); background-size:100% 2px; }
+			.t-navbar { margin-bottom:0 !important; }
+			.t-shell { padding-top:6px !important; }
+			:is(.t-card,.t-navbar,.t-statusline,.t-command,.t-modal-content,.t-alert,.t-select,.t-toast,.t-empty-state,.t-kv-key,.t-metric) { background:#000000 !important; color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-card-header,.t-border-top,.t-border-bottom,.t-tabs-header,.t-kv,.t-kv-key,.t-kv-value,.t-file-btn,.t-textarea,.t-input,.t-select,.t-metric) { border-color:#00ff41 !important; }
+			:is(.t-input,.t-textarea,.t-select,.t-btn,.t-badge,.t-form-label,.t-nav-brand,.t-nav-menu a,.t-input-action-btn,.t-file-btn,.text-muted,.text-danger,.text-warning,.text-success,.text-info,.text-white) { color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-btn:hover,.t-input-action-btn:hover) { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			.bunker-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px; }
+			.bunker-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:20px; }
+			.bunker-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; align-items:center; }
+			.bunker-pre { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-wide-modal { max-width:860px; }
+			.bunker-hidden { display:none !important; }
+			.bunker-hero { text-align:center; padding:0 0 24px; }
+			.bunker-hero .t-hero-title { margin-bottom:6px; }
+			.bunker-hero .t-hero-subtitle { margin:0 auto; max-width:760px; }
+			.bunker-file-name { display:block; margin-top:8px; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-input-group { position:relative; margin-bottom:15px; }
+			.bunker-input-group .t-input { margin-bottom:0; padding-right:66px; }
+			.bunker-input-actions { position:absolute; top:0; right:0; bottom:0; display:flex; align-items:stretch; }
+			.bunker-input-actions .t-input-action-btn { position:static; height:100%; min-width:58px; border-left:1px dashed #00ff41; }
+			.bunker-summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:15px; margin-bottom:20px; }
+			.bunker-money { font-size:1.25rem; font-weight:bold; overflow-wrap:anywhere; }
+			.bunker-tag-list { display:flex; flex-wrap:wrap; gap:8px; }
+			.bunker-table-scroll { overflow-x:auto; }
+			@media (max-width:768px) { .bunker-form-grid { grid-template-columns:1fr; } .bunker-actions { justify-content:flex-start; } }
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">BUNKER_LEDGER</div>
+			<a href="/" class="t-btn t-btn-sm">[ BACK ]</a>
+		</nav>
+
+		<main class="t-shell">
+			<section id="paneLocked" class="t-pane active">
+				<div class="bunker-hero">
+					<h1 class="t-hero-title">BUNKER_LEDGER</h1>
+					<p class="t-hero-subtitle">Static encrypted ledger for personal transactions, flexible currencies, categories, accounts, and private financial notes. Everything is decrypted locally in your browser.</p>
+				</div>
+				<div class="t-grid t-grid-2">
+					<div class="t-card">
+						<div class="t-card-header">> IMPORT_EXISTING_LEDGER</div>
+						<label class="t-form-label">> encrypted file</label>
+						<div class="t-file-wrapper">
+							<input id="importFile" type="file" accept=".enc,.json,.txt">
+							<span class="t-file-btn">[ SELECT .ENC ]</span>
+						</div>
+						<span id="importFileName" class="bunker-file-name fs-small text-muted mb-3">> NO FILE SELECTED</span>
+						<label class="t-form-label">> master password</label>
+						<div class="bunker-input-group">
+							<input id="importPassword" class="t-input" type="password" autocomplete="current-password" placeholder="ENTER MASTER PASSWORD">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="importPassword" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<button id="btnImport" class="t-btn t-btn-block">[ DECRYPT_LEDGER ]</button>
+					</div>
+					<div class="t-card">
+						<div class="t-card-header">> CREATE_NEW_LEDGER</div>
+						<div class="bunker-form-grid">
+							<div><label class="t-form-label">> default currency</label><input id="newCurrency" class="t-input" type="text" value="IDR" maxlength="8" placeholder="IDR"></div>
+							<div><label class="t-form-label">> locale</label><input id="newLocale" class="t-input" type="text" value="id-ID" placeholder="id-ID"></div>
+						</div>
+						<label class="t-form-label">> master password</label>
+						<div class="bunker-input-group">
+							<input id="newPassword" class="t-input" type="password" autocomplete="new-password" placeholder="MINIMUM 10 CHARACTERS">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="newPassword" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<label class="t-form-label">> confirm password</label>
+						<div class="bunker-input-group">
+							<input id="newConfirm" class="t-input" type="password" autocomplete="new-password" placeholder="RETYPE PASSWORD">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="newConfirm" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<button id="btnCreate" class="t-btn t-btn-block">[ INITIALIZE_EMPTY_LEDGER ]</button>
+					</div>
+				</div>
+				<div class="t-alert warning">> This is a private record keeper, not accounting or tax software. Always verify totals before making decisions.</div>
+			</section>
+
+			<section id="paneApp" class="t-pane">
+				<div class="t-toolbar">
+					<div class="t-toolbar-group">
+						<button id="btnAdd" class="t-btn">[ + ADD_TRANSACTION ]</button>
+						<button id="btnExport" class="t-btn">[ EXPORT_ENC ]</button>
+						<button id="btnSettings" class="t-btn">[ SETTINGS ]</button>
+					</div>
+					<div class="t-toolbar-group">
+						<button id="btnLock" class="t-btn">[ LOCK ]</button>
+					</div>
+				</div>
+
+				<div class="t-statusline">
+					<span>FILE: <strong id="statusFile">MEMORY_ONLY</strong></span>
+					<span>STATE: <strong id="statusDirty" class="text-success">CLEAN</strong></span>
+					<span>ITEMS: <strong id="countAll">0</strong></span>
+					<span>CURRENCY: <strong id="statusCurrency">IDR</strong></span>
+				</div>
+
+				<div id="summaryGrid" class="bunker-summary-grid"></div>
+
+				<div class="t-card">
+					<div class="t-command mb-3">
+						<span class="t-command-prompt">$</span>
+						<input id="searchInput" class="t-input" type="search" placeholder="QUERY_LEDGER_DATA...">
+					</div>
+					<div class="bunker-form-grid">
+						<div>
+							<label class="t-form-label">> type filter</label>
+							<select id="filterType" class="t-select">
+								<option value="ALL">ALL</option>
+								<option value="INCOME">INCOME</option>
+								<option value="EXPENSE">EXPENSE</option>
+								<option value="TRANSFER">TRANSFER</option>
+								<option value="DEBT">DEBT</option>
+								<option value="LOAN">LOAN</option>
+							</select>
+						</div>
+						<div>
+							<label class="t-form-label">> month filter</label>
+							<input id="filterMonth" class="t-input" type="month">
+						</div>
+					</div>
+					<label class="t-form-label">> tag filter</label>
+					<div id="tagFilters" class="bunker-tag-list"></div>
+				</div>
+
+				<div id="entryList"></div>
+			</section>
+		</main>
+
+		<div id="entryModal" class="t-modal" role="dialog" aria-modal="true">
+			<div class="t-modal-content bunker-wide-modal">
+				<div class="d-flex justify-content-between align-items-center mb-3 t-border-bottom pb-2">
+					<span id="modalTitle" class="font-bold">> ADD_TRANSACTION</span>
+					<button id="btnCloseModal" class="t-btn t-btn-sm" type="button">[ X ]</button>
+				</div>
+				<form id="entryForm" onsubmit="return false;">
+					<div class="bunker-form-grid">
+						<div>
+							<label class="t-form-label">> type</label>
+							<select id="entryType" class="t-select">
+								<option value="EXPENSE">EXPENSE</option>
+								<option value="INCOME">INCOME</option>
+								<option value="TRANSFER">TRANSFER</option>
+								<option value="DEBT">DEBT</option>
+								<option value="LOAN">LOAN</option>
+							</select>
+						</div>
+						<div><label class="t-form-label">> date</label><input id="entryDate" class="t-input" type="date"></div>
+						<div><label class="t-form-label">> title</label><input id="entryTitle" class="t-input" type="text" placeholder="Groceries / Salary / Transfer"></div>
+						<div><label class="t-form-label">> amount</label><input id="entryAmount" class="t-input" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0"></div>
+						<div><label class="t-form-label">> currency</label><input id="entryCurrency" class="t-input" type="text" maxlength="8" placeholder="IDR"></div>
+						<div><label class="t-form-label">> category</label><input id="entryCategory" class="t-input" type="text" placeholder="Food / Work / Transport"></div>
+						<div><label class="t-form-label">> account / wallet</label><input id="entryAccount" class="t-input" type="text" placeholder="Cash / Bank / E-wallet"></div>
+						<div><label class="t-form-label">> counterparty</label><input id="entryCounterparty" class="t-input" type="text" placeholder="Optional"></div>
+					</div>
+					<label class="t-form-label">> tags comma separated</label>
+					<input id="entryTags" class="t-input" type="text" placeholder="monthly, food, work">
+					<label class="t-checkbox-label">
+						<input id="entryPinned" type="checkbox">
+						<span class="t-checkmark">PINNED</span>
+					</label>
+					<label class="t-form-label">> private notes</label>
+					<textarea id="entryNotes" class="t-textarea" rows="4"></textarea>
+					<div class="bunker-actions">
+						<button id="btnCancelModal" class="t-btn" type="button">[ ABORT ]</button>
+						<button id="btnSaveEntry" class="t-btn" type="button">[ SAVE_TO_MEMORY ]</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div id="settingsModal" class="t-modal" role="dialog" aria-modal="true">
+			<div class="t-modal-content bunker-wide-modal">
+				<div class="d-flex justify-content-between align-items-center mb-3 t-border-bottom pb-2">
+					<span class="font-bold">> LEDGER_SETTINGS</span>
+					<button id="btnCloseSettings" class="t-btn t-btn-sm" type="button">[ X ]</button>
+				</div>
+				<div class="bunker-form-grid">
+					<div><label class="t-form-label">> default currency</label><input id="settingsCurrency" class="t-input" type="text" maxlength="8"></div>
+					<div><label class="t-form-label">> locale</label><input id="settingsLocale" class="t-input" type="text" placeholder="id-ID / en-US"></div>
+				</div>
+				<div class="t-alert">> Currency and locale affect display only. Existing transactions keep their own currency value.</div>
+				<div class="bunker-actions">
+					<button id="btnCancelSettings" class="t-btn" type="button">[ ABORT ]</button>
+					<button id="btnSaveSettings" class="t-btn" type="button">[ SAVE_SETTINGS ]</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="../assets/terminal.js" defer></script>
+		<script type="module">
+			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
+			await sodium.ready;
+			window.sodium = sodium;
+
+			const APP_VERSION = 1;
+			const KDF_OPSLIMIT = 3;
+			const KDF_MEMLIMIT = 64 * 1024 * 1024;
+			const CLIPBOARD_CLEAR_MS = 45000;
+			const AUTO_LOCK_MS = 10 * 60 * 1000;
+			const textEncoder = new TextEncoder();
+			const textDecoder = new TextDecoder();
+			const B64 = sodium.base64_variants.ORIGINAL;
+
+			function toast(message, type = 'normal') {
+				if (window.Terminal && typeof window.Terminal.toast === 'function') window.Terminal.toast(message, type);
+				else console[type === 'danger' ? 'error' : 'log']('> ' + message);
+			}
+			function $(id) { return document.getElementById(id); }
+			function qsa(sel, scope = document) { return Array.from(scope.querySelectorAll(sel)); }
+			function createEl(tag, className = '', text = '') {
+				const el = document.createElement(tag);
+				if (className) el.className = className;
+				if (text !== '') el.textContent = text;
+				return el;
+			}
+			function nowIso() { return new Date().toISOString(); }
+			function todayDate() { return new Date().toISOString().slice(0, 10); }
+			function uid() {
+				if (crypto.randomUUID) return crypto.randomUUID();
+				const bytes = crypto.getRandomValues(new Uint8Array(16));
+				bytes[6] = (bytes[6] & 0x0f) | 0x40;
+				bytes[8] = (bytes[8] & 0x3f) | 0x80;
+				const hex = [...bytes].map(b => b.toString(16).padStart(2, '0'));
+				return `${hex.slice(0,4).join('')}-${hex.slice(4,6).join('')}-${hex.slice(6,8).join('')}-${hex.slice(8,10).join('')}-${hex.slice(10).join('')}`;
+			}
+			function normalizeText(value) { return String(value || '').trim(); }
+			function normalizeCurrency(value) { return normalizeText(value || state.settings.defaultCurrency || 'IDR').toUpperCase(); }
+			function parseTags(value) { return [...new Set(String(value || '').split(',').map(x => x.trim()).filter(Boolean))]; }
+			function tagsToString(tags) { return Array.isArray(tags) ? tags.join(', ') : ''; }
+			function toB64(bytes) { return sodium.to_base64(bytes, B64); }
+			function fromB64(text) { return sodium.from_base64(text, B64); }
+			function aadFor(kind) { return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`); }
+			async function deriveKey(password, salt, params) {
+				return sodium.crypto_pwhash(
+					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+					password,
+					salt,
+					Number(params.opslimit || KDF_OPSLIMIT),
+					Number(params.memlimit || KDF_MEMLIMIT),
+					sodium.crypto_pwhash_ALG_ARGON2ID13
+				);
+			}
+			async function encryptEnvelope(kind, payloadObject, password) {
+				const salt = sodium.randombytes_buf(16);
+				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+				const params = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
+				const key = await deriveKey(password, salt, params);
+				try {
+					const plaintext = textEncoder.encode(JSON.stringify(payloadObject));
+					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(kind), null, nonce, key);
+					return JSON.stringify({
+						bunker: kind,
+						version: APP_VERSION,
+						format: `bunker-${kind}-enc`,
+						kdf: params,
+						aead: 'xchacha20-poly1305-ietf',
+						salt: toB64(salt),
+						nonce: toB64(nonce),
+						payload: toB64(cipher),
+						createdAt: payloadObject.createdAt || nowIso(),
+						updatedAt: nowIso()
+					}, null, 2);
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+			async function decryptEnvelope(kind, rawText, password) {
+				const envelope = JSON.parse(rawText.trim());
+				if (!envelope || envelope.bunker !== kind || envelope.version !== APP_VERSION) throw new Error('INVALID_BUNKER_FILE');
+				if (envelope.aead !== 'xchacha20-poly1305-ietf') throw new Error('UNSUPPORTED_CIPHER');
+				if (!envelope.kdf || envelope.kdf.name !== 'argon2id') throw new Error('UNSUPPORTED_KDF');
+				const salt = fromB64(envelope.salt);
+				const nonce = fromB64(envelope.nonce);
+				const cipher = fromB64(envelope.payload);
+				const key = await deriveKey(password, salt, envelope.kdf);
+				try {
+					const plain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(kind), nonce, key);
+					return JSON.parse(textDecoder.decode(plain));
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+			async function readFileAsText(file) { return await file.text(); }
+			function downloadText(filename, text) {
+				const blob = new Blob([text], { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				setTimeout(() => URL.revokeObjectURL(url), 1200);
+			}
+			function stampName(kind) {
+				const d = new Date();
+				const pad = n => String(n).padStart(2, '0');
+				return `bunker-${kind}-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.enc`;
+			}
+			async function copyText(text, label = 'COPIED TO CLIPBOARD') {
+				try {
+					await navigator.clipboard.writeText(text || '');
+					toast(label, 'normal');
+					setTimeout(async () => {
+						try { await navigator.clipboard.writeText(''); } catch (e) {}
+					}, CLIPBOARD_CLEAR_MS);
+				} catch (e) {
+					toast('CLIPBOARD PERMISSION DENIED', 'warning');
+				}
+			}
+			function preventDirtyUnload(event) {
+				if (!state.dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			}
+			window.addEventListener('beforeunload', preventDirtyUnload);
+
+			const KIND = 'ledger';
+			const state = {
+				unlocked: false,
+				password: '',
+				items: [],
+				fileName: '',
+				dirty: false,
+				editingId: null,
+				activeTag: '',
+				settings: { defaultCurrency: 'IDR', locale: 'id-ID' },
+				lastActivity: Date.now()
+			};
+			let autoLockTimer = null;
+
+			function setPane(name) {
+				qsa('.t-pane').forEach(p => p.classList.remove('active'));
+				$(name).classList.add('active');
+			}
+			function touchActivity() { state.lastActivity = Date.now(); }
+			function startAutoLock() {
+				if (autoLockTimer) clearInterval(autoLockTimer);
+				autoLockTimer = setInterval(() => {
+					if (state.unlocked && Date.now() - state.lastActivity > AUTO_LOCK_MS) lockLedger('AUTO_LOCKED_AFTER_IDLE');
+				}, 15000);
+			}
+			['click', 'keydown', 'pointermove', 'touchstart'].forEach(eventName => document.addEventListener(eventName, touchActivity, { passive: true }));
+			function formatMoney(amount, currency = state.settings.defaultCurrency) {
+				const locale = state.settings.locale || 'en-US';
+				const normalized = normalizeCurrency(currency);
+				try {
+					return new Intl.NumberFormat(locale, { style: 'currency', currency: normalized }).format(Number(amount || 0));
+				} catch (e) {
+					return `${normalized} ${Number(amount || 0).toLocaleString(locale)}`;
+				}
+			}
+			function signedAmount(item) {
+				const amount = Number(item.amount || 0);
+				if (item.type === 'INCOME') return amount;
+				if (item.type === 'EXPENSE') return -amount;
+				return 0;
+			}
+			function updateStatus() {
+				$('countAll').textContent = String(state.items.length);
+				$('statusFile').textContent = state.fileName || 'MEMORY_ONLY';
+				$('statusDirty').textContent = state.dirty ? 'DIRTY_EXPORT_REQUIRED' : 'CLEAN';
+				$('statusDirty').className = state.dirty ? 'text-warning' : 'text-success';
+				$('statusCurrency').textContent = state.settings.defaultCurrency || 'IDR';
+			}
+			function renderSummary() {
+				const wrap = $('summaryGrid');
+				wrap.textContent = '';
+				const map = new Map();
+				filteredItems(false).forEach(item => {
+					const currency = normalizeCurrency(item.currency);
+					if (!map.has(currency)) map.set(currency, { income: 0, expense: 0, net: 0, count: 0 });
+					const row = map.get(currency);
+					row.count += 1;
+					if (item.type === 'INCOME') row.income += Number(item.amount || 0);
+					if (item.type === 'EXPENSE') row.expense += Number(item.amount || 0);
+					row.net += signedAmount(item);
+				});
+				if (!map.size) {
+					wrap.appendChild(createEl('div', 't-alert', '> NO_SUMMARY_FOR_CURRENT_FILTER'));
+					return;
+				}
+				[...map.entries()].sort((a, b) => a[0].localeCompare(b[0])).forEach(([currency, row]) => {
+					const card = createEl('div', 't-card m-0');
+					card.append(createEl('div', 't-card-header', `> ${currency}`));
+					const body = createEl('div', 't-kv');
+					addPlainKv(body, 'INCOME', formatMoney(row.income, currency));
+					addPlainKv(body, 'EXPENSE', formatMoney(row.expense, currency));
+					addPlainKv(body, 'NET', formatMoney(row.net, currency));
+					addPlainKv(body, 'COUNT', String(row.count));
+					card.appendChild(body);
+					wrap.appendChild(card);
+				});
+			}
+			function addPlainKv(parent, key, value) {
+				parent.append(createEl('div', 't-kv-key', key), createEl('div', 't-kv-value', value || '-'));
+			}
+			function unlockUi() {
+				state.unlocked = true;
+				setPane('paneApp');
+				renderEntries();
+				startAutoLock();
+				updateStatus();
+			}
+			async function createNewLedger() {
+				const pass = $('newPassword').value;
+				const confirm = $('newConfirm').value;
+				if (!pass || pass.length < 10) return toast('MASTER PASSWORD MINIMUM 10 CHARACTERS', 'danger');
+				if (pass !== confirm) return toast('PASSWORD CONFIRMATION MISMATCH', 'danger');
+				state.password = pass;
+				state.items = [];
+				state.settings.defaultCurrency = normalizeCurrency($('newCurrency').value || 'IDR');
+				state.settings.locale = normalizeText($('newLocale').value || 'id-ID');
+				state.fileName = 'NEW_LEDGER';
+				state.dirty = true;
+				$('newPassword').value = '';
+				$('newConfirm').value = '';
+				unlockUi();
+				toast('NEW LEDGER INITIALIZED. EXPORT FILE AFTER ADDING DATA.', 'warning');
+			}
+			async function importLedger() {
+				const file = $('importFile').files[0];
+				const pass = $('importPassword').value;
+				if (!file) return toast('SELECT .ENC FILE FIRST', 'danger');
+				if (!pass) return toast('MASTER PASSWORD REQUIRED', 'danger');
+				try {
+					toast('DECRYPTING LEDGER. ARGON2ID MAY TAKE A MOMENT.', 'warning');
+					const raw = await readFileAsText(file);
+					const payload = await decryptEnvelope(KIND, raw, pass);
+					if (!payload || !Array.isArray(payload.items)) throw new Error('INVALID_PAYLOAD');
+					state.password = pass;
+					state.items = payload.items;
+					state.settings = { defaultCurrency: 'IDR', locale: 'id-ID', ...(payload.settings || {}) };
+					state.fileName = file.name;
+					state.dirty = false;
+					$('importPassword').value = '';
+					unlockUi();
+					toast('LEDGER UNLOCKED', 'normal');
+				} catch (e) {
+					console.error(e);
+					toast('DECRYPT FAILED. WRONG PASSWORD OR INVALID FILE.', 'danger');
+				}
+			}
+			async function exportLedger() {
+				if (!state.unlocked || !state.password) return toast('LEDGER LOCKED', 'danger');
+				try {
+					toast('ENCRYPTING LEDGER.', 'warning');
+					const payload = { kind: KIND, version: APP_VERSION, settings: state.settings, createdAt: nowIso(), exportedAt: nowIso(), items: state.items };
+					const text = await encryptEnvelope(KIND, payload, state.password);
+					downloadText(stampName(KIND), text);
+					state.dirty = false;
+					updateStatus();
+					toast('ENCRYPTED FILE EXPORTED', 'normal');
+				} catch (e) {
+					console.error(e);
+					toast('EXPORT FAILED', 'danger');
+				}
+			}
+			function lockLedger(message = 'LEDGER LOCKED AND MEMORY CLEARED') {
+				state.unlocked = false;
+				state.password = '';
+				state.items = [];
+				state.fileName = '';
+				state.dirty = false;
+				state.editingId = null;
+				state.activeTag = '';
+				$('searchInput').value = '';
+				$('filterType').value = 'ALL';
+				$('filterMonth').value = '';
+				if (autoLockTimer) clearInterval(autoLockTimer);
+				setPane('paneLocked');
+				updateStatus();
+				toast(message, 'warning');
+			}
+			function openEntryModal(id = null) {
+				state.editingId = id;
+				$('entryForm').reset();
+				const item = state.items.find(x => x.id === id);
+				$('modalTitle').textContent = item ? '> EDIT_TRANSACTION' : '> ADD_TRANSACTION';
+				$('entryCurrency').value = state.settings.defaultCurrency || 'IDR';
+				$('entryDate').value = todayDate();
+				if (item) {
+					$('entryType').value = item.type || 'EXPENSE';
+					$('entryDate').value = item.date || todayDate();
+					$('entryTitle').value = item.title || '';
+					$('entryAmount').value = item.amount || '';
+					$('entryCurrency').value = item.currency || state.settings.defaultCurrency || 'IDR';
+					$('entryCategory').value = item.category || '';
+					$('entryAccount').value = item.account || '';
+					$('entryCounterparty').value = item.counterparty || '';
+					$('entryTags').value = tagsToString(item.tags);
+					$('entryPinned').checked = Boolean(item.pinned);
+					$('entryNotes').value = item.notes || '';
+				}
+				window.Terminal ? Terminal.modal.open('entryModal') : $('entryModal').classList.add('is-open');
+			}
+			function closeEntryModal() { window.Terminal ? Terminal.modal.close('entryModal') : $('entryModal').classList.remove('is-open'); }
+			function saveEntry() {
+				const title = normalizeText($('entryTitle').value);
+				const amount = Number($('entryAmount').value);
+				if (!title) return toast('TITLE REQUIRED', 'danger');
+				if (!Number.isFinite(amount) || amount <= 0) return toast('VALID AMOUNT REQUIRED', 'danger');
+				const base = {
+					id: state.editingId || uid(),
+					type: $('entryType').value,
+					date: $('entryDate').value || todayDate(),
+					title,
+					amount,
+					currency: normalizeCurrency($('entryCurrency').value),
+					category: normalizeText($('entryCategory').value),
+					account: normalizeText($('entryAccount').value),
+					counterparty: normalizeText($('entryCounterparty').value),
+					tags: parseTags($('entryTags').value),
+					pinned: $('entryPinned').checked,
+					notes: normalizeText($('entryNotes').value),
+					updatedAt: nowIso()
+				};
+				if (!state.editingId) base.createdAt = nowIso();
+				const index = state.items.findIndex(x => x.id === state.editingId);
+				if (index >= 0) state.items[index] = { ...state.items[index], ...base };
+				else state.items.unshift(base);
+				state.dirty = true;
+				closeEntryModal();
+				renderEntries();
+				updateStatus();
+				toast('TRANSACTION SAVED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function deleteEntry(id) {
+				if (!confirm('PURGE THIS TRANSACTION FROM MEMORY?')) return;
+				state.items = state.items.filter(x => x.id !== id);
+				state.dirty = true;
+				renderEntries();
+				updateStatus();
+				toast('TRANSACTION PURGED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function togglePin(id) {
+				const item = state.items.find(x => x.id === id);
+				if (!item) return;
+				item.pinned = !item.pinned;
+				item.updatedAt = nowIso();
+				state.dirty = true;
+				renderEntries();
+				updateStatus();
+				toast(item.pinned ? 'TRANSACTION PINNED' : 'TRANSACTION UNPINNED', 'warning');
+			}
+			function filteredItems(applySort = true) {
+				const q = normalizeText($('searchInput').value).toLowerCase();
+				const type = $('filterType').value;
+				const month = $('filterMonth').value;
+				let items = state.items.filter(item => {
+					if (type !== 'ALL' && item.type !== type) return false;
+					if (month && !String(item.date || '').startsWith(month)) return false;
+					if (state.activeTag && !(item.tags || []).includes(state.activeTag)) return false;
+					if (!q) return true;
+					return [item.type, item.date, item.title, item.currency, item.category, item.account, item.counterparty, item.notes, ...(item.tags || [])].some(v => String(v || '').toLowerCase().includes(q));
+				});
+				if (applySort) {
+					items = items.sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || String(b.date || '').localeCompare(String(a.date || '')) || String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+				}
+				return items;
+			}
+			function allTags() {
+				return [...new Set(state.items.flatMap(item => item.tags || []))].sort((a, b) => a.localeCompare(b));
+			}
+			function renderTags() {
+				const wrap = $('tagFilters');
+				wrap.textContent = '';
+				const all = createEl('button', `t-btn t-btn-sm ${state.activeTag ? 'ghost' : ''}`, '[ ALL_TAGS ]');
+				all.type = 'button';
+				all.addEventListener('click', () => { state.activeTag = ''; renderEntries(); });
+				wrap.appendChild(all);
+				allTags().forEach(tag => {
+					const btn = createEl('button', `t-btn t-btn-sm ${state.activeTag === tag ? '' : 'ghost'}`, `[ ${tag} ]`);
+					btn.type = 'button';
+					btn.addEventListener('click', () => { state.activeTag = tag; renderEntries(); });
+					wrap.appendChild(btn);
+				});
+			}
+			function renderEntries() {
+				const container = $('entryList');
+				container.textContent = '';
+				renderTags();
+				renderSummary();
+				const items = filteredItems();
+				if (!items.length) {
+					const empty = createEl('div', 't-empty-state');
+					empty.append(createEl('span', 't-empty-state-icon', '[$]'));
+					empty.append(createEl('div', 'font-bold', '> NO_TRANSACTION_FOUND'));
+					empty.append(createEl('div', 'text-muted fs-small mt-2', 'Create a transaction or change your search/filter.'));
+					container.appendChild(empty);
+					return;
+				}
+				const grid = createEl('div', 'bunker-card-grid');
+				items.forEach(item => {
+					const card = createEl('article', 't-card');
+					const header = createEl('div', 't-card-header d-flex justify-content-between align-items-center gap-2');
+					const title = createEl('span', '', `${item.pinned ? '[PIN] ' : ''}> ${item.title || 'UNTITLED'}`);
+					const badge = createEl('span', 't-badge muted', item.type || 'EXPENSE');
+					header.append(title, badge);
+					const amount = createEl('div', 'bunker-money mb-2', formatMoney(item.amount, item.currency));
+					const meta = createEl('div', 'text-muted fs-small mb-3 text-break', `${item.date || 'NO_DATE'} / ${item.category || 'UNCATEGORIZED'} / ${item.account || 'NO_ACCOUNT'}`);
+					const kv = createEl('div', 't-kv');
+					addPlainKv(kv, 'CURRENCY', normalizeCurrency(item.currency));
+					addPlainKv(kv, 'COUNTERPARTY', item.counterparty || '-');
+					addPlainKv(kv, 'TAGS', tagsToString(item.tags) || '-');
+					addPlainKv(kv, 'UPDATED', item.updatedAt ? new Date(item.updatedAt).toLocaleString() : '-');
+					card.append(header, amount, meta, kv);
+					if (item.notes) card.appendChild(createEl('div', 't-alert mt-3 bunker-pre', '> NOTES\n' + item.notes));
+					const actions = createEl('div', 'bunker-actions t-border-top pt-3 mt-3');
+					const copy = createEl('button', 't-btn t-btn-sm ghost', '[ COPY ]');
+					copy.type = 'button'; copy.addEventListener('click', () => copyText(`${item.date} ${item.type} ${formatMoney(item.amount, item.currency)} ${item.title}`));
+					const pin = createEl('button', 't-btn t-btn-sm ghost', item.pinned ? '[ UNPIN ]' : '[ PIN ]');
+					pin.type = 'button'; pin.addEventListener('click', () => togglePin(item.id));
+					const edit = createEl('button', 't-btn t-btn-sm', '[ EDIT ]');
+					edit.type = 'button'; edit.addEventListener('click', () => openEntryModal(item.id));
+					const del = createEl('button', 't-btn t-btn-sm danger', '[ PURGE ]');
+					del.type = 'button'; del.addEventListener('click', () => deleteEntry(item.id));
+					actions.append(copy, pin, edit, del);
+					card.appendChild(actions);
+					grid.appendChild(card);
+				});
+				container.appendChild(grid);
+			}
+			function selectedFileNameLabel() {
+				const fileInput = $('importFile');
+				const label = $('importFileName');
+				if (!fileInput || !label) return;
+				const file = fileInput.files && fileInput.files[0];
+				label.textContent = file ? `> SELECTED: ${file.name}` : '> NO FILE SELECTED';
+			}
+			function setSensitiveInputsHidden() {
+				qsa('[data-eye]').forEach(btn => {
+					const input = $(btn.dataset.eye);
+					if (!input) return;
+					input.type = 'password';
+					btn.textContent = '[ ◉ ]';
+					btn.setAttribute('aria-label', 'Show value');
+					btn.setAttribute('title', 'Show value');
+				});
+			}
+			function bindEyeToggles() {
+				qsa('[data-eye]').forEach(btn => {
+					btn.addEventListener('click', () => {
+						const input = $(btn.dataset.eye);
+						if (!input) return;
+						const show = input.type === 'password';
+						input.type = show ? 'text' : 'password';
+						btn.textContent = show ? '[ ◌ ]' : '[ ◉ ]';
+						btn.setAttribute('aria-label', show ? 'Hide value' : 'Show value');
+						btn.setAttribute('title', show ? 'Hide value' : 'Show value');
+						input.focus();
+					});
+				});
+			}
+			function openSettings() {
+				$('settingsCurrency').value = state.settings.defaultCurrency || 'IDR';
+				$('settingsLocale').value = state.settings.locale || 'id-ID';
+				window.Terminal ? Terminal.modal.open('settingsModal') : $('settingsModal').classList.add('is-open');
+			}
+			function closeSettings() { window.Terminal ? Terminal.modal.close('settingsModal') : $('settingsModal').classList.remove('is-open'); }
+			function saveSettings() {
+				state.settings.defaultCurrency = normalizeCurrency($('settingsCurrency').value || 'IDR');
+				state.settings.locale = normalizeText($('settingsLocale').value || 'id-ID');
+				state.dirty = true;
+				closeSettings();
+				renderEntries();
+				updateStatus();
+				toast('SETTINGS SAVED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function bindLedger() {
+				$('btnCreate').addEventListener('click', createNewLedger);
+				$('btnImport').addEventListener('click', importLedger);
+				$('importFile').addEventListener('change', selectedFileNameLabel);
+				bindEyeToggles();
+				$('btnExport').addEventListener('click', exportLedger);
+				$('btnLock').addEventListener('click', () => lockLedger());
+				$('btnAdd').addEventListener('click', () => openEntryModal());
+				$('btnSettings').addEventListener('click', openSettings);
+				$('btnSaveEntry').addEventListener('click', saveEntry);
+				$('btnCloseModal').addEventListener('click', closeEntryModal);
+				$('btnCancelModal').addEventListener('click', closeEntryModal);
+				$('btnCloseSettings').addEventListener('click', closeSettings);
+				$('btnCancelSettings').addEventListener('click', closeSettings);
+				$('btnSaveSettings').addEventListener('click', saveSettings);
+				$('searchInput').addEventListener('input', renderEntries);
+				$('filterType').addEventListener('change', renderEntries);
+				$('filterMonth').addEventListener('change', renderEntries);
+			}
+			bindLedger();
+			toast('CRYPTO READY: ARGON2ID + XCHACHA20-POLY1305', 'normal');
+		</script>
+	</body>
+</html>

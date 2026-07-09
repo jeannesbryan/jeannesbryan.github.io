@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Bunker Contacts</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#030303">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="stylesheet" href="../assets/terminal.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+		<link rel="icon" type="image/svg+xml" href="../assets/npc-icon.svg">
+		<style>
+			:root,
+			html {
+				--bg-base:#000000 !important;
+				--bg-surface:#000000 !important;
+				--t-green:#00ff41 !important;
+				--t-green-dim:#00ff41 !important;
+				--t-white:#00ff41 !important;
+				--t-muted:#00ff41 !important;
+				--t-shadow-soft:rgba(0,255,65,.16) !important;
+				--t-shadow-strong:rgba(0,255,65,.34) !important;
+			}
+			body {
+				background:#000000 !important;
+				background-image:none !important;
+				color:#00ff41 !important;
+			}
+			body.t-crt::after {
+				background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%);
+				background-size:100% 2px;
+			}
+			.t-navbar { margin-bottom:0 !important; }
+			.t-shell { padding-top:6px !important; }
+			:is(.t-card,.t-navbar,.t-statusline,.t-command,.t-modal-content,.t-alert,.t-select,.t-toast,.t-empty-state,.t-kv-key,.t-list-group,.t-list-item) {
+				background:#000000 !important;
+				color:#00ff41 !important;
+				border-color:#00ff41 !important;
+			}
+			:is(.t-card-header,.t-border-top,.t-border-bottom,.t-tabs-header,.t-kv,.t-kv-key,.t-kv-value,.t-file-btn,.t-textarea,.t-input,.t-select,.t-list-group,.t-list-item) { border-color:#00ff41 !important; }
+			:is(.t-input,.t-textarea,.t-select,.t-btn,.t-badge,.t-form-label,.t-nav-brand,.t-nav-menu a,.t-input-action-btn,.t-file-btn,.text-muted,.text-danger,.text-warning,.text-success,.text-info,.text-white) {
+				color:#00ff41 !important;
+				border-color:#00ff41 !important;
+			}
+			:is(.t-btn:hover,.t-input-action-btn:hover) {
+				color:#000000 !important;
+				background:#00ff41 !important;
+				box-shadow:0 0 10px #00ff41 !important;
+			}
+			:is(.t-led-dot,.t-progress-bar) {
+				background:#00ff41 !important;
+				box-shadow:0 0 10px #00ff41 !important;
+			}
+			.bunker-form-grid {
+				display:grid;
+				grid-template-columns:repeat(2, minmax(0,1fr));
+				gap:15px;
+			}
+			.bunker-card-grid {
+				display:grid;
+				grid-template-columns:repeat(auto-fill, minmax(290px,1fr));
+				gap:20px;
+			}
+			.bunker-actions {
+				display:flex;
+				flex-wrap:wrap;
+				gap:10px;
+				justify-content:flex-end;
+				align-items:center;
+			}
+			.bunker-hero {
+				text-align:center;
+				padding:0 0 24px;
+			}
+			.bunker-hero .t-hero-title { margin-bottom:6px; }
+			.bunker-hero .t-hero-subtitle {
+				margin:0 auto;
+				max-width:760px;
+			}
+			.bunker-file-name {
+				display:block;
+				margin-top:8px;
+				overflow-wrap:anywhere;
+				word-break:break-word;
+			}
+			.bunker-input-group {
+				position:relative;
+				margin-bottom:15px;
+			}
+			.bunker-input-group .t-input {
+				margin-bottom:0;
+				padding-right:66px;
+			}
+			.bunker-input-actions {
+				position:absolute;
+				top:0;
+				right:0;
+				bottom:0;
+				display:flex;
+				align-items:stretch;
+			}
+			.bunker-input-actions .t-input-action-btn {
+				position:static;
+				height:100%;
+				min-width:58px;
+				border-left:1px dashed #00ff41;
+			}
+			.bunker-wide-modal { max-width:920px; }
+			.bunker-hidden { display:none !important; }
+			.bunker-pre {
+				white-space:pre-wrap;
+				overflow-wrap:anywhere;
+				word-break:break-word;
+			}
+			.bunker-tag-row {
+				display:flex;
+				flex-wrap:wrap;
+				gap:8px;
+				align-items:center;
+			}
+			.bunker-meta {
+				display:flex;
+				flex-wrap:wrap;
+				gap:8px;
+				align-items:center;
+			}
+			.bunker-card-title {
+				overflow-wrap:anywhere;
+				word-break:break-word;
+			}
+			.bunker-contact-line {
+				overflow-wrap:anywhere;
+				word-break:break-word;
+			}
+			@media (max-width:768px) {
+				.bunker-form-grid { grid-template-columns:1fr; }
+				.bunker-actions { justify-content:flex-start; }
+			}
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">BUNKER_CONTACTS</div>
+			<a href="/" class="t-btn t-btn-sm">[ BACK ]</a>
+		</nav>
+
+		<main class="t-shell">
+			<section id="paneLocked" class="t-pane active">
+				<div class="bunker-hero">
+					<h1 class="t-hero-title">BUNKER_CONTACTS</h1>
+					<p class="t-hero-subtitle">Static encrypted address book for private contacts, emergency numbers, work identities, and service records. Everything is decrypted locally in your browser.</p>
+				</div>
+				<div class="t-grid t-grid-2">
+					<div class="t-card">
+						<div class="t-card-header">> IMPORT_EXISTING_CONTACTS</div>
+						<label class="t-form-label">> encrypted file</label>
+						<div class="t-file-wrapper">
+							<input id="importFile" type="file" accept=".enc,.json,.txt">
+							<span class="t-file-btn">[ SELECT .ENC ]</span>
+						</div>
+						<span id="importFileName" class="bunker-file-name fs-small text-muted mb-3">> NO FILE SELECTED</span>
+						<label class="t-form-label">> master password</label>
+						<div class="bunker-input-group">
+							<input id="importPassword" class="t-input" type="password" autocomplete="current-password" placeholder="ENTER MASTER PASSWORD">
+							<div class="bunker-input-actions">
+								<button type="button" class="t-input-action-btn" data-eye="importPassword" aria-label="Show value" title="Show value">[ ◉ ]</button>
+							</div>
+						</div>
+						<button id="btnImport" class="t-btn t-btn-block">[ DECRYPT_CONTACTS ]</button>
+					</div>
+					<div class="t-card">
+						<div class="t-card-header">> CREATE_NEW_CONTACTS</div>
+						<label class="t-form-label">> master password</label>
+						<div class="bunker-input-group">
+							<input id="newPassword" class="t-input" type="password" autocomplete="new-password" placeholder="MINIMUM 10 CHARACTERS">
+							<div class="bunker-input-actions">
+								<button type="button" class="t-input-action-btn" data-eye="newPassword" aria-label="Show value" title="Show value">[ ◉ ]</button>
+							</div>
+						</div>
+						<label class="t-form-label">> confirm password</label>
+						<div class="bunker-input-group">
+							<input id="newConfirm" class="t-input" type="password" autocomplete="new-password" placeholder="RETYPE PASSWORD">
+							<div class="bunker-input-actions">
+								<button type="button" class="t-input-action-btn" data-eye="newConfirm" aria-label="Show value" title="Show value">[ ◉ ]</button>
+							</div>
+						</div>
+						<button id="btnCreate" class="t-btn t-btn-block">[ INITIALIZE_EMPTY_CONTACTS ]</button>
+					</div>
+				</div>
+				<div class="t-alert warning">> Keep your master password safe. Without it, the .enc file cannot be recovered.</div>
+			</section>
+
+			<section id="paneApp" class="t-pane">
+				<div class="t-toolbar">
+					<div class="t-toolbar-group">
+						<button id="btnAdd" class="t-btn">[ + ADD_CONTACT ]</button>
+						<button id="btnExport" class="t-btn">[ EXPORT_ENC ]</button>
+					</div>
+					<div class="t-toolbar-group">
+						<button id="btnLock" class="t-btn">[ LOCK ]</button>
+					</div>
+				</div>
+
+				<div class="t-statusline">
+					<span>FILE: <strong id="statusFile">MEMORY_ONLY</strong></span>
+					<span>STATE: <strong id="statusDirty" class="text-success">CLEAN</strong></span>
+					<span>CONTACTS: <strong id="countAll">0</strong></span>
+					<span>PINNED: <strong id="countPinned">0</strong></span>
+				</div>
+
+				<div class="t-card">
+					<div class="t-command mb-3">
+						<span class="t-command-prompt">$</span>
+						<input id="searchInput" class="t-input" type="search" placeholder="QUERY_CONTACTS...">
+					</div>
+					<div class="t-tabs-header flex-wrap mb-3">
+						<button class="t-tab-btn filter-tab active" data-filter="ALL">ALL</button>
+						<button class="t-tab-btn filter-tab" data-filter="PINNED">PINNED</button>
+						<button class="t-tab-btn filter-tab" data-filter="FAMILY">FAMILY</button>
+						<button class="t-tab-btn filter-tab" data-filter="WORK">WORK</button>
+						<button class="t-tab-btn filter-tab" data-filter="SERVICE">SERVICE</button>
+						<button class="t-tab-btn filter-tab" data-filter="EMERGENCY">EMERGENCY</button>
+					</div>
+					<div id="tagFilters" class="bunker-tag-row"></div>
+				</div>
+
+				<div id="contactList"></div>
+			</section>
+		</main>
+
+		<div id="entryModal" class="t-modal" role="dialog" aria-modal="true">
+			<div class="t-modal-content bunker-wide-modal">
+				<div class="d-flex justify-content-between align-items-center mb-3 t-border-bottom pb-2">
+					<span id="modalTitle" class="font-bold">> ADD_CONTACT</span>
+					<button id="btnCloseModal" class="t-btn t-btn-sm" type="button">[ X ]</button>
+				</div>
+				<form id="entryForm" onsubmit="return false;">
+					<div class="bunker-form-grid">
+						<div>
+							<label class="t-form-label">> full name</label>
+							<input id="entryName" class="t-input" type="text" autocomplete="off" placeholder="Jane Doe">
+						</div>
+						<div>
+							<label class="t-form-label">> nickname / alias</label>
+							<input id="entryAlias" class="t-input" type="text" autocomplete="off" placeholder="Jane">
+						</div>
+						<div>
+							<label class="t-form-label">> group</label>
+							<select id="entryGroup" class="t-select">
+								<option value="PERSONAL">PERSONAL</option>
+								<option value="FAMILY">FAMILY</option>
+								<option value="WORK">WORK</option>
+								<option value="SERVICE">SERVICE</option>
+								<option value="EMERGENCY">EMERGENCY</option>
+								<option value="OTHER">OTHER</option>
+							</select>
+						</div>
+						<div>
+							<label class="t-form-label">> organization</label>
+							<input id="entryOrganization" class="t-input" type="text" autocomplete="off" placeholder="Company / institution">
+						</div>
+						<div>
+							<label class="t-form-label">> role / title</label>
+							<input id="entryRole" class="t-input" type="text" autocomplete="off" placeholder="Manager / Doctor / Support">
+						</div>
+						<div>
+							<label class="t-form-label">> birthday / important date</label>
+							<input id="entryDate" class="t-input" type="text" autocomplete="off" placeholder="YYYY-MM-DD or free text">
+						</div>
+						<div>
+							<label class="t-form-label">> phone</label>
+							<input id="entryPhone" class="t-input" type="tel" autocomplete="off" placeholder="+62...">
+						</div>
+						<div>
+							<label class="t-form-label">> email</label>
+							<input id="entryEmail" class="t-input" type="email" autocomplete="off" placeholder="name@example.com">
+						</div>
+						<div>
+							<label class="t-form-label">> website / profile</label>
+							<input id="entryWebsite" class="t-input" type="url" autocomplete="off" placeholder="https://...">
+						</div>
+						<div>
+							<label class="t-form-label">> tags comma separated</label>
+							<input id="entryTags" class="t-input" type="text" autocomplete="off" placeholder="family, doctor, emergency">
+						</div>
+					</div>
+
+					<label class="t-form-label">> address</label>
+					<textarea id="entryAddress" class="t-textarea" rows="3" placeholder="Street, city, notes for location"></textarea>
+
+					<label class="t-form-label">> private notes</label>
+					<textarea id="entryNotes" class="t-textarea" rows="4" placeholder="Context, relationship, preferred contact time, backup numbers, etc."></textarea>
+
+					<label class="t-checkbox-label mb-3">
+						<input id="entryPinned" type="checkbox">
+						<span class="t-checkmark">PIN THIS CONTACT</span>
+					</label>
+
+					<div id="duplicateWarning" class="t-alert warning bunker-hidden">> A contact with the same name already exists. You can still save it.</div>
+
+					<div class="bunker-actions">
+						<button id="btnCancelModal" class="t-btn" type="button">[ ABORT ]</button>
+						<button id="btnSaveEntry" class="t-btn" type="button">[ SAVE_TO_MEMORY ]</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script src="../assets/terminal.js" defer></script>
+		<script type="module">
+			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
+			await sodium.ready;
+			window.sodium = sodium;
+
+			const APP_VERSION = 1;
+			const KDF_OPSLIMIT = 3;
+			const KDF_MEMLIMIT = 64 * 1024 * 1024;
+			const AUTO_LOCK_MS = 10 * 60 * 1000;
+			const CLIPBOARD_CLEAR_MS = 45 * 1000;
+			const textEncoder = new TextEncoder();
+			const textDecoder = new TextDecoder();
+			const B64 = sodium.base64_variants.ORIGINAL;
+
+			function toast(message, type = 'normal') {
+				if (window.Terminal && typeof window.Terminal.toast === 'function') window.Terminal.toast(message, type);
+				else console[type === 'danger' ? 'error' : 'log']('> ' + message);
+			}
+			function $(id) { return document.getElementById(id); }
+			function qsa(sel, scope = document) { return Array.from(scope.querySelectorAll(sel)); }
+			function createEl(tag, className = '', text = '') {
+				const el = document.createElement(tag);
+				if (className) el.className = className;
+				if (text !== '') el.textContent = text;
+				return el;
+			}
+			function nowIso() { return new Date().toISOString(); }
+			function uid() {
+				if (crypto.randomUUID) return crypto.randomUUID();
+				const bytes = crypto.getRandomValues(new Uint8Array(16));
+				bytes[6] = (bytes[6] & 0x0f) | 0x40;
+				bytes[8] = (bytes[8] & 0x3f) | 0x80;
+				const hex = [...bytes].map(b => b.toString(16).padStart(2, '0'));
+				return `${hex.slice(0,4).join('')}-${hex.slice(4,6).join('')}-${hex.slice(6,8).join('')}-${hex.slice(8,10).join('')}-${hex.slice(10).join('')}`;
+			}
+			function normalizeText(value) { return String(value || '').trim(); }
+			function normalizeGroup(value) {
+				const group = String(value || 'PERSONAL').toUpperCase();
+				return ['PERSONAL', 'FAMILY', 'WORK', 'SERVICE', 'EMERGENCY', 'OTHER'].includes(group) ? group : 'OTHER';
+			}
+			function normalizeTags(value) {
+				if (Array.isArray(value)) return [...new Set(value.map(v => normalizeText(v).toLowerCase()).filter(Boolean))].sort();
+				return [...new Set(String(value || '').split(',').map(v => normalizeText(v).toLowerCase()).filter(Boolean))].sort();
+			}
+			function toB64(bytes) { return sodium.to_base64(bytes, B64); }
+			function fromB64(text) { return sodium.from_base64(text, B64); }
+			function aadFor(kind) { return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`); }
+			async function deriveKey(password, salt, params) {
+				return sodium.crypto_pwhash(
+					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+					password,
+					salt,
+					Number(params.opslimit || KDF_OPSLIMIT),
+					Number(params.memlimit || KDF_MEMLIMIT),
+					sodium.crypto_pwhash_ALG_ARGON2ID13
+				);
+			}
+			async function encryptEnvelope(kind, payloadObject, password) {
+				const salt = sodium.randombytes_buf(16);
+				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+				const params = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
+				const key = await deriveKey(password, salt, params);
+				try {
+					const plaintext = textEncoder.encode(JSON.stringify(payloadObject));
+					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(kind), null, nonce, key);
+					return JSON.stringify({
+						bunker: kind,
+						version: APP_VERSION,
+						format: `bunker-${kind}-enc`,
+						kdf: params,
+						aead: 'xchacha20-poly1305-ietf',
+						salt: toB64(salt),
+						nonce: toB64(nonce),
+						payload: toB64(cipher),
+						createdAt: payloadObject.createdAt || nowIso(),
+						updatedAt: nowIso()
+					}, null, 2);
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+			async function decryptEnvelope(kind, rawText, password) {
+				const envelope = JSON.parse(rawText.trim());
+				if (!envelope || envelope.bunker !== kind || envelope.version !== APP_VERSION) throw new Error('INVALID_BUNKER_FILE');
+				if (envelope.aead !== 'xchacha20-poly1305-ietf') throw new Error('UNSUPPORTED_CIPHER');
+				if (!envelope.kdf || envelope.kdf.name !== 'argon2id') throw new Error('UNSUPPORTED_KDF');
+				const salt = fromB64(envelope.salt);
+				const nonce = fromB64(envelope.nonce);
+				const cipher = fromB64(envelope.payload);
+				const key = await deriveKey(password, salt, envelope.kdf);
+				try {
+					const plain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(kind), nonce, key);
+					return JSON.parse(textDecoder.decode(plain));
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+			async function readFileAsText(file) { return await file.text(); }
+			function downloadText(filename, text, type = 'application/octet-stream') {
+				const blob = new Blob([text], { type });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				setTimeout(() => URL.revokeObjectURL(url), 1200);
+			}
+			function stampName(kind) {
+				const d = new Date();
+				const pad = n => String(n).padStart(2, '0');
+				return `bunker-${kind}-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.enc`;
+			}
+			let clipboardTimer = null;
+			async function copyText(text, label = 'COPIED TO CLIPBOARD') {
+				try {
+					await navigator.clipboard.writeText(text || '');
+					toast(label, 'normal');
+					if (clipboardTimer) clearTimeout(clipboardTimer);
+					clipboardTimer = setTimeout(async () => {
+						try {
+							await navigator.clipboard.writeText('');
+							toast('CLIPBOARD CLEARED', 'warning');
+						} catch (e) {}
+					}, CLIPBOARD_CLEAR_MS);
+				} catch (e) {
+					toast('CLIPBOARD PERMISSION DENIED', 'warning');
+				}
+			}
+			function preventDirtyUnload(event) {
+				if (!state.dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			}
+			window.addEventListener('beforeunload', preventDirtyUnload);
+
+			const KIND = 'contacts';
+			const state = {
+				unlocked: false,
+				password: '',
+				items: [],
+				fileName: '',
+				dirty: false,
+				editingId: null,
+				filter: 'ALL',
+				tagFilter: ''
+			};
+			let autoLockTimer = null;
+
+			function resetAutoLock() {
+				if (!state.unlocked) return;
+				if (autoLockTimer) clearTimeout(autoLockTimer);
+				autoLockTimer = setTimeout(() => {
+					toast('AUTO LOCK TRIGGERED BY IDLE TIMER', 'warning');
+					lockContacts();
+				}, AUTO_LOCK_MS);
+			}
+			['click', 'keydown', 'pointermove', 'input', 'touchstart'].forEach(eventName => {
+				document.addEventListener(eventName, resetAutoLock, { passive: true });
+			});
+			function setPane(name) {
+				qsa('.t-pane').forEach(p => p.classList.remove('active'));
+				$(name).classList.add('active');
+			}
+			function updateStatus() {
+				$('countAll').textContent = String(state.items.length);
+				$('countPinned').textContent = String(state.items.filter(item => item.pinned).length);
+				$('statusFile').textContent = state.fileName || 'MEMORY_ONLY';
+				$('statusDirty').textContent = state.dirty ? 'DIRTY_EXPORT_REQUIRED' : 'CLEAN';
+				$('statusDirty').className = state.dirty ? 'text-warning' : 'text-success';
+			}
+			function normalizeContact(item = {}) {
+				return {
+					id: item.id || uid(),
+					name: normalizeText(item.name || item.title || ''),
+					alias: normalizeText(item.alias || item.nickname || ''),
+					group: normalizeGroup(item.group || item.type || 'PERSONAL'),
+					organization: normalizeText(item.organization || item.company || ''),
+					role: normalizeText(item.role || item.jobTitle || item.titleRole || ''),
+					phone: normalizeText(item.phone || item.phoneNumber || ''),
+					email: normalizeText(item.email || ''),
+					website: normalizeText(item.website || item.url || ''),
+					address: normalizeText(item.address || ''),
+					date: normalizeText(item.date || item.birthday || ''),
+					notes: normalizeText(item.notes || item.content || ''),
+					tags: normalizeTags(item.tags || ''),
+					pinned: Boolean(item.pinned),
+					createdAt: item.createdAt || nowIso(),
+					updatedAt: item.updatedAt || nowIso()
+				};
+			}
+			function sortContacts(items) {
+				return [...items].sort((a, b) => {
+					if (Boolean(a.pinned) !== Boolean(b.pinned)) return a.pinned ? -1 : 1;
+					return String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' });
+				});
+			}
+			function unlockUi() {
+				state.unlocked = true;
+				setPane('paneApp');
+				renderContacts();
+				updateStatus();
+				resetAutoLock();
+			}
+			async function createNewContacts() {
+				const pass = $('newPassword').value;
+				const confirm = $('newConfirm').value;
+				if (!pass || pass.length < 10) return toast('MASTER PASSWORD MINIMUM 10 CHARACTERS', 'danger');
+				if (pass !== confirm) return toast('PASSWORD CONFIRMATION MISMATCH', 'danger');
+				state.password = pass;
+				state.items = [];
+				state.fileName = 'NEW_CONTACTS';
+				state.dirty = true;
+				$('newPassword').value = '';
+				$('newConfirm').value = '';
+				unlockUi();
+				toast('NEW CONTACTS DATABASE INITIALIZED. EXPORT FILE AFTER ADDING DATA.', 'warning');
+			}
+			async function importContacts() {
+				const file = $('importFile').files[0];
+				const pass = $('importPassword').value;
+				if (!file) return toast('SELECT .ENC FILE FIRST', 'danger');
+				if (!pass) return toast('MASTER PASSWORD REQUIRED', 'danger');
+				try {
+					toast('DECRYPTING CONTACTS. ARGON2ID MAY TAKE A MOMENT.', 'warning');
+					const raw = await readFileAsText(file);
+					const payload = await decryptEnvelope(KIND, raw, pass);
+					if (!payload || !Array.isArray(payload.items)) throw new Error('INVALID_PAYLOAD');
+					state.password = pass;
+					state.items = payload.items.map(normalizeContact);
+					state.fileName = file.name;
+					state.dirty = false;
+					$('importPassword').value = '';
+					unlockUi();
+					toast('CONTACTS DATABASE UNLOCKED', 'normal');
+				} catch (e) {
+					console.error(e);
+					toast('DECRYPT FAILED. WRONG PASSWORD OR INVALID FILE.', 'danger');
+				}
+			}
+			async function exportContacts() {
+				if (!state.unlocked || !state.password) return toast('CONTACTS LOCKED', 'danger');
+				try {
+					toast('ENCRYPTING CONTACTS DATABASE.', 'warning');
+					const payload = { kind: KIND, version: APP_VERSION, createdAt: nowIso(), exportedAt: nowIso(), items: sortContacts(state.items) };
+					const text = await encryptEnvelope(KIND, payload, state.password);
+					downloadText(stampName(KIND), text);
+					state.dirty = false;
+					updateStatus();
+					toast('ENCRYPTED FILE EXPORTED', 'normal');
+				} catch (e) {
+					console.error(e);
+					toast('EXPORT FAILED', 'danger');
+				}
+			}
+			function lockContacts() {
+				state.unlocked = false;
+				state.password = '';
+				state.items = [];
+				state.fileName = '';
+				state.dirty = false;
+				state.editingId = null;
+				state.filter = 'ALL';
+				state.tagFilter = '';
+				$('searchInput').value = '';
+				if (autoLockTimer) clearTimeout(autoLockTimer);
+				setPane('paneLocked');
+				updateStatus();
+				toast('CONTACTS LOCKED AND MEMORY CLEARED', 'warning');
+			}
+			function selectedFileNameLabel() {
+				const fileInput = $('importFile');
+				const label = $('importFileName');
+				if (!fileInput || !label) return;
+				const file = fileInput.files && fileInput.files[0];
+				label.textContent = file ? `> SELECTED: ${file.name}` : '> NO FILE SELECTED';
+			}
+			function setSensitiveInputsHidden() {
+				qsa('[data-eye]').forEach(btn => {
+					const input = $(btn.dataset.eye);
+					if (!input) return;
+					input.type = 'password';
+					btn.textContent = '[ ◉ ]';
+					btn.setAttribute('aria-label', 'Show value');
+					btn.setAttribute('title', 'Show value');
+				});
+			}
+			function bindEyeToggles() {
+				qsa('[data-eye]').forEach(btn => {
+					btn.addEventListener('click', () => {
+						const input = $(btn.dataset.eye);
+						if (!input) return;
+						const show = input.type === 'password';
+						input.type = show ? 'text' : 'password';
+						btn.textContent = show ? '[ ◌ ]' : '[ ◉ ]';
+						btn.setAttribute('aria-label', show ? 'Hide value' : 'Show value');
+						btn.setAttribute('title', show ? 'Hide value' : 'Show value');
+						input.focus();
+					});
+				});
+			}
+			function openEntryModal(id = null) {
+				state.editingId = id;
+				$('entryForm').reset();
+				$('duplicateWarning').classList.add('bunker-hidden');
+				setSensitiveInputsHidden();
+				const item = state.items.find(contact => contact.id === id);
+				$('modalTitle').textContent = item ? '> EDIT_CONTACT' : '> ADD_CONTACT';
+				if (item) {
+					$('entryName').value = item.name || '';
+					$('entryAlias').value = item.alias || '';
+					$('entryGroup').value = normalizeGroup(item.group);
+					$('entryOrganization').value = item.organization || '';
+					$('entryRole').value = item.role || '';
+					$('entryDate').value = item.date || '';
+					$('entryPhone').value = item.phone || '';
+					$('entryEmail').value = item.email || '';
+					$('entryWebsite').value = item.website || '';
+					$('entryTags').value = (item.tags || []).join(', ');
+					$('entryAddress').value = item.address || '';
+					$('entryNotes').value = item.notes || '';
+					$('entryPinned').checked = Boolean(item.pinned);
+				} else {
+					$('entryGroup').value = 'PERSONAL';
+				}
+				window.Terminal ? Terminal.modal.open('entryModal') : $('entryModal').classList.add('is-open');
+			}
+			function closeEntryModal() {
+				window.Terminal ? Terminal.modal.close('entryModal') : $('entryModal').classList.remove('is-open');
+			}
+			function currentFormContact() {
+				return normalizeContact({
+					id: state.editingId || uid(),
+					name: $('entryName').value,
+					alias: $('entryAlias').value,
+					group: $('entryGroup').value,
+					organization: $('entryOrganization').value,
+					role: $('entryRole').value,
+					date: $('entryDate').value,
+					phone: $('entryPhone').value,
+					email: $('entryEmail').value,
+					website: $('entryWebsite').value,
+					address: $('entryAddress').value,
+					notes: $('entryNotes').value,
+					tags: normalizeTags($('entryTags').value),
+					pinned: $('entryPinned').checked
+				});
+			}
+			function updateDuplicateWarning() {
+				const name = normalizeText($('entryName').value).toLowerCase();
+				const duplicate = Boolean(name) && state.items.some(item => item.id !== state.editingId && normalizeText(item.name).toLowerCase() === name);
+				$('duplicateWarning').classList.toggle('bunker-hidden', !duplicate);
+			}
+			function saveEntry() {
+				const contact = currentFormContact();
+				if (!contact.name) return toast('FULL NAME REQUIRED', 'danger');
+				if (!contact.phone && !contact.email && !contact.website && !contact.address) return toast('ADD AT LEAST ONE CONTACT METHOD OR ADDRESS', 'danger');
+				if (!state.editingId) contact.createdAt = nowIso();
+				contact.updatedAt = nowIso();
+				const index = state.items.findIndex(item => item.id === state.editingId);
+				if (index >= 0) state.items[index] = { ...state.items[index], ...contact };
+				else state.items.unshift(contact);
+				state.dirty = true;
+				closeEntryModal();
+				renderContacts();
+				updateStatus();
+				toast('CONTACT SAVED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function deleteEntry(id) {
+				if (!confirm('PURGE THIS CONTACT FROM MEMORY?')) return;
+				state.items = state.items.filter(item => item.id !== id);
+				state.dirty = true;
+				renderContacts();
+				updateStatus();
+				toast('CONTACT PURGED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function togglePinned(id) {
+				const item = state.items.find(contact => contact.id === id);
+				if (!item) return;
+				item.pinned = !item.pinned;
+				item.updatedAt = nowIso();
+				state.dirty = true;
+				renderContacts();
+				updateStatus();
+				toast(item.pinned ? 'CONTACT PINNED. EXPORT UPDATED FILE.' : 'CONTACT UNPINNED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function setFilter(type, btn) {
+				state.filter = type;
+				qsa('.filter-tab').forEach(item => item.classList.remove('active'));
+				btn.classList.add('active');
+				renderContacts();
+			}
+			function setTagFilter(tag, btn) {
+				state.tagFilter = state.tagFilter === tag ? '' : tag;
+				qsa('[data-tag-filter]').forEach(item => item.classList.remove('active'));
+				if (state.tagFilter && btn) btn.classList.add('active');
+				renderContacts();
+			}
+			function allTags() {
+				return [...new Set(state.items.flatMap(item => item.tags || []))].sort();
+			}
+			function filteredItems() {
+				const q = normalizeText($('searchInput').value).toLowerCase();
+				return sortContacts(state.items.filter(item => {
+					if (state.filter === 'PINNED' && !item.pinned) return false;
+					if (!['ALL', 'PINNED'].includes(state.filter) && item.group !== state.filter) return false;
+					if (state.tagFilter && !(item.tags || []).includes(state.tagFilter)) return false;
+					if (!q) return true;
+					return [
+						item.name,
+						item.alias,
+						item.group,
+						item.organization,
+						item.role,
+						item.phone,
+						item.email,
+						item.website,
+						item.address,
+						item.date,
+						item.notes,
+						...(item.tags || [])
+					].some(value => String(value || '').toLowerCase().includes(q));
+				}));
+			}
+			function renderTagFilters() {
+				const container = $('tagFilters');
+				container.textContent = '';
+				const tags = allTags();
+				if (!tags.length) {
+					container.appendChild(createEl('span', 'text-muted fs-small', '> NO_TAGS_YET'));
+					return;
+				}
+				tags.forEach(tag => {
+					const btn = createEl('button', 't-btn t-btn-sm ghost', '#' + tag);
+					btn.type = 'button';
+					btn.dataset.tagFilter = tag;
+					if (state.tagFilter === tag) btn.classList.add('active');
+					btn.addEventListener('click', () => setTagFilter(tag, btn));
+					container.appendChild(btn);
+				});
+			}
+			function addKv(parent, key, value, copyable = false) {
+				if (!value) return;
+				const row = createEl('div', 't-kv-row');
+				const k = createEl('div', 't-kv-key', key);
+				const v = createEl('div', 't-kv-value');
+				const line = createEl('span', 'bunker-contact-line', value);
+				v.appendChild(line);
+				if (copyable) {
+					const copy = createEl('button', 't-btn t-btn-sm mt-2', '[ COPY ]');
+					copy.type = 'button';
+					copy.addEventListener('click', () => copyText(value));
+					v.appendChild(createEl('div', ''));
+					v.appendChild(copy);
+				}
+				parent.append(k, v);
+			}
+			function contactVcard(item) {
+				const lines = [
+					'BEGIN:VCARD',
+					'VERSION:3.0',
+					`FN:${escapeVcard(item.name || '')}`
+				];
+				if (item.organization) lines.push(`ORG:${escapeVcard(item.organization)}`);
+				if (item.role) lines.push(`TITLE:${escapeVcard(item.role)}`);
+				if (item.phone) lines.push(`TEL:${escapeVcard(item.phone)}`);
+				if (item.email) lines.push(`EMAIL:${escapeVcard(item.email)}`);
+				if (item.website) lines.push(`URL:${escapeVcard(item.website)}`);
+				if (item.address) lines.push(`ADR;TYPE=HOME:;;${escapeVcard(item.address.replace(/\n/g, ' '))}`);
+				if (item.notes) lines.push(`NOTE:${escapeVcard(item.notes.replace(/\n/g, ' '))}`);
+				lines.push('END:VCARD');
+				return lines.join('\r\n');
+			}
+			function escapeVcard(value) {
+				return String(value || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+			}
+			function exportVcard(item) {
+				const safeName = String(item.name || 'contact').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'contact';
+				downloadText(`${safeName}.vcf`, contactVcard(item), 'text/vcard');
+				toast('VCARD EXPORTED', 'normal');
+			}
+			function renderContacts() {
+				renderTagFilters();
+				const container = $('contactList');
+				container.textContent = '';
+				const items = filteredItems();
+				if (!items.length) {
+					const empty = createEl('div', 't-empty-state');
+					empty.append(createEl('span', 't-empty-state-icon', '[ ]'));
+					empty.append(createEl('div', 'font-bold', '> NO_CONTACT_FOUND'));
+					empty.append(createEl('div', 'text-muted fs-small mt-2', 'Create a new contact or change your search/filter.'));
+					container.appendChild(empty);
+					return;
+				}
+				const grid = createEl('div', 'bunker-card-grid');
+				items.forEach(item => {
+					const card = createEl('article', 't-card');
+					const header = createEl('div', 't-card-header d-flex justify-content-between align-items-center gap-2');
+					const left = createEl('span', 'bunker-card-title', '> ' + (item.name || 'UNTITLED'));
+					const badgeText = `${item.pinned ? 'PINNED / ' : ''}${item.group || 'PERSONAL'}`;
+					const badge = createEl('span', 't-badge muted', badgeText);
+					header.append(left, badge);
+
+					const meta = createEl('div', 'bunker-meta mb-3');
+					if (item.alias) meta.appendChild(createEl('span', 't-badge muted', 'ALIAS: ' + item.alias));
+					(item.tags || []).forEach(tag => meta.appendChild(createEl('span', 't-badge muted', '#' + tag)));
+					if (item.updatedAt) meta.appendChild(createEl('span', 'text-muted fs-small', 'UPDATED: ' + new Date(item.updatedAt).toLocaleString()));
+
+					const kv = createEl('div', 't-kv');
+					addKv(kv, 'PHONE', item.phone, true);
+					addKv(kv, 'EMAIL', item.email, true);
+					addKv(kv, 'WEBSITE', item.website, true);
+					addKv(kv, 'ORG', item.organization);
+					addKv(kv, 'ROLE', item.role);
+					addKv(kv, 'DATE', item.date);
+					addKv(kv, 'ADDRESS', item.address, true);
+
+					card.append(header);
+					if (meta.childNodes.length) card.appendChild(meta);
+					card.appendChild(kv);
+					if (item.notes) card.appendChild(createEl('div', 't-alert mt-3 bunker-pre', '> NOTES\n' + item.notes));
+
+					const actions = createEl('div', 'bunker-actions t-border-top pt-3 mt-3');
+					const pin = createEl('button', 't-btn t-btn-sm ghost', item.pinned ? '[ UNPIN ]' : '[ PIN ]');
+					pin.type = 'button';
+					pin.addEventListener('click', () => togglePinned(item.id));
+					const copy = createEl('button', 't-btn t-btn-sm', '[ COPY_CARD ]');
+					copy.type = 'button';
+					copy.addEventListener('click', () => copyText(contactSummary(item), 'CONTACT SUMMARY COPIED'));
+					const vcard = createEl('button', 't-btn t-btn-sm', '[ VCARD ]');
+					vcard.type = 'button';
+					vcard.addEventListener('click', () => exportVcard(item));
+					const edit = createEl('button', 't-btn t-btn-sm', '[ EDIT ]');
+					edit.type = 'button';
+					edit.addEventListener('click', () => openEntryModal(item.id));
+					const del = createEl('button', 't-btn t-btn-sm danger', '[ PURGE ]');
+					del.type = 'button';
+					del.addEventListener('click', () => deleteEntry(item.id));
+					actions.append(pin, copy, vcard, edit, del);
+					card.appendChild(actions);
+					grid.appendChild(card);
+				});
+				container.appendChild(grid);
+			}
+			function contactSummary(item) {
+				return [
+					item.name,
+					item.alias ? `Alias: ${item.alias}` : '',
+					item.group ? `Group: ${item.group}` : '',
+					item.organization ? `Organization: ${item.organization}` : '',
+					item.role ? `Role: ${item.role}` : '',
+					item.phone ? `Phone: ${item.phone}` : '',
+					item.email ? `Email: ${item.email}` : '',
+					item.website ? `Website: ${item.website}` : '',
+					item.address ? `Address: ${item.address}` : '',
+					item.date ? `Date: ${item.date}` : '',
+					(item.tags || []).length ? `Tags: ${item.tags.join(', ')}` : '',
+					item.notes ? `Notes: ${item.notes}` : ''
+				].filter(Boolean).join('\n');
+			}
+			function bindContacts() {
+				$('btnCreate').addEventListener('click', createNewContacts);
+				$('btnImport').addEventListener('click', importContacts);
+				$('importFile').addEventListener('change', selectedFileNameLabel);
+				bindEyeToggles();
+				$('btnExport').addEventListener('click', exportContacts);
+				$('btnLock').addEventListener('click', lockContacts);
+				$('btnAdd').addEventListener('click', () => openEntryModal());
+				$('btnSaveEntry').addEventListener('click', saveEntry);
+				$('btnCloseModal').addEventListener('click', closeEntryModal);
+				$('btnCancelModal').addEventListener('click', closeEntryModal);
+				$('searchInput').addEventListener('input', renderContacts);
+				$('entryName').addEventListener('input', updateDuplicateWarning);
+				qsa('[data-filter]').forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter, btn)));
+			}
+			bindContacts();
+			toast('CRYPTO READY: ARGON2ID + XCHACHA20-POLY1305', 'normal');
+		</script>
+	</body>
+</html>

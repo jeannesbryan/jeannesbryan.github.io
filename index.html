@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Jeannes Bryan</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#000000">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="manifest" href="./assets/manifest.webmanifest">
+		<link rel="stylesheet" href="./assets/terminal.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+		<link rel="icon" type="image/svg+xml" href="./assets/npc-icon.svg">
+		<style>
+			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
+			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
+			body.t-crt::after { background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%); background-size:100% 2px; }
+			:is(.t-navbar,.t-btn,.t-alert,.t-statusline,.t-card,.t-card-header,.t-border-top,.t-border-bottom,.text-muted,.text-success,.text-warning,.text-danger,.text-info,.text-white) { background:#000000 !important; color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-btn:hover) { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			.t-navbar { margin-bottom:0 !important; }
+			.t-shell { max-width:900px; padding-top:10px !important; }
+			.site-hero { text-align:center; padding:8px 0 34px; }
+			.site-hero .t-hero-title { margin-bottom:8px; }
+			.site-hero .t-hero-subtitle { margin:0 auto; max-width:760px; }
+			.site-section-label { border-top:1px dashed #00ff41; border-bottom:1px dashed #00ff41; padding:10px 0; margin-bottom:0; font-weight:bold; text-transform:uppercase; }
+			.app-list { border-bottom:1px dashed #00ff41; }
+			.app-row { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:26px 0; border-bottom:1px dashed #00ff41; }
+			.app-row:last-child { border-bottom:0; }
+			.app-copy { max-width:650px; }
+			.app-title { font-size:1.35rem; font-weight:bold; letter-spacing:-.03em; margin-bottom:6px; }
+			.app-desc { color:#00ff41; margin:0; line-height:1.7; }
+			.install-panel { display:none; margin-bottom:20px; }
+			.install-panel.is-visible { display:block; }
+			.site-footer { padding:24px 0 0; text-align:center; }
+			.site-footer.fs-small { font-size:clamp(1rem, 2vw, 1.2rem) !important; line-height:1.7; }
+			.copyleft-mark { display:inline-block; transform:scaleX(-1); transform-origin:center; }
+			@media (max-width:768px) { .app-row { align-items:flex-start; flex-direction:column; } .app-row .t-btn { width:100%; } }
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">JEANNES_BRYAN</div>
+		</nav>
+
+		<main class="t-shell">
+			<section class="site-hero">
+				<h1 class="t-hero-title">JEANNES BRYAN</h1>
+				<p class="t-hero-subtitle">A personal terminal-style launcher for small offline-first web apps, experiments, and private browser tools.</p>
+			</section>
+
+			<div id="installPanel" class="t-alert install-panel">
+				<div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+					<span>> Install this launcher as a PWA for faster access.</span>
+					<div class="d-flex gap-2 flex-wrap">
+						<button id="btnInstall" class="t-btn t-btn-sm" type="button">[ INSTALL_APP ]</button>
+						<button id="btnDismissInstall" class="t-btn t-btn-sm ghost" type="button">[ DISMISS ]</button>
+					</div>
+				</div>
+			</div>
+
+			<section aria-label="Bunker software launcher">
+				<div class="site-section-label">> BUNKER_SOFTWARE</div>
+				<div class="t-alert mb-0">> Bunker is a software label for encrypted, offline-first browser tools stored under the <span class="t-code-inline">/bunker</span> directory.</div>
+
+				<div class="app-list">
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Vault</h2>
+							<p class="app-desc">Encrypted local vault for logins, private notes, payment cards, and Wi-Fi credentials. Import an .enc file, unlock it in memory, edit entries, then export a new encrypted file.</p>
+						</div>
+						<a href="./bunker/vault.html" class="t-btn">[ OPEN_VAULT ]</a>
+					</article>
+
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Auth</h2>
+							<p class="app-desc">Encrypted local TOTP manager for second-factor secrets. Keep auth data separate from the password vault, generate codes locally, and export a protected .enc file.</p>
+						</div>
+						<a href="./bunker/auth.html" class="t-btn">[ OPEN_AUTH ]</a>
+					</article>
+
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Notes</h2>
+							<p class="app-desc">Encrypted local Markdown notes for private writing, recovery plans, drafts, and personal documentation. Write in Markdown, preview safely in the browser, then export a protected .enc file.</p>
+						</div>
+						<a href="./bunker/notes.html" class="t-btn">[ OPEN_NOTES ]</a>
+					</article>
+
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Contacts</h2>
+							<p class="app-desc">Encrypted local address book for private contacts, emergency numbers, work identities, and service records. Store contact data in memory only, then export a protected .enc file.</p>
+						</div>
+						<a href="./bunker/contacts.html" class="t-btn">[ OPEN_CONTACTS ]</a>
+					</article>
+
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Ledger</h2>
+							<p class="app-desc">Encrypted local ledger for personal transactions, flexible currencies, categories, accounts, and private financial notes. Track income and expenses locally, then export a protected .enc file.</p>
+						</div>
+						<a href="./bunker/ledger.html" class="t-btn">[ OPEN_LEDGER ]</a>
+					</article>
+				</div>
+			</section>
+
+			<div class="site-footer fs-small text-muted">
+				<span class="copyleft-mark" aria-label="Copyleft">©</span> Jeannes Bryan
+			</div>
+		</main>
+
+		<script src="./assets/terminal.js" defer></script>
+		<script>
+			let deferredInstallPrompt = null;
+			const installPanel = document.getElementById('installPanel');
+			const btnInstall = document.getElementById('btnInstall');
+			const btnDismissInstall = document.getElementById('btnDismissInstall');
+
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', () => {
+					navigator.serviceWorker.register('./sw.js').catch(error => console.warn('Service worker registration failed:', error));
+				});
+			}
+
+			window.addEventListener('beforeinstallprompt', event => {
+				event.preventDefault();
+				deferredInstallPrompt = event;
+				if (!localStorage.getItem('bunker-install-dismissed')) installPanel.classList.add('is-visible');
+			});
+
+			btnInstall.addEventListener('click', async () => {
+				if (!deferredInstallPrompt) return;
+				deferredInstallPrompt.prompt();
+				await deferredInstallPrompt.userChoice;
+				deferredInstallPrompt = null;
+				installPanel.classList.remove('is-visible');
+			});
+
+			btnDismissInstall.addEventListener('click', () => {
+				localStorage.setItem('bunker-install-dismissed', '1');
+				installPanel.classList.remove('is-visible');
+			});
+		</script>
+	</body>
+</html>
