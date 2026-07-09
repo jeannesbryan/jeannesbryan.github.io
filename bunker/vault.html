@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Bunker Vault</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#000000">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="stylesheet" href="../assets/terminal.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+		<link rel="icon" type="image/svg+xml" href="../assets/npc-icon.svg">
+		<style>
+			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
+			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
+			body.t-crt::after { background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%); background-size:100% 2px; }
+			.t-navbar { margin-bottom:0 !important; }
+			.t-shell { padding-top:6px !important; }
+			:is(.t-card,.t-navbar,.t-statusline,.t-command,.t-modal-content,.t-alert,.t-select,.t-toast,.t-empty-state,.t-kv-key) { background:#000000 !important; color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-card-header,.t-border-top,.t-border-bottom,.t-tabs-header,.t-kv,.t-kv-key,.t-kv-value,.t-file-btn,.t-timer-line-bg,.t-textarea,.t-input,.t-select) { border-color:#00ff41 !important; }
+			:is(.t-input,.t-textarea,.t-select,.t-btn,.t-badge,.t-form-label,.t-nav-brand,.t-nav-menu a,.t-input-action-btn,.t-file-btn,.text-muted,.text-danger,.text-warning,.text-success,.text-info,.text-white) { color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-btn:hover,.t-input-action-btn:hover) { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			:is(.t-led-dot,.t-timer-line,.t-progress-bar) { background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			:is(.t-btn.danger,.t-btn.warning,.t-badge.danger,.t-badge.warning,.t-alert.warning,.t-alert.danger,.t-toast.warning,.t-toast.danger) { color:#00ff41 !important; border-color:#00ff41 !important; background:#000000 !important; }
+			.bunker-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px; }
+			.bunker-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:20px; }
+			.bunker-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; align-items:center; }
+			.bunker-secret { letter-spacing:2px; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-pre { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-wide-modal { max-width:780px; }
+			.bunker-hidden { display:none !important; }
+			.bunker-hero { text-align:center; padding:0 0 24px; }
+			.bunker-hero .t-hero-title { margin:0 0 6px; }
+			.bunker-hero .t-hero-subtitle { margin:0 auto; max-width:760px; }
+			.bunker-file-name { display:block; margin-top:8px; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-input-group { position:relative; margin-bottom:15px; }
+			.bunker-input-group .t-input { margin-bottom:0; padding-right:66px; }
+			.bunker-input-group.has-two .t-input { padding-right:132px; }
+			.bunker-input-actions { position:absolute; top:0; right:0; bottom:0; display:flex; align-items:stretch; }
+			.bunker-input-actions .t-input-action-btn { position:static; height:100%; min-width:58px; border-left:1px dashed #00ff41; }
+			.bunker-tag-row { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+			.bunker-tag { display:inline-block; border:1px dashed #00ff41; padding:1px 6px; font-size:11px; }
+			.bunker-meta { font-size:11px; opacity:.86; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-strength { display:block; margin-top:-8px; margin-bottom:15px; font-size:11px; }
+			.bunker-generator { border:1px dashed #00ff41; padding:12px; margin-bottom:15px; }
+			.bunker-checkbox-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 12px; }
+			@media (max-width:768px) { .bunker-form-grid,.bunker-checkbox-grid { grid-template-columns:1fr; } .bunker-actions { justify-content:flex-start; } }
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">BUNKER_VAULT</div>
+			<a href="/" class="t-btn t-btn-sm">[ BACK ]</a>
+		</nav>
+
+		<main class="t-shell">
+			<section id="paneLocked" class="t-pane active">
+				<div class="bunker-hero">
+					<h1 class="t-hero-title">BUNKER_VAULT</h1>
+					<p class="t-hero-subtitle">Static password manager. Import an encrypted <i>.enc</i> file or create a new vault. Everything is decrypted locally in your browser.</p>
+				</div>
+				<div class="t-grid t-grid-2">
+					<div class="t-card">
+						<div class="t-card-header">&gt; IMPORT_EXISTING_VAULT</div>
+						<label class="t-form-label">&gt; encrypted file</label>
+						<div class="t-file-wrapper">
+							<input id="importFile" type="file" accept=".enc,.json,.txt">
+							<span class="t-file-btn">[ SELECT .ENC ]</span>
+						</div>
+						<span id="importFileName" class="bunker-file-name fs-small text-muted mb-3">&gt; NO FILE SELECTED</span>
+						<label class="t-form-label">&gt; master password</label>
+						<div class="bunker-input-group">
+							<input id="importPassword" class="t-input" type="password" autocomplete="current-password" placeholder="ENTER MASTER PASSWORD">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="importPassword" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<button id="btnImport" class="t-btn t-btn-block">[ DECRYPT_VAULT ]</button>
+					</div>
+					<div class="t-card">
+						<div class="t-card-header">&gt; CREATE_NEW_VAULT</div>
+						<label class="t-form-label">&gt; master password</label>
+						<div class="bunker-input-group">
+							<input id="newPassword" class="t-input" type="password" autocomplete="new-password" placeholder="MINIMUM 10 CHARACTERS">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="newPassword" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<label class="t-form-label">&gt; confirm password</label>
+						<div class="bunker-input-group">
+							<input id="newConfirm" class="t-input" type="password" autocomplete="new-password" placeholder="RETYPE PASSWORD">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="newConfirm" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<button id="btnCreate" class="t-btn t-btn-block">[ INITIALIZE_EMPTY_VAULT ]</button>
+					</div>
+				</div>
+				<div class="t-alert">&gt; Keep your master password safe. Without it, the .enc file cannot be recovered.</div>
+			</section>
+
+			<section id="paneApp" class="t-pane">
+				<div class="t-toolbar">
+					<div class="t-toolbar-group">
+						<button id="btnAdd" class="t-btn">[ + ADD_PAYLOAD ]</button>
+						<button id="btnExport" class="t-btn">[ EXPORT_ENC ]</button>
+					</div>
+					<div class="t-toolbar-group">
+						<button id="btnLock" class="t-btn">[ LOCK ]</button>
+					</div>
+				</div>
+
+				<div class="t-statusline">
+					<span>FILE: <strong id="statusFile">MEMORY_ONLY</strong></span>
+					<span>STATE: <strong id="statusDirty" class="text-success">CLEAN</strong></span>
+					<span>AUTO_LOCK: <strong id="statusAutoLock">10:00</strong></span>
+					<span>ITEMS: <strong id="countAll">0</strong></span>
+				</div>
+
+				<div class="t-card">
+					<div class="t-command mb-3">
+						<span class="t-command-prompt">$</span>
+						<input id="searchInput" class="t-input" type="search" placeholder="SEARCH TITLE / TAG / USER / NOTE...">
+					</div>
+					<div class="t-tabs-header flex-wrap">
+						<button class="t-tab-btn filter-tab active" data-filter="ALL">ALL:<span id="countAllTab">0</span></button>
+						<button class="t-tab-btn filter-tab" data-filter="PINNED">PINNED:<span id="countPinned">0</span></button>
+						<button class="t-tab-btn filter-tab" data-filter="LOGIN">LOGIN:<span id="countLogin">0</span></button>
+						<button class="t-tab-btn filter-tab" data-filter="CARD">CARD:<span id="countCard">0</span></button>
+						<button class="t-tab-btn filter-tab" data-filter="WIFI">WIFI:<span id="countWifi">0</span></button>
+						<button class="t-tab-btn filter-tab" data-filter="NOTE">NOTE:<span id="countNote">0</span></button>
+					</div>
+				</div>
+
+				<div id="entryList"></div>
+			</section>
+		</main>
+
+		<div id="entryModal" class="t-modal" role="dialog" aria-modal="true">
+			<div class="t-modal-content bunker-wide-modal">
+				<div class="d-flex justify-content-between align-items-center mb-3 t-border-bottom pb-2">
+					<span id="modalTitle" class="font-bold">&gt; ADD_PAYLOAD</span>
+					<button id="btnCloseModal" class="t-btn t-btn-sm" type="button">[ X ]</button>
+				</div>
+				<form id="entryForm" onsubmit="return false;">
+					<div class="bunker-form-grid">
+						<div>
+							<label class="t-form-label">&gt; type</label>
+							<select id="entryType" class="t-select">
+								<option value="LOGIN">LOGIN</option>
+								<option value="NOTE">NOTE</option>
+								<option value="CARD">CARD</option>
+								<option value="WIFI">WIFI</option>
+							</select>
+						</div>
+						<div>
+							<label class="t-form-label">&gt; title</label>
+							<input id="entryTitle" class="t-input" type="text" placeholder="GitHub / Bank / Home Wi-Fi">
+							<span id="duplicateWarning" class="bunker-strength text-muted"></span>
+						</div>
+					</div>
+					<div class="bunker-form-grid">
+						<div>
+							<label class="t-checkbox-label"><input id="entryPinned" type="checkbox"><span class="t-checkmark"></span>PINNED</label>
+						</div>
+						<div>
+							<label class="t-form-label">&gt; tags comma separated</label>
+							<input id="entryTags" class="t-input" type="text" placeholder="main, crypto, backup">
+						</div>
+					</div>
+
+					<div id="fieldsLOGIN" data-fields>
+						<div class="bunker-form-grid">
+							<div><label class="t-form-label">&gt; id / email</label><input id="entryUsername" class="t-input" type="text"></div>
+							<div><label class="t-form-label">&gt; url</label><input id="entryUrl" class="t-input" type="url"></div>
+						</div>
+						<label class="t-form-label">&gt; password</label>
+						<div class="bunker-input-group has-two">
+							<input id="entryPassword" class="t-input" type="password" autocomplete="off">
+							<div class="bunker-input-actions">
+								<button type="button" class="t-input-action-btn" data-eye="entryPassword" aria-label="Show value" title="Show value">[ ◉ ]</button>
+								<button id="genLoginPass" type="button" class="t-input-action-btn">[ GEN ]</button>
+							</div>
+						</div>
+						<span id="entryPasswordStrength" class="bunker-strength text-muted">STRENGTH: EMPTY</span>
+					</div>
+
+					<div id="fieldsCARD" data-fields class="bunker-hidden">
+						<div class="bunker-form-grid">
+							<div><label class="t-form-label">&gt; name on card</label><input id="entryCardName" class="t-input" type="text"></div>
+							<div><label class="t-form-label">&gt; card number</label><div class="bunker-input-group"><input id="entryCardNumber" class="t-input" type="password" inputmode="numeric" autocomplete="off"><div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="entryCardNumber" aria-label="Show value" title="Show value">[ ◉ ]</button></div></div></div>
+							<div><label class="t-form-label">&gt; expiry</label><input id="entryCardExpiry" class="t-input" type="text" placeholder="MM/YY"></div>
+							<div><label class="t-form-label">&gt; cvc</label><div class="bunker-input-group"><input id="entryCardCvc" class="t-input" type="password" inputmode="numeric" autocomplete="off"><div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="entryCardCvc" aria-label="Show value" title="Show value">[ ◉ ]</button></div></div></div>
+							<div><label class="t-form-label">&gt; pin</label><div class="bunker-input-group"><input id="entryCardPin" class="t-input" type="password" inputmode="numeric" autocomplete="off"><div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="entryCardPin" aria-label="Show value" title="Show value">[ ◉ ]</button></div></div></div>
+						</div>
+					</div>
+
+					<div id="fieldsWIFI" data-fields class="bunker-hidden">
+						<div class="bunker-form-grid">
+							<div><label class="t-form-label">&gt; ssid</label><input id="entryWifiSsid" class="t-input" type="text"></div>
+							<div>
+								<label class="t-form-label">&gt; wi-fi password</label>
+								<div class="bunker-input-group has-two">
+									<input id="entryWifiPassword" class="t-input" type="password" autocomplete="off">
+									<div class="bunker-input-actions">
+										<button type="button" class="t-input-action-btn" data-eye="entryWifiPassword" aria-label="Show value" title="Show value">[ ◉ ]</button>
+										<button id="genWifiPass" type="button" class="t-input-action-btn">[ GEN ]</button>
+									</div>
+								</div>
+								<span id="entryWifiStrength" class="bunker-strength text-muted">STRENGTH: EMPTY</span>
+							</div>
+						</div>
+					</div>
+
+					<div id="fieldsNOTE" data-fields class="bunker-hidden"></div>
+
+					<div class="bunker-generator">
+						<div class="t-card-header">&gt; PASSWORD_GENERATOR</div>
+						<label class="t-form-label">&gt; length: <span id="genLengthLabel">28</span></label>
+						<input id="genLength" class="t-range" type="range" min="12" max="64" value="28">
+						<div class="bunker-checkbox-grid">
+							<label class="t-checkbox-label"><input id="genUpper" type="checkbox" checked><span class="t-checkmark"></span>UPPERCASE</label>
+							<label class="t-checkbox-label"><input id="genLower" type="checkbox" checked><span class="t-checkmark"></span>LOWERCASE</label>
+							<label class="t-checkbox-label"><input id="genNumbers" type="checkbox" checked><span class="t-checkmark"></span>NUMBERS</label>
+							<label class="t-checkbox-label"><input id="genSymbols" type="checkbox" checked><span class="t-checkmark"></span>SYMBOLS</label>
+						</div>
+					</div>
+
+					<label class="t-form-label">&gt; private notes</label>
+					<textarea id="entryNotes" class="t-textarea" rows="4"></textarea>
+					<div class="bunker-actions">
+						<button id="btnCancelModal" class="t-btn" type="button">[ ABORT ]</button>
+						<button id="btnSaveEntry" class="t-btn" type="button">[ SAVE_TO_MEMORY ]</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script src="../assets/terminal.js" defer></script>
+
+		<script type="module">
+			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
+			await sodium.ready;
+			window.sodium = sodium;
+
+			const APP_VERSION = 1;
+			const KDF_OPSLIMIT = 3;
+			const KDF_MEMLIMIT = 64 * 1024 * 1024;
+			const AUTO_LOCK_MS = 10 * 60 * 1000;
+			const CLIPBOARD_CLEAR_MS = 45 * 1000;
+			const textEncoder = new TextEncoder();
+			const textDecoder = new TextDecoder();
+			const B64 = sodium.base64_variants.ORIGINAL;
+
+			function toast(message, type = 'normal') {
+				if (window.Terminal && typeof window.Terminal.toast === 'function') window.Terminal.toast(message, 'normal');
+				else console[type === 'danger' ? 'error' : 'log']('> ' + message);
+			}
+			function $(id) { return document.getElementById(id); }
+			function qsa(selector, scope = document) { return Array.from(scope.querySelectorAll(selector)); }
+			function createEl(tag, className = '', text = '') {
+				const el = document.createElement(tag);
+				if (className) el.className = className;
+				if (text !== '') el.textContent = text;
+				return el;
+			}
+			function nowIso() { return new Date().toISOString(); }
+			function uid() {
+				if (crypto.randomUUID) return crypto.randomUUID();
+				const bytes = crypto.getRandomValues(new Uint8Array(16));
+				bytes[6] = (bytes[6] & 0x0f) | 0x40;
+				bytes[8] = (bytes[8] & 0x3f) | 0x80;
+				const hex = [...bytes].map(byte => byte.toString(16).padStart(2, '0'));
+				return `${hex.slice(0,4).join('')}-${hex.slice(4,6).join('')}-${hex.slice(6,8).join('')}-${hex.slice(8,10).join('')}-${hex.slice(10).join('')}`;
+			}
+			function normalizeText(value) { return String(value || '').trim(); }
+			function parseTags(value) {
+				return Array.from(new Set(String(value || '').split(',').map(tag => tag.trim().toLowerCase()).filter(Boolean))).slice(0, 12);
+			}
+			function tagsToText(tags) { return Array.isArray(tags) ? tags.join(', ') : ''; }
+			function toB64(bytes) { return sodium.to_base64(bytes, B64); }
+			function fromB64(text) { return sodium.from_base64(text, B64); }
+			function aadFor(kind) { return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`); }
+			async function deriveKey(password, salt, params) {
+				return sodium.crypto_pwhash(
+					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+					password,
+					salt,
+					Number(params.opslimit || KDF_OPSLIMIT),
+					Number(params.memlimit || KDF_MEMLIMIT),
+					sodium.crypto_pwhash_ALG_ARGON2ID13
+				);
+			}
+			async function encryptEnvelope(kind, payloadObject, password) {
+				const salt = sodium.randombytes_buf(16);
+				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+				const params = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
+				const key = await deriveKey(password, salt, params);
+				try {
+					const plaintext = textEncoder.encode(JSON.stringify(payloadObject));
+					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(kind), null, nonce, key);
+					return JSON.stringify({
+						bunker: kind,
+						version: APP_VERSION,
+						format: `bunker-${kind}-enc`,
+						kdf: params,
+						aead: 'xchacha20-poly1305-ietf',
+						salt: toB64(salt),
+						nonce: toB64(nonce),
+						payload: toB64(cipher),
+						createdAt: payloadObject.createdAt || nowIso(),
+						updatedAt: nowIso()
+					}, null, 2);
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+			async function decryptEnvelope(kind, rawText, password) {
+				const envelope = JSON.parse(rawText.trim());
+				if (!envelope || envelope.bunker !== kind || envelope.version !== APP_VERSION) throw new Error('INVALID_BUNKER_FILE');
+				if (envelope.aead !== 'xchacha20-poly1305-ietf') throw new Error('UNSUPPORTED_CIPHER');
+				if (!envelope.kdf || envelope.kdf.name !== 'argon2id') throw new Error('UNSUPPORTED_KDF');
+				const salt = fromB64(envelope.salt);
+				const nonce = fromB64(envelope.nonce);
+				const cipher = fromB64(envelope.payload);
+				const key = await deriveKey(password, salt, envelope.kdf);
+				try {
+					const plain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(kind), nonce, key);
+					return JSON.parse(textDecoder.decode(plain));
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+			async function readFileAsText(file) { return await file.text(); }
+			function downloadText(filename, text) {
+				const blob = new Blob([text], { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				setTimeout(() => URL.revokeObjectURL(url), 1200);
+			}
+			function stampName(kind) {
+				const d = new Date();
+				const pad = value => String(value).padStart(2, '0');
+				return `bunker-${kind}-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.enc`;
+			}
+			async function copyText(text, label = 'COPIED TO CLIPBOARD') {
+				const copied = String(text || '');
+				try {
+					await navigator.clipboard.writeText(copied);
+					toast(label, 'normal');
+					setTimeout(async () => {
+						try {
+							if (navigator.clipboard.readText) {
+								const current = await navigator.clipboard.readText();
+								if (current === copied) await navigator.clipboard.writeText('');
+							}
+						} catch (error) {}
+					}, CLIPBOARD_CLEAR_MS);
+				} catch (error) {
+					toast('CLIPBOARD PERMISSION DENIED', 'warning');
+				}
+			}
+			function formatTimeLeft(ms) {
+				const total = Math.max(0, Math.ceil(ms / 1000));
+				const minutes = Math.floor(total / 60);
+				const seconds = total % 60;
+				return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+			}
+			function selectedFileNameLabel() {
+				const fileInput = $('importFile');
+				const label = $('importFileName');
+				if (!fileInput || !label) return;
+				const file = fileInput.files && fileInput.files[0];
+				label.textContent = file ? `> SELECTED: ${file.name}` : '> NO FILE SELECTED';
+			}
+			function setSensitiveInputsHidden() {
+				qsa('[data-eye]').forEach(btn => {
+					const input = $(btn.dataset.eye);
+					if (!input) return;
+					input.type = 'password';
+					btn.textContent = '[ ◉ ]';
+					btn.setAttribute('aria-label', 'Show value');
+					btn.setAttribute('title', 'Show value');
+				});
+			}
+			function bindEyeToggles() {
+				qsa('[data-eye]').forEach(btn => {
+					btn.addEventListener('click', () => {
+						const input = $(btn.dataset.eye);
+						if (!input) return;
+						const show = input.type === 'password';
+						input.type = show ? 'text' : 'password';
+						btn.textContent = show ? '[ ◌ ]' : '[ ◉ ]';
+						btn.setAttribute('aria-label', show ? 'Hide value' : 'Show value');
+						btn.setAttribute('title', show ? 'Hide value' : 'Show value');
+						input.focus();
+					});
+				});
+			}
+			function preventDirtyUnload(event) {
+				if (!state.dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			}
+			window.addEventListener('beforeunload', preventDirtyUnload);
+
+			const KIND = 'vault';
+			const state = { unlocked: false, password: '', items: [], fileName: '', dirty: false, editingId: null, filter: 'ALL', createdAt: '', lockAt: 0 };
+			let autoLockTimer = null;
+
+			function normalizeVaultItem(item) {
+				const type = ['LOGIN', 'NOTE', 'CARD', 'WIFI'].includes(item.type) ? item.type : 'NOTE';
+				const createdAt = item.createdAt || item.date || nowIso();
+				return {
+					id: item.id || uid(),
+					type,
+					title: normalizeText(item.title) || 'UNTITLED',
+					pinned: Boolean(item.pinned),
+					tags: Array.isArray(item.tags) ? parseTags(item.tags.join(',')) : parseTags(item.tags),
+					username: normalizeText(item.username || item.email || item.user || ''),
+					password: String(item.password || ''),
+					url: normalizeText(item.url || ''),
+					cardName: normalizeText(item.cardName || ''),
+					cardNumber: String(item.cardNumber || ''),
+					cardExpiry: normalizeText(item.cardExpiry || ''),
+					cardCvc: String(item.cardCvc || ''),
+					cardPin: String(item.cardPin || ''),
+					wifiSsid: normalizeText(item.wifiSsid || item.ssid || ''),
+					wifiPassword: String(item.wifiPassword || item.wifiPass || ''),
+					notes: normalizeText(item.notes || item.content || ''),
+					createdAt,
+					updatedAt: item.updatedAt || createdAt
+				};
+			}
+			function normalizeVaultItems(items) { return (Array.isArray(items) ? items : []).map(normalizeVaultItem); }
+			function setPane(name) {
+				qsa('.t-pane').forEach(pane => pane.classList.remove('active'));
+				$(name).classList.add('active');
+			}
+			function markDirty() {
+				state.dirty = true;
+				updateStatus();
+			}
+			function resetAutoLock() {
+				if (!state.unlocked) return;
+				state.lockAt = Date.now() + AUTO_LOCK_MS;
+				updateAutoLockStatus();
+			}
+			function updateAutoLockStatus() {
+				const el = $('statusAutoLock');
+				if (!el) return;
+				el.textContent = state.unlocked ? formatTimeLeft(state.lockAt - Date.now()) : 'LOCKED';
+			}
+			function startAutoLock() {
+				if (autoLockTimer) clearInterval(autoLockTimer);
+				resetAutoLock();
+				autoLockTimer = setInterval(() => {
+					if (!state.unlocked) return;
+					if (Date.now() >= state.lockAt) {
+						lockVault('AUTO_LOCK_TIMEOUT');
+						return;
+					}
+					updateAutoLockStatus();
+				}, 1000);
+			}
+			function updateStatus() {
+				$('countAll').textContent = String(state.items.length);
+				$('countAllTab').textContent = String(state.items.length);
+				$('countPinned').textContent = String(state.items.filter(item => item.pinned).length);
+				$('countLogin').textContent = String(state.items.filter(item => item.type === 'LOGIN').length);
+				$('countCard').textContent = String(state.items.filter(item => item.type === 'CARD').length);
+				$('countWifi').textContent = String(state.items.filter(item => item.type === 'WIFI').length);
+				$('countNote').textContent = String(state.items.filter(item => item.type === 'NOTE').length);
+				$('statusFile').textContent = state.fileName || 'MEMORY_ONLY';
+				$('statusDirty').textContent = state.dirty ? 'DIRTY_EXPORT_REQUIRED' : 'CLEAN';
+				$('statusDirty').className = state.dirty ? 'text-warning' : 'text-success';
+				updateAutoLockStatus();
+			}
+			function unlockUi() {
+				state.unlocked = true;
+				setPane('paneApp');
+				renderEntries();
+				startAutoLock();
+				updateStatus();
+			}
+			async function createNewVault() {
+				const pass = $('newPassword').value;
+				const confirm = $('newConfirm').value;
+				if (!pass || pass.length < 10) return toast('MASTER PASSWORD MINIMUM 10 CHARACTERS', 'danger');
+				if (pass !== confirm) return toast('PASSWORD CONFIRMATION MISMATCH', 'danger');
+				state.password = pass;
+				state.items = [];
+				state.fileName = 'NEW_VAULT';
+				state.createdAt = nowIso();
+				state.dirty = true;
+				$('newPassword').value = '';
+				$('newConfirm').value = '';
+				unlockUi();
+				toast('NEW VAULT INITIALIZED. EXPORT FILE AFTER ADDING DATA.', 'warning');
+			}
+			async function importVault() {
+				const file = $('importFile').files[0];
+				const pass = $('importPassword').value;
+				if (!file) return toast('SELECT .ENC FILE FIRST', 'danger');
+				if (!pass) return toast('MASTER PASSWORD REQUIRED', 'danger');
+				try {
+					toast('DECRYPTING VAULT. ARGON2ID MAY TAKE A MOMENT.', 'warning');
+					const raw = await readFileAsText(file);
+					const payload = await decryptEnvelope(KIND, raw, pass);
+					if (!payload || !Array.isArray(payload.items)) throw new Error('INVALID_PAYLOAD');
+					state.password = pass;
+					state.items = normalizeVaultItems(payload.items);
+					state.fileName = file.name;
+					state.createdAt = payload.createdAt || nowIso();
+					state.dirty = false;
+					$('importPassword').value = '';
+					unlockUi();
+					toast('VAULT UNLOCKED', 'normal');
+				} catch (error) {
+					console.error(error);
+					toast('DECRYPT FAILED. WRONG PASSWORD OR INVALID FILE.', 'danger');
+				}
+			}
+			async function exportVault() {
+				if (!state.unlocked || !state.password) return toast('VAULT LOCKED', 'danger');
+				try {
+					toast('ENCRYPTING VAULT.', 'warning');
+					const payload = { kind: KIND, version: APP_VERSION, createdAt: state.createdAt || nowIso(), exportedAt: nowIso(), items: state.items };
+					const text = await encryptEnvelope(KIND, payload, state.password);
+					downloadText(stampName(KIND), text);
+					state.dirty = false;
+					updateStatus();
+					toast('ENCRYPTED FILE EXPORTED', 'normal');
+				} catch (error) {
+					console.error(error);
+					toast('EXPORT FAILED', 'danger');
+				}
+			}
+			function lockVault(reason = 'VAULT LOCKED AND MEMORY CLEARED') {
+				state.unlocked = false;
+				state.password = '';
+				state.items = [];
+				state.fileName = '';
+				state.dirty = false;
+				state.editingId = null;
+				state.createdAt = '';
+				state.lockAt = 0;
+				$('searchInput').value = '';
+				if (autoLockTimer) clearInterval(autoLockTimer);
+				setPane('paneLocked');
+				updateStatus();
+				toast(reason, 'warning');
+			}
+			function sortedItems(items) {
+				return [...items].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')) || String(a.title || '').localeCompare(String(b.title || '')));
+			}
+			function duplicateTitleExists(title) {
+				const clean = normalizeText(title).toLowerCase();
+				if (!clean) return false;
+				return state.items.some(item => item.id !== state.editingId && normalizeText(item.title).toLowerCase() === clean);
+			}
+			function updateDuplicateWarning() {
+				const warning = $('duplicateWarning');
+				if (!warning) return;
+				warning.textContent = duplicateTitleExists($('entryTitle').value) ? 'WARNING: DUPLICATE TITLE DETECTED' : '';
+			}
+			function openEntryModal(id = null) {
+				resetAutoLock();
+				state.editingId = id;
+				$('entryForm').reset();
+				$('entryPinned').checked = false;
+				setSensitiveInputsHidden();
+				const item = state.items.find(entry => entry.id === id);
+				$('modalTitle').textContent = item ? '> EDIT_PAYLOAD' : '> ADD_PAYLOAD';
+				if (item) {
+					$('entryType').value = item.type || 'LOGIN';
+					$('entryTitle').value = item.title || '';
+					$('entryPinned').checked = Boolean(item.pinned);
+					$('entryTags').value = tagsToText(item.tags);
+					$('entryUsername').value = item.username || '';
+					$('entryPassword').value = item.password || '';
+					$('entryUrl').value = item.url || '';
+					$('entryCardName').value = item.cardName || '';
+					$('entryCardNumber').value = item.cardNumber || '';
+					$('entryCardExpiry').value = item.cardExpiry || '';
+					$('entryCardCvc').value = item.cardCvc || '';
+					$('entryCardPin').value = item.cardPin || '';
+					$('entryWifiSsid').value = item.wifiSsid || '';
+					$('entryWifiPassword').value = item.wifiPassword || '';
+					$('entryNotes').value = item.notes || '';
+				} else {
+					$('entryType').value = 'LOGIN';
+				}
+				toggleEntryFields();
+				updateDuplicateWarning();
+				updateStrengthLabels();
+				window.Terminal ? Terminal.modal.open('entryModal') : $('entryModal').classList.add('is-open');
+			}
+			function closeEntryModal() { window.Terminal ? Terminal.modal.close('entryModal') : $('entryModal').classList.remove('is-open'); }
+			function toggleEntryFields() {
+				const type = $('entryType').value;
+				qsa('[data-fields]').forEach(el => el.classList.add('bunker-hidden'));
+				const pane = $(`fields${type}`);
+				if (pane) pane.classList.remove('bunker-hidden');
+			}
+			function saveEntry() {
+				resetAutoLock();
+				const type = $('entryType').value;
+				const title = normalizeText($('entryTitle').value);
+				if (!title) return toast('TITLE REQUIRED', 'danger');
+				if (duplicateTitleExists(title) && !confirm('A payload with the same title already exists. Save anyway?')) return;
+				const previous = state.items.find(item => item.id === state.editingId);
+				const createdAt = previous ? previous.createdAt : nowIso();
+				const base = {
+					id: state.editingId || uid(),
+					type,
+					title,
+					pinned: $('entryPinned').checked,
+					tags: parseTags($('entryTags').value),
+					username: normalizeText($('entryUsername').value),
+					password: $('entryPassword').value,
+					url: normalizeText($('entryUrl').value),
+					cardName: normalizeText($('entryCardName').value),
+					cardNumber: normalizeText($('entryCardNumber').value),
+					cardExpiry: normalizeText($('entryCardExpiry').value),
+					cardCvc: normalizeText($('entryCardCvc').value),
+					cardPin: normalizeText($('entryCardPin').value),
+					wifiSsid: normalizeText($('entryWifiSsid').value),
+					wifiPassword: $('entryWifiPassword').value,
+					notes: normalizeText($('entryNotes').value),
+					createdAt,
+					updatedAt: nowIso()
+				};
+				const index = state.items.findIndex(item => item.id === state.editingId);
+				if (index >= 0) state.items[index] = base;
+				else state.items.unshift(base);
+				markDirty();
+				closeEntryModal();
+				renderEntries();
+				toast('PAYLOAD SAVED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function deleteEntry(id) {
+				resetAutoLock();
+				if (!confirm('Purge this payload from memory? Export is required to persist the deletion.')) return;
+				state.items = state.items.filter(item => item.id !== id);
+				markDirty();
+				renderEntries();
+				toast('PAYLOAD PURGED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function togglePin(id) {
+				resetAutoLock();
+				const item = state.items.find(entry => entry.id === id);
+				if (!item) return;
+				item.pinned = !item.pinned;
+				item.updatedAt = nowIso();
+				markDirty();
+				renderEntries();
+				toast(item.pinned ? 'PAYLOAD PINNED' : 'PAYLOAD UNPINNED', 'normal');
+			}
+			function setFilter(type, btn) {
+				state.filter = type;
+				qsa('.filter-tab').forEach(button => button.classList.remove('active'));
+				btn.classList.add('active');
+				renderEntries();
+			}
+			function filteredItems() {
+				const q = normalizeText($('searchInput').value).toLowerCase();
+				return sortedItems(state.items.filter(item => {
+					if (state.filter === 'PINNED' && !item.pinned) return false;
+					if (!['ALL', 'PINNED'].includes(state.filter) && item.type !== state.filter) return false;
+					if (!q) return true;
+					return [item.type, item.title, item.username, item.url, item.wifiSsid, item.notes, ...(item.tags || [])].some(value => String(value || '').toLowerCase().includes(q));
+				}));
+			}
+			function addTags(parent, tags) {
+				if (!Array.isArray(tags) || !tags.length) return;
+				const row = createEl('div', 'bunker-tag-row');
+				tags.forEach(tag => row.appendChild(createEl('span', 'bunker-tag', '#' + tag)));
+				parent.appendChild(row);
+			}
+			function addMeta(parent, item) {
+				parent.appendChild(createEl('div', 'bunker-meta mt-2', `CREATED: ${item.createdAt || '-'}`));
+				parent.appendChild(createEl('div', 'bunker-meta', `UPDATED: ${item.updatedAt || '-'}`));
+			}
+			function addKv(parent, key, value, secret = false) {
+				if (!value) return;
+				const k = createEl('div', 't-kv-key', key);
+				const v = createEl('div', 't-kv-value');
+				if (secret) {
+					const span = createEl('span', 'bunker-secret', '••••••••••••');
+					const actions = createEl('div', 'd-flex gap-2 flex-wrap mt-2');
+					const reveal = createEl('button', 't-btn t-btn-sm ghost', '[ REVEAL ]');
+					reveal.type = 'button';
+					reveal.addEventListener('click', () => {
+						resetAutoLock();
+						span.textContent = value;
+						setTimeout(() => { span.textContent = '••••••••••••'; }, 12000);
+					});
+					const copy = createEl('button', 't-btn t-btn-sm', '[ COPY ]');
+					copy.type = 'button';
+					copy.addEventListener('click', () => { resetAutoLock(); copyText(value); });
+					actions.append(reveal, copy);
+					v.append(span, actions);
+				} else {
+					v.textContent = value;
+				}
+				parent.append(k, v);
+			}
+			function renderEntries() {
+				const container = $('entryList');
+				container.textContent = '';
+				const items = filteredItems();
+				if (!items.length) {
+					const empty = createEl('div', 't-empty-state');
+					empty.append(createEl('span', 't-empty-state-icon', '[ ]'));
+					empty.append(createEl('div', 'font-bold', '> NO_PAYLOAD_FOUND'));
+					empty.append(createEl('div', 'text-muted fs-small mt-2', 'Create a new payload or change your search/filter.'));
+					container.appendChild(empty);
+					return;
+				}
+				const grid = createEl('div', 'bunker-card-grid');
+				items.forEach(item => {
+					const card = createEl('article', 't-card');
+					const header = createEl('div', 't-card-header d-flex justify-content-between align-items-center gap-2');
+					header.append(createEl('span', '', '> ' + (item.title || 'UNTITLED')));
+					const badges = createEl('div', 'd-flex gap-2 flex-wrap justify-content-end');
+					if (item.pinned) badges.appendChild(createEl('span', 't-badge', 'PINNED'));
+					badges.appendChild(createEl('span', 't-badge muted', item.type));
+					header.appendChild(badges);
+					const kv = createEl('div', 't-kv');
+					if (item.type === 'LOGIN') {
+						addKv(kv, 'ID', item.username);
+						addKv(kv, 'PASSWORD', item.password, true);
+						addKv(kv, 'URL', item.url);
+					} else if (item.type === 'CARD') {
+						addKv(kv, 'NAME', item.cardName);
+						addKv(kv, 'NUMBER', item.cardNumber, true);
+						addKv(kv, 'EXPIRY', item.cardExpiry);
+						addKv(kv, 'CVC', item.cardCvc, true);
+						addKv(kv, 'PIN', item.cardPin, true);
+					} else if (item.type === 'WIFI') {
+						addKv(kv, 'SSID', item.wifiSsid || item.title);
+						addKv(kv, 'PASSWORD', item.wifiPassword, true);
+					}
+					card.append(header);
+					addTags(card, item.tags);
+					card.appendChild(kv);
+					if (item.notes) card.appendChild(createEl('div', 't-alert mt-3 bunker-pre', '> NOTES\n' + item.notes));
+					addMeta(card, item);
+					const actions = createEl('div', 'bunker-actions t-border-top pt-3 mt-3');
+					const pin = createEl('button', 't-btn t-btn-sm ghost', item.pinned ? '[ UNPIN ]' : '[ PIN ]');
+					pin.type = 'button'; pin.addEventListener('click', () => togglePin(item.id));
+					const edit = createEl('button', 't-btn t-btn-sm', '[ EDIT ]');
+					edit.type = 'button'; edit.addEventListener('click', () => openEntryModal(item.id));
+					const del = createEl('button', 't-btn t-btn-sm ghost', '[ PURGE ]');
+					del.type = 'button'; del.addEventListener('click', () => deleteEntry(item.id));
+					actions.append(pin, edit, del);
+					card.appendChild(actions);
+					grid.appendChild(card);
+				});
+				container.appendChild(grid);
+			}
+			function passwordStrength(value) {
+				const pass = String(value || '');
+				if (!pass) return 'STRENGTH: EMPTY';
+				let score = 0;
+				if (pass.length >= 12) score++;
+				if (pass.length >= 18) score++;
+				if (/[a-z]/.test(pass)) score++;
+				if (/[A-Z]/.test(pass)) score++;
+				if (/\d/.test(pass)) score++;
+				if (/[^A-Za-z0-9]/.test(pass)) score++;
+				if (score <= 2) return 'STRENGTH: WEAK';
+				if (score <= 4) return 'STRENGTH: MEDIUM';
+				return 'STRENGTH: STRONG';
+			}
+			function updateStrengthLabels() {
+				$('entryPasswordStrength').textContent = passwordStrength($('entryPassword').value);
+				$('entryWifiStrength').textContent = passwordStrength($('entryWifiPassword').value);
+			}
+			function generatorCharset() {
+				let chars = '';
+				if ($('genUpper').checked) chars += 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+				if ($('genLower').checked) chars += 'abcdefghijkmnopqrstuvwxyz';
+				if ($('genNumbers').checked) chars += '23456789';
+				if ($('genSymbols').checked) chars += '!@#$%^&*_-+=?';
+				return chars || 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+			}
+			function generatePassword(targetId) {
+				resetAutoLock();
+				const chars = generatorCharset();
+				const length = Number($('genLength').value || 28);
+				const bytes = crypto.getRandomValues(new Uint8Array(length));
+				$(targetId).value = [...bytes].map(byte => chars[byte % chars.length]).join('');
+				updateStrengthLabels();
+				toast('PASSWORD GENERATED', 'normal');
+			}
+			function bindVault() {
+				$('btnCreate').addEventListener('click', createNewVault);
+				$('btnImport').addEventListener('click', importVault);
+				$('importFile').addEventListener('change', selectedFileNameLabel);
+				bindEyeToggles();
+				$('btnExport').addEventListener('click', exportVault);
+				$('btnLock').addEventListener('click', () => lockVault());
+				$('btnAdd').addEventListener('click', () => openEntryModal());
+				$('entryType').addEventListener('change', toggleEntryFields);
+				$('entryTitle').addEventListener('input', updateDuplicateWarning);
+				$('entryPassword').addEventListener('input', updateStrengthLabels);
+				$('entryWifiPassword').addEventListener('input', updateStrengthLabels);
+				$('btnSaveEntry').addEventListener('click', saveEntry);
+				$('btnCloseModal').addEventListener('click', closeEntryModal);
+				$('btnCancelModal').addEventListener('click', closeEntryModal);
+				$('searchInput').addEventListener('input', renderEntries);
+				$('genLoginPass').addEventListener('click', () => generatePassword('entryPassword'));
+				$('genWifiPass').addEventListener('click', () => generatePassword('entryWifiPassword'));
+				$('genLength').addEventListener('input', () => { $('genLengthLabel').textContent = $('genLength').value; });
+				qsa('[data-filter]').forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter, btn)));
+				['click', 'keydown', 'input', 'touchstart'].forEach(eventName => document.addEventListener(eventName, resetAutoLock, { passive: true }));
+			}
+			bindVault();
+			toast('CRYPTO READY: ARGON2ID + XCHACHA20-POLY1305', 'normal');
+		</script>
+	</body>
+</html>

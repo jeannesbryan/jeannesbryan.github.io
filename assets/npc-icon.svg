@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <rect width="512" height="512" rx="115" fill="#050505" />
+    
+    <rect x="32" y="32" width="448" height="448" rx="90" fill="none" stroke="#008f11" stroke-width="24" />
+    
+    <text x="256" y="295" font-family="monospace" font-size="210" font-weight="bold" fill="#00ff41" text-anchor="middle" dominant-baseline="middle">NPC</text>
+</svg>

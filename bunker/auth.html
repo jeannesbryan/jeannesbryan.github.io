@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Bunker Auth</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#000000">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="stylesheet" href="../assets/terminal.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+		<link rel="icon" type="image/svg+xml" href="../assets/npc-icon.svg">
+		<style>
+			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
+			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
+			body.t-crt::after { background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%); background-size:100% 2px; }
+			.t-navbar { margin-bottom:0 !important; }
+			.t-shell { padding-top:6px !important; }
+			:is(.t-card,.t-navbar,.t-statusline,.t-command,.t-modal-content,.t-alert,.t-select,.t-toast,.t-empty-state,.t-kv-key) { background:#000000 !important; color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-card-header,.t-border-top,.t-border-bottom,.t-tabs-header,.t-kv,.t-kv-key,.t-kv-value,.t-file-btn,.t-timer-line-bg,.t-textarea,.t-input,.t-select) { border-color:#00ff41 !important; }
+			:is(.t-input,.t-textarea,.t-select,.t-btn,.t-badge,.t-form-label,.t-nav-brand,.t-nav-menu a,.t-input-action-btn,.t-file-btn,.text-muted,.text-danger,.text-warning,.text-success,.text-info,.text-white) { color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-btn:hover,.t-input-action-btn:hover) { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			:is(.t-led-dot,.t-timer-line,.t-progress-bar) { background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			:is(.t-btn.danger,.t-btn.warning,.t-badge.danger,.t-badge.warning,.t-alert.warning,.t-alert.danger,.t-toast.warning,.t-toast.danger) { color:#00ff41 !important; border-color:#00ff41 !important; background:#000000 !important; }
+			.bunker-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px; }
+			.bunker-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:20px; }
+			.bunker-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; align-items:center; }
+			.bunker-secret { letter-spacing:2px; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-pre { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-wide-modal { max-width:780px; }
+			.bunker-hidden { display:none !important; }
+			.bunker-hero { text-align:center; padding:0 0 24px; }
+			.bunker-hero .t-hero-title { margin:0 0 6px; }
+			.bunker-hero .t-hero-subtitle { margin:0 auto; max-width:760px; }
+			.bunker-file-name { display:block; margin-top:8px; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-input-group { position:relative; margin-bottom:15px; }
+			.bunker-input-group .t-input { margin-bottom:0; padding-right:66px; }
+			.bunker-input-group.has-two .t-input { padding-right:132px; }
+			.bunker-input-actions { position:absolute; top:0; right:0; bottom:0; display:flex; align-items:stretch; }
+			.bunker-input-actions .t-input-action-btn { position:static; height:100%; min-width:58px; border-left:1px dashed #00ff41; }
+			.bunker-tag-row { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+			.bunker-tag { display:inline-block; border:1px dashed #00ff41; padding:1px 6px; font-size:11px; }
+			.bunker-meta { font-size:11px; opacity:.86; overflow-wrap:anywhere; word-break:break-word; }
+			.bunker-strength { display:block; margin-top:-8px; margin-bottom:15px; font-size:11px; }
+			.bunker-generator { border:1px dashed #00ff41; padding:12px; margin-bottom:15px; }
+			.bunker-checkbox-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 12px; }
+			@media (max-width:768px) { .bunker-form-grid,.bunker-checkbox-grid { grid-template-columns:1fr; } .bunker-actions { justify-content:flex-start; } }
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">BUNKER_AUTH</div>
+			<a href="/" class="t-btn t-btn-sm">[ BACK ]</a>
+		</nav>
+
+		<main class="t-shell">
+			<section id="paneLocked" class="t-pane active">
+				<div class="bunker-hero">
+					<h1 class="t-hero-title">BUNKER_AUTH</h1>
+					<p class="t-hero-subtitle">Static 2FA/TOTP manager. Import an encrypted <i>.enc</i> file or create a new auth vault. Secrets and codes are calculated locally in your browser.</p>
+				</div>
+				<div class="t-grid t-grid-2">
+					<div class="t-card">
+						<div class="t-card-header">&gt; IMPORT_EXISTING_AUTH</div>
+						<label class="t-form-label">&gt; encrypted file</label>
+						<div class="t-file-wrapper">
+							<input id="importFile" type="file" accept=".enc,.json,.txt">
+							<span class="t-file-btn">[ SELECT .ENC ]</span>
+						</div>
+						<span id="importFileName" class="bunker-file-name fs-small text-muted mb-3">&gt; NO FILE SELECTED</span>
+						<label class="t-form-label">&gt; master password</label>
+						<div class="bunker-input-group">
+							<input id="importPassword" class="t-input" type="password" autocomplete="current-password" placeholder="ENTER MASTER PASSWORD">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="importPassword" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<button id="btnImport" class="t-btn t-btn-block">[ DECRYPT_AUTH ]</button>
+					</div>
+					<div class="t-card">
+						<div class="t-card-header">&gt; CREATE_NEW_AUTH</div>
+						<label class="t-form-label">&gt; master password</label>
+						<div class="bunker-input-group">
+							<input id="newPassword" class="t-input" type="password" autocomplete="new-password" placeholder="MINIMUM 10 CHARACTERS">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="newPassword" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<label class="t-form-label">&gt; confirm password</label>
+						<div class="bunker-input-group">
+							<input id="newConfirm" class="t-input" type="password" autocomplete="new-password" placeholder="RETYPE PASSWORD">
+							<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="newConfirm" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+						</div>
+						<button id="btnCreate" class="t-btn t-btn-block">[ INITIALIZE_EMPTY_AUTH ]</button>
+					</div>
+				</div>
+				<div class="t-alert">&gt; Use a different master password from your password vault. Keep passwords and second-factor secrets separated.</div>
+			</section>
+
+			<section id="paneApp" class="t-pane">
+				<div class="t-toolbar">
+					<div class="t-toolbar-group">
+						<button id="btnAdd" class="t-btn">[ + ADD_TOTP ]</button>
+						<button id="btnExport" class="t-btn">[ EXPORT_ENC ]</button>
+					</div>
+					<div class="t-toolbar-group">
+						<button id="btnLock" class="t-btn">[ LOCK ]</button>
+					</div>
+				</div>
+
+				<div class="t-statusline">
+					<span>FILE: <strong id="statusFile">MEMORY_ONLY</strong></span>
+					<span>STATE: <strong id="statusDirty" class="text-success">CLEAN</strong></span>
+					<span>AUTO_LOCK: <strong id="statusAutoLock">10:00</strong></span>
+					<span>KEYS: <strong id="countAll">0</strong></span>
+				</div>
+
+				<div class="t-card">
+					<div class="t-command mb-3">
+						<span class="t-command-prompt">$</span>
+						<input id="searchInput" class="t-input" type="search" placeholder="SEARCH ISSUER / ACCOUNT / TAG / NOTE...">
+					</div>
+					<div class="t-tabs-header flex-wrap">
+						<button class="t-tab-btn filter-tab active" data-filter="ALL">ALL:<span id="countAllTab">0</span></button>
+						<button class="t-tab-btn filter-tab" data-filter="PINNED">PINNED:<span id="countPinned">0</span></button>
+					</div>
+				</div>
+
+				<div id="authList"></div>
+			</section>
+		</main>
+
+		<div id="entryModal" class="t-modal" role="dialog" aria-modal="true">
+			<div class="t-modal-content bunker-wide-modal">
+				<div class="d-flex justify-content-between align-items-center mb-3 t-border-bottom pb-2">
+					<span id="modalTitle" class="font-bold">&gt; ADD_TOTP_KEY</span>
+					<button id="btnCloseModal" class="t-btn t-btn-sm" type="button">[ X ]</button>
+				</div>
+				<form id="entryForm" onsubmit="return false;">
+					<label class="t-form-label">&gt; otpauth uri optional</label>
+					<div class="bunker-input-group has-two">
+						<input id="entryUri" class="t-input" type="password" placeholder="otpauth://totp/..." autocomplete="off">
+						<div class="bunker-input-actions">
+							<button type="button" class="t-input-action-btn" data-eye="entryUri" aria-label="Show value" title="Show value">[ ◉ ]</button>
+							<button id="btnParseUri" type="button" class="t-input-action-btn">[ PARSE ]</button>
+						</div>
+					</div>
+
+					<div class="bunker-form-grid">
+						<div><label class="t-form-label">&gt; issuer</label><input id="entryIssuer" class="t-input" type="text" placeholder="GitHub"></div>
+						<div><label class="t-form-label">&gt; account</label><input id="entryAccount" class="t-input" type="text" placeholder="user@example.com"></div>
+					</div>
+					<div class="bunker-form-grid">
+						<div><label class="t-checkbox-label"><input id="entryPinned" type="checkbox"><span class="t-checkmark"></span>PINNED</label></div>
+						<div><label class="t-form-label">&gt; tags comma separated</label><input id="entryTags" class="t-input" type="text" placeholder="main, email, admin"></div>
+					</div>
+					<label class="t-form-label">&gt; base32 secret</label>
+					<div class="bunker-input-group">
+						<input id="entrySecret" class="t-input bunker-secret" type="password" placeholder="JBSWY3DPEHPK3PXP" autocomplete="off">
+						<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="entrySecret" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
+					</div>
+					<span id="secretValidation" class="bunker-strength text-muted">SECRET_STATUS: EMPTY</span>
+
+					<div class="bunker-form-grid">
+						<div>
+							<label class="t-form-label">&gt; algorithm</label>
+							<select id="entryAlgorithm" class="t-select">
+								<option value="SHA1">SHA1</option>
+								<option value="SHA256">SHA256</option>
+								<option value="SHA512">SHA512</option>
+							</select>
+						</div>
+						<div>
+							<label class="t-form-label">&gt; digits</label>
+							<select id="entryDigits" class="t-select">
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+							</select>
+						</div>
+						<div><label class="t-form-label">&gt; period seconds</label><input id="entryPeriod" class="t-input" type="number" min="10" max="120" step="1" value="30"></div>
+					</div>
+
+					<label class="t-form-label">&gt; private notes</label>
+					<textarea id="entryNotes" class="t-textarea" rows="4"></textarea>
+					<div class="bunker-actions">
+						<button id="btnCancelModal" class="t-btn" type="button">[ ABORT ]</button>
+						<button id="btnSaveEntry" class="t-btn" type="button">[ SAVE_TO_MEMORY ]</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script src="../assets/terminal.js" defer></script>
+
+		<script type="module">
+			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
+			await sodium.ready;
+			window.sodium = sodium;
+
+			const APP_VERSION = 1;
+			const KDF_OPSLIMIT = 3;
+			const KDF_MEMLIMIT = 64 * 1024 * 1024;
+			const AUTO_LOCK_MS = 10 * 60 * 1000;
+			const CLIPBOARD_CLEAR_MS = 45 * 1000;
+			const textEncoder = new TextEncoder();
+			const textDecoder = new TextDecoder();
+			const B64 = sodium.base64_variants.ORIGINAL;
+
+			function toast(message, type = 'normal') {
+				if (window.Terminal && typeof window.Terminal.toast === 'function') window.Terminal.toast(message, 'normal');
+				else console[type === 'danger' ? 'error' : 'log']('> ' + message);
+			}
+			function $(id) { return document.getElementById(id); }
+			function qsa(selector, scope = document) { return Array.from(scope.querySelectorAll(selector)); }
+			function createEl(tag, className = '', text = '') {
+				const el = document.createElement(tag);
+				if (className) el.className = className;
+				if (text !== '') el.textContent = text;
+				return el;
+			}
+			function nowIso() { return new Date().toISOString(); }
+			function uid() {
+				if (crypto.randomUUID) return crypto.randomUUID();
+				const bytes = crypto.getRandomValues(new Uint8Array(16));
+				bytes[6] = (bytes[6] & 0x0f) | 0x40;
+				bytes[8] = (bytes[8] & 0x3f) | 0x80;
+				const hex = [...bytes].map(byte => byte.toString(16).padStart(2, '0'));
+				return `${hex.slice(0,4).join('')}-${hex.slice(4,6).join('')}-${hex.slice(6,8).join('')}-${hex.slice(8,10).join('')}-${hex.slice(10).join('')}`;
+			}
+			function normalizeText(value) { return String(value || '').trim(); }
+			function parseTags(value) {
+				return Array.from(new Set(String(value || '').split(',').map(tag => tag.trim().toLowerCase()).filter(Boolean))).slice(0, 12);
+			}
+			function tagsToText(tags) { return Array.isArray(tags) ? tags.join(', ') : ''; }
+			function toB64(bytes) { return sodium.to_base64(bytes, B64); }
+			function fromB64(text) { return sodium.from_base64(text, B64); }
+			function aadFor(kind) { return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`); }
+			async function deriveKey(password, salt, params) {
+				return sodium.crypto_pwhash(
+					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+					password,
+					salt,
+					Number(params.opslimit || KDF_OPSLIMIT),
+					Number(params.memlimit || KDF_MEMLIMIT),
+					sodium.crypto_pwhash_ALG_ARGON2ID13
+				);
+			}
+			async function encryptEnvelope(kind, payloadObject, password) {
+				const salt = sodium.randombytes_buf(16);
+				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+				const params = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
+				const key = await deriveKey(password, salt, params);
+				try {
+					const plaintext = textEncoder.encode(JSON.stringify(payloadObject));
+					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(kind), null, nonce, key);
+					return JSON.stringify({
+						bunker: kind,
+						version: APP_VERSION,
+						format: `bunker-${kind}-enc`,
+						kdf: params,
+						aead: 'xchacha20-poly1305-ietf',
+						salt: toB64(salt),
+						nonce: toB64(nonce),
+						payload: toB64(cipher),
+						createdAt: payloadObject.createdAt || nowIso(),
+						updatedAt: nowIso()
+					}, null, 2);
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+			async function decryptEnvelope(kind, rawText, password) {
+				const envelope = JSON.parse(rawText.trim());
+				if (!envelope || envelope.bunker !== kind || envelope.version !== APP_VERSION) throw new Error('INVALID_BUNKER_FILE');
+				if (envelope.aead !== 'xchacha20-poly1305-ietf') throw new Error('UNSUPPORTED_CIPHER');
+				if (!envelope.kdf || envelope.kdf.name !== 'argon2id') throw new Error('UNSUPPORTED_KDF');
+				const salt = fromB64(envelope.salt);
+				const nonce = fromB64(envelope.nonce);
+				const cipher = fromB64(envelope.payload);
+				const key = await deriveKey(password, salt, envelope.kdf);
+				try {
+					const plain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(kind), nonce, key);
+					return JSON.parse(textDecoder.decode(plain));
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+			async function readFileAsText(file) { return await file.text(); }
+			function downloadText(filename, text) {
+				const blob = new Blob([text], { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				setTimeout(() => URL.revokeObjectURL(url), 1200);
+			}
+			function stampName(kind) {
+				const d = new Date();
+				const pad = value => String(value).padStart(2, '0');
+				return `bunker-${kind}-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.enc`;
+			}
+			async function copyText(text, label = 'COPIED TO CLIPBOARD') {
+				const copied = String(text || '');
+				try {
+					await navigator.clipboard.writeText(copied);
+					toast(label, 'normal');
+					setTimeout(async () => {
+						try {
+							if (navigator.clipboard.readText) {
+								const current = await navigator.clipboard.readText();
+								if (current === copied) await navigator.clipboard.writeText('');
+							}
+						} catch (error) {}
+					}, CLIPBOARD_CLEAR_MS);
+				} catch (error) {
+					toast('CLIPBOARD PERMISSION DENIED', 'warning');
+				}
+			}
+			function formatTimeLeft(ms) {
+				const total = Math.max(0, Math.ceil(ms / 1000));
+				const minutes = Math.floor(total / 60);
+				const seconds = total % 60;
+				return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+			}
+			function selectedFileNameLabel() {
+				const fileInput = $('importFile');
+				const label = $('importFileName');
+				if (!fileInput || !label) return;
+				const file = fileInput.files && fileInput.files[0];
+				label.textContent = file ? `> SELECTED: ${file.name}` : '> NO FILE SELECTED';
+			}
+			function setSensitiveInputsHidden() {
+				qsa('[data-eye]').forEach(btn => {
+					const input = $(btn.dataset.eye);
+					if (!input) return;
+					input.type = 'password';
+					btn.textContent = '[ ◉ ]';
+					btn.setAttribute('aria-label', 'Show value');
+					btn.setAttribute('title', 'Show value');
+				});
+			}
+			function bindEyeToggles() {
+				qsa('[data-eye]').forEach(btn => {
+					btn.addEventListener('click', () => {
+						const input = $(btn.dataset.eye);
+						if (!input) return;
+						const show = input.type === 'password';
+						input.type = show ? 'text' : 'password';
+						btn.textContent = show ? '[ ◌ ]' : '[ ◉ ]';
+						btn.setAttribute('aria-label', show ? 'Hide value' : 'Show value');
+						btn.setAttribute('title', show ? 'Hide value' : 'Show value');
+						input.focus();
+					});
+				});
+			}
+			function preventDirtyUnload(event) {
+				if (!state.dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			}
+			window.addEventListener('beforeunload', preventDirtyUnload);
+
+			const KIND = 'auth';
+			const state = { unlocked: false, password: '', items: [], fileName: '', dirty: false, editingId: null, filter: 'ALL', createdAt: '', lockAt: 0 };
+			let ticker = null;
+			let autoLockTimer = null;
+
+			function normalizeSecret(value) { return String(value || '').toUpperCase().replace(/[^A-Z2-7=]/g, '').replace(/=+$/g, ''); }
+			function normalizeAuthItem(item) {
+				const createdAt = item.createdAt || item.date || nowIso();
+				return {
+					id: item.id || uid(),
+					issuer: normalizeText(item.issuer || item.title || ''),
+					account: normalizeText(item.account || item.email || item.label || ''),
+					secret: normalizeSecret(item.secret || ''),
+					algorithm: String(item.algorithm || 'SHA1').toUpperCase(),
+					digits: Number(item.digits || 6),
+					period: Number(item.period || 30),
+					pinned: Boolean(item.pinned),
+					tags: Array.isArray(item.tags) ? parseTags(item.tags.join(',')) : parseTags(item.tags),
+					notes: normalizeText(item.notes || item.content || ''),
+					createdAt,
+					updatedAt: item.updatedAt || createdAt
+				};
+			}
+			function normalizeAuthItems(items) { return (Array.isArray(items) ? items : []).map(normalizeAuthItem); }
+			function setPane(name) {
+				qsa('.t-pane').forEach(pane => pane.classList.remove('active'));
+				$(name).classList.add('active');
+			}
+			function markDirty() {
+				state.dirty = true;
+				updateStatus();
+			}
+			function resetAutoLock() {
+				if (!state.unlocked) return;
+				state.lockAt = Date.now() + AUTO_LOCK_MS;
+				updateAutoLockStatus();
+			}
+			function updateAutoLockStatus() {
+				const el = $('statusAutoLock');
+				if (!el) return;
+				el.textContent = state.unlocked ? formatTimeLeft(state.lockAt - Date.now()) : 'LOCKED';
+			}
+			function startAutoLock() {
+				if (autoLockTimer) clearInterval(autoLockTimer);
+				resetAutoLock();
+				autoLockTimer = setInterval(() => {
+					if (!state.unlocked) return;
+					if (Date.now() >= state.lockAt) {
+						lockAuth('AUTO_LOCK_TIMEOUT');
+						return;
+					}
+					updateAutoLockStatus();
+				}, 1000);
+			}
+			function updateStatus() {
+				$('countAll').textContent = String(state.items.length);
+				$('countAllTab').textContent = String(state.items.length);
+				$('countPinned').textContent = String(state.items.filter(item => item.pinned).length);
+				$('statusFile').textContent = state.fileName || 'MEMORY_ONLY';
+				$('statusDirty').textContent = state.dirty ? 'DIRTY_EXPORT_REQUIRED' : 'CLEAN';
+				$('statusDirty').className = state.dirty ? 'text-warning' : 'text-success';
+				updateAutoLockStatus();
+			}
+			function unlockUi() {
+				state.unlocked = true;
+				setPane('paneApp');
+				renderAuth();
+				startTicker();
+				startAutoLock();
+				updateStatus();
+			}
+			async function createNewAuth() {
+				const pass = $('newPassword').value;
+				const confirm = $('newConfirm').value;
+				if (!pass || pass.length < 10) return toast('MASTER PASSWORD MINIMUM 10 CHARACTERS', 'danger');
+				if (pass !== confirm) return toast('PASSWORD CONFIRMATION MISMATCH', 'danger');
+				state.password = pass;
+				state.items = [];
+				state.fileName = 'NEW_AUTH';
+				state.createdAt = nowIso();
+				state.dirty = true;
+				$('newPassword').value = '';
+				$('newConfirm').value = '';
+				unlockUi();
+				toast('NEW AUTH DATABASE INITIALIZED. EXPORT FILE AFTER ADDING DATA.', 'warning');
+			}
+			async function importAuth() {
+				const file = $('importFile').files[0];
+				const pass = $('importPassword').value;
+				if (!file) return toast('SELECT .ENC FILE FIRST', 'danger');
+				if (!pass) return toast('MASTER PASSWORD REQUIRED', 'danger');
+				try {
+					toast('DECRYPTING AUTH DATABASE. ARGON2ID MAY TAKE A MOMENT.', 'warning');
+					const raw = await readFileAsText(file);
+					const payload = await decryptEnvelope(KIND, raw, pass);
+					if (!payload || !Array.isArray(payload.items)) throw new Error('INVALID_PAYLOAD');
+					state.password = pass;
+					state.items = normalizeAuthItems(payload.items);
+					state.fileName = file.name;
+					state.createdAt = payload.createdAt || nowIso();
+					state.dirty = false;
+					$('importPassword').value = '';
+					unlockUi();
+					toast('AUTH DATABASE UNLOCKED', 'normal');
+				} catch (error) {
+					console.error(error);
+					toast('DECRYPT FAILED. WRONG PASSWORD OR INVALID FILE.', 'danger');
+				}
+			}
+			async function exportAuth() {
+				if (!state.unlocked || !state.password) return toast('AUTH LOCKED', 'danger');
+				try {
+					toast('ENCRYPTING AUTH DATABASE.', 'warning');
+					const payload = { kind: KIND, version: APP_VERSION, createdAt: state.createdAt || nowIso(), exportedAt: nowIso(), items: state.items };
+					const text = await encryptEnvelope(KIND, payload, state.password);
+					downloadText(stampName(KIND), text);
+					state.dirty = false;
+					updateStatus();
+					toast('ENCRYPTED FILE EXPORTED', 'normal');
+				} catch (error) {
+					console.error(error);
+					toast('EXPORT FAILED', 'danger');
+				}
+			}
+			function lockAuth(reason = 'AUTH LOCKED AND MEMORY CLEARED') {
+				state.unlocked = false;
+				state.password = '';
+				state.items = [];
+				state.fileName = '';
+				state.dirty = false;
+				state.editingId = null;
+				state.createdAt = '';
+				state.lockAt = 0;
+				$('searchInput').value = '';
+				if (ticker) clearInterval(ticker);
+				if (autoLockTimer) clearInterval(autoLockTimer);
+				setPane('paneLocked');
+				updateStatus();
+				toast(reason, 'warning');
+			}
+			function sortedItems(items) {
+				return [...items].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || String(a.issuer || '').localeCompare(String(b.issuer || '')) || String(a.account || '').localeCompare(String(b.account || '')));
+			}
+			function parseOtpAuthUri() {
+				resetAutoLock();
+				const raw = normalizeText($('entryUri').value);
+				if (!raw) return toast('PASTE OTPAUTH URI FIRST', 'warning');
+				try {
+					const url = new URL(raw);
+					if (url.protocol !== 'otpauth:') throw new Error('NOT_OTPAUTH');
+					const label = decodeURIComponent(url.pathname.replace(/^\//, ''));
+					const parts = label.includes(':') ? label.split(/:(.*)/s).filter(Boolean) : ['', label];
+					const issuer = url.searchParams.get('issuer') || parts[0] || '';
+					const account = parts[1] || parts[0] || '';
+					$('entryIssuer').value = issuer;
+					$('entryAccount').value = account;
+					$('entrySecret').value = normalizeSecret(url.searchParams.get('secret') || '');
+					$('entryAlgorithm').value = (url.searchParams.get('algorithm') || 'SHA1').toUpperCase();
+					$('entryDigits').value = url.searchParams.get('digits') || '6';
+					$('entryPeriod').value = url.searchParams.get('period') || '30';
+					validateSecretPreview();
+					toast('OTPAUTH URI PARSED', 'normal');
+				} catch (error) {
+					toast('INVALID OTPAUTH URI', 'danger');
+				}
+			}
+			function openEntryModal(id = null) {
+				resetAutoLock();
+				state.editingId = id;
+				$('entryForm').reset();
+				$('entryPinned').checked = false;
+				setSensitiveInputsHidden();
+				const item = state.items.find(entry => entry.id === id);
+				$('modalTitle').textContent = item ? '> EDIT_TOTP_KEY' : '> ADD_TOTP_KEY';
+				$('entryAlgorithm').value = 'SHA1';
+				$('entryDigits').value = '6';
+				$('entryPeriod').value = '30';
+				if (item) {
+					$('entryIssuer').value = item.issuer || '';
+					$('entryAccount').value = item.account || '';
+					$('entrySecret').value = item.secret || '';
+					$('entryAlgorithm').value = item.algorithm || 'SHA1';
+					$('entryDigits').value = String(item.digits || 6);
+					$('entryPeriod').value = String(item.period || 30);
+					$('entryPinned').checked = Boolean(item.pinned);
+					$('entryTags').value = tagsToText(item.tags);
+					$('entryNotes').value = item.notes || '';
+				}
+				validateSecretPreview();
+				window.Terminal ? Terminal.modal.open('entryModal') : $('entryModal').classList.add('is-open');
+			}
+			function closeEntryModal() { window.Terminal ? Terminal.modal.close('entryModal') : $('entryModal').classList.remove('is-open'); }
+			async function saveEntry() {
+				resetAutoLock();
+				const issuer = normalizeText($('entryIssuer').value);
+				const account = normalizeText($('entryAccount').value);
+				const secret = normalizeSecret($('entrySecret').value);
+				const algorithm = $('entryAlgorithm').value;
+				const digits = Number($('entryDigits').value || 6);
+				const period = Number($('entryPeriod').value || 30);
+				if (!issuer) return toast('ISSUER REQUIRED', 'danger');
+				if (!secret || !/^[A-Z2-7]+$/.test(secret)) return toast('VALID BASE32 SECRET REQUIRED', 'danger');
+				if (![6, 7, 8].includes(digits)) return toast('DIGITS MUST BE 6, 7, OR 8', 'danger');
+				if (period < 10 || period > 120) return toast('PERIOD MUST BE 10-120 SECONDS', 'danger');
+				try {
+					await generateTotp({ secret, algorithm, digits, period });
+				} catch (error) {
+					return toast('SECRET VALIDATION FAILED', 'danger');
+				}
+				const previous = state.items.find(item => item.id === state.editingId);
+				const createdAt = previous ? previous.createdAt : nowIso();
+				const base = {
+					id: state.editingId || uid(),
+					issuer,
+					account,
+					secret,
+					algorithm,
+					digits,
+					period,
+					pinned: $('entryPinned').checked,
+					tags: parseTags($('entryTags').value),
+					notes: normalizeText($('entryNotes').value),
+					createdAt,
+					updatedAt: nowIso()
+				};
+				const index = state.items.findIndex(item => item.id === state.editingId);
+				if (index >= 0) state.items[index] = base;
+				else state.items.unshift(base);
+				markDirty();
+				closeEntryModal();
+				renderAuth();
+				toast('TOTP KEY SAVED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function deleteEntry(id) {
+				resetAutoLock();
+				if (!confirm('Purge this TOTP key from memory? Export is required to persist the deletion.')) return;
+				state.items = state.items.filter(item => item.id !== id);
+				markDirty();
+				renderAuth();
+				toast('TOTP KEY PURGED. EXPORT UPDATED FILE.', 'warning');
+			}
+			function togglePin(id) {
+				resetAutoLock();
+				const item = state.items.find(entry => entry.id === id);
+				if (!item) return;
+				item.pinned = !item.pinned;
+				item.updatedAt = nowIso();
+				markDirty();
+				renderAuth();
+				toast(item.pinned ? 'TOTP KEY PINNED' : 'TOTP KEY UNPINNED', 'normal');
+			}
+			function base32ToBytes(base32) {
+				const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+				const clean = normalizeSecret(base32);
+				let bits = 0;
+				let value = 0;
+				const out = [];
+				for (const ch of clean) {
+					const idx = alphabet.indexOf(ch);
+					if (idx === -1) throw new Error('INVALID_BASE32');
+					value = (value << 5) | idx;
+					bits += 5;
+					if (bits >= 8) {
+						out.push((value >>> (bits - 8)) & 255);
+						bits -= 8;
+					}
+				}
+				return new Uint8Array(out);
+			}
+			async function generateTotp(item, timestamp = Date.now()) {
+				const period = Number(item.period || 30);
+				const counter = Math.floor(timestamp / 1000 / period);
+				const buffer = new ArrayBuffer(8);
+				const view = new DataView(buffer);
+				const high = Math.floor(counter / 0x100000000);
+				const low = counter >>> 0;
+				view.setUint32(0, high, false);
+				view.setUint32(4, low, false);
+				const algo = String(item.algorithm || 'SHA1').toUpperCase().replace('-', '');
+				const hash = algo === 'SHA256' ? 'SHA-256' : algo === 'SHA512' ? 'SHA-512' : 'SHA-1';
+				const key = await crypto.subtle.importKey('raw', base32ToBytes(item.secret), { name: 'HMAC', hash }, false, ['sign']);
+				const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, buffer));
+				const offset = sig[sig.length - 1] & 0x0f;
+				const binary = ((sig[offset] & 0x7f) << 24) | ((sig[offset + 1] & 0xff) << 16) | ((sig[offset + 2] & 0xff) << 8) | (sig[offset + 3] & 0xff);
+				const modulo = 10 ** Number(item.digits || 6);
+				return String(binary % modulo).padStart(Number(item.digits || 6), '0');
+			}
+			async function validateSecretPreview() {
+				const el = $('secretValidation');
+				const secret = normalizeSecret($('entrySecret').value);
+				if (!secret) { el.textContent = 'SECRET_STATUS: EMPTY'; return; }
+				try {
+					await generateTotp({ secret, algorithm: $('entryAlgorithm').value, digits: Number($('entryDigits').value || 6), period: Number($('entryPeriod').value || 30) });
+					el.textContent = 'SECRET_STATUS: VALID';
+				} catch (error) {
+					el.textContent = 'SECRET_STATUS: INVALID';
+				}
+			}
+			function setFilter(type, btn) {
+				state.filter = type;
+				qsa('.filter-tab').forEach(button => button.classList.remove('active'));
+				btn.classList.add('active');
+				renderAuth();
+			}
+			function filteredItems() {
+				const q = normalizeText($('searchInput').value).toLowerCase();
+				return sortedItems(state.items.filter(item => {
+					if (state.filter === 'PINNED' && !item.pinned) return false;
+					if (!q) return true;
+					return [item.issuer, item.account, item.notes, item.algorithm, ...(item.tags || [])].some(value => String(value || '').toLowerCase().includes(q));
+				}));
+			}
+			function addTags(parent, tags) {
+				if (!Array.isArray(tags) || !tags.length) return;
+				const row = createEl('div', 'bunker-tag-row');
+				tags.forEach(tag => row.appendChild(createEl('span', 'bunker-tag', '#' + tag)));
+				parent.appendChild(row);
+			}
+			function addMeta(parent, item) {
+				parent.appendChild(createEl('div', 'bunker-meta mt-2', `CREATED: ${item.createdAt || '-'}`));
+				parent.appendChild(createEl('div', 'bunker-meta', `UPDATED: ${item.updatedAt || '-'}`));
+			}
+			function renderAuth() {
+				const container = $('authList');
+				container.textContent = '';
+				const items = filteredItems();
+				if (!items.length) {
+					const empty = createEl('div', 't-empty-state');
+					empty.append(createEl('span', 't-empty-state-icon', '[*]'));
+					empty.append(createEl('div', 'font-bold', '> NO_TOTP_KEY_FOUND'));
+					empty.append(createEl('div', 'text-muted fs-small mt-2', 'Add a TOTP key or change your search/filter.'));
+					container.appendChild(empty);
+					return;
+				}
+				const grid = createEl('div', 'bunker-card-grid');
+				items.forEach(item => {
+					const card = createEl('article', 't-card');
+					card.dataset.id = item.id;
+					const header = createEl('div', 't-card-header d-flex justify-content-between align-items-center gap-2');
+					const title = createEl('span', '', '> ' + (item.issuer || 'UNKNOWN'));
+					const badges = createEl('div', 'd-flex gap-2 flex-wrap justify-content-end');
+					if (item.pinned) badges.appendChild(createEl('span', 't-badge', 'PINNED'));
+					badges.appendChild(createEl('span', 't-badge muted', `${item.algorithm || 'SHA1'} / ${item.digits || 6}`));
+					header.append(title, badges);
+					const account = createEl('div', 'text-muted mb-2 text-break', item.account || 'NO_ACCOUNT_LABEL');
+					const code = createEl('div', 't-totp-code', '------');
+					code.id = 'code-' + item.id;
+					code.title = 'Click to copy current code';
+					code.addEventListener('click', () => { resetAutoLock(); copyText(code.textContent.replace(/\s/g, ''), 'TOTP CODE COPIED'); });
+					const timerBg = createEl('div', 't-timer-line-bg');
+					const timerLine = createEl('div', 't-timer-line');
+					timerLine.id = 'bar-' + item.id;
+					timerBg.appendChild(timerLine);
+					const countdown = createEl('div', 'text-muted fs-small mt-2 text-center');
+					countdown.id = 'timer-' + item.id;
+					const secretBox = createEl('div', 't-alert mt-3 bunker-pre', '> SECRET\n••••••••••••');
+					const actions = createEl('div', 'bunker-actions t-border-top pt-3 mt-3');
+					const pin = createEl('button', 't-btn t-btn-sm ghost', item.pinned ? '[ UNPIN ]' : '[ PIN ]');
+					pin.type = 'button'; pin.addEventListener('click', () => togglePin(item.id));
+					const reveal = createEl('button', 't-btn t-btn-sm ghost', '[ REVEAL_SECRET ]');
+					reveal.type = 'button'; reveal.addEventListener('click', () => {
+						resetAutoLock();
+						secretBox.textContent = '> SECRET\n' + item.secret;
+						setTimeout(() => { secretBox.textContent = '> SECRET\n••••••••••••'; }, 12000);
+					});
+					const copySecret = createEl('button', 't-btn t-btn-sm', '[ COPY_SECRET ]');
+					copySecret.type = 'button'; copySecret.addEventListener('click', () => { resetAutoLock(); copyText(item.secret, 'BASE32 SECRET COPIED'); });
+					const edit = createEl('button', 't-btn t-btn-sm', '[ EDIT ]');
+					edit.type = 'button'; edit.addEventListener('click', () => openEntryModal(item.id));
+					const del = createEl('button', 't-btn t-btn-sm ghost', '[ PURGE ]');
+					del.type = 'button'; del.addEventListener('click', () => deleteEntry(item.id));
+					actions.append(pin, reveal, copySecret, edit, del);
+					card.append(header, account);
+					addTags(card, item.tags);
+					card.append(code, timerBg, countdown, secretBox);
+					if (item.notes) card.appendChild(createEl('div', 't-alert mt-3 bunker-pre', '> NOTES\n' + item.notes));
+					addMeta(card, item);
+					card.appendChild(actions);
+					grid.appendChild(card);
+				});
+				container.appendChild(grid);
+				updateTotpCodes();
+			}
+			async function updateTotpCodes() {
+				if (!state.unlocked) return;
+				const now = Date.now();
+				for (const item of filteredItems()) {
+					const period = Number(item.period || 30);
+					const remaining = period - (Math.floor(now / 1000) % period);
+					const codeEl = $('code-' + item.id);
+					const barEl = $('bar-' + item.id);
+					const timerEl = $('timer-' + item.id);
+					if (!codeEl || !barEl || !timerEl) continue;
+					try {
+						const code = await generateTotp(item, now);
+						codeEl.textContent = code.length > 6 ? code : code.replace(/(.{3})/g, '$1 ').trim();
+						codeEl.classList.toggle('warning', remaining <= 5);
+						barEl.style.width = `${(remaining / period) * 100}%`;
+						barEl.classList.toggle('warning', remaining <= 5);
+						timerEl.textContent = `refresh in ${remaining}s`;
+					} catch (error) {
+						codeEl.textContent = 'ERROR';
+						timerEl.textContent = 'invalid secret';
+					}
+				}
+			}
+			function startTicker() {
+				if (ticker) clearInterval(ticker);
+				ticker = setInterval(updateTotpCodes, 1000);
+				updateTotpCodes();
+			}
+			function bindAuth() {
+				$('btnCreate').addEventListener('click', createNewAuth);
+				$('btnImport').addEventListener('click', importAuth);
+				$('importFile').addEventListener('change', selectedFileNameLabel);
+				bindEyeToggles();
+				$('btnExport').addEventListener('click', exportAuth);
+				$('btnLock').addEventListener('click', () => lockAuth());
+				$('btnAdd').addEventListener('click', () => openEntryModal());
+				$('btnSaveEntry').addEventListener('click', saveEntry);
+				$('btnCloseModal').addEventListener('click', closeEntryModal);
+				$('btnCancelModal').addEventListener('click', closeEntryModal);
+				$('btnParseUri').addEventListener('click', parseOtpAuthUri);
+				$('entrySecret').addEventListener('input', validateSecretPreview);
+				$('entryAlgorithm').addEventListener('change', validateSecretPreview);
+				$('entryDigits').addEventListener('change', validateSecretPreview);
+				$('entryPeriod').addEventListener('input', validateSecretPreview);
+				$('searchInput').addEventListener('input', renderAuth);
+				qsa('[data-filter]').forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter, btn)));
+				['click', 'keydown', 'input', 'touchstart'].forEach(eventName => document.addEventListener(eventName, resetAutoLock, { passive: true }));
+			}
+			bindAuth();
+			toast('CRYPTO READY: ARGON2ID + XCHACHA20-POLY1305', 'normal');
+		</script>
+	</body>
+</html>
