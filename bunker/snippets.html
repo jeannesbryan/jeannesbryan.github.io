@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Bunker Snippets v2</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#000000">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="stylesheet" href="../assets/terminal.css">
+		<style>
+			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
+			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
+			body.t-crt::after { background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%); background-size:100% 2px; }
+			:is(.t-navbar,.t-btn,.t-alert,.t-statusline,.t-card,.t-card-header,.t-border-top,.t-border-bottom,.text-muted,.text-success,.text-warning,.text-danger,.text-info,.text-white,.form-control,.form-select,input,textarea,select) { background:#000000 !important; color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-btn:hover,.t-btn:focus) { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			::placeholder { color:rgba(0,255,65,.55) !important; }
+			.t-shell { max-width:1450px; }
+			.snippets-hero { display:flex; justify-content:space-between; gap:16px; align-items:flex-end; flex-wrap:wrap; margin-bottom:18px; }
+			.snippets-grid { display:grid; grid-template-columns:390px minmax(0, 1fr); gap:18px; align-items:start; }
+			.side-stack { display:flex; flex-direction:column; gap:18px; }
+			.control-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+			.control-grid.one { grid-template-columns:1fr; }
+			.control-grid.three { grid-template-columns:1fr 1fr 1fr; }
+			.form-row { display:flex; flex-direction:column; gap:7px; }
+			.form-row label { font-weight:bold; font-size:.82rem; text-transform:uppercase; }
+			.form-actions { display:flex; gap:10px; flex-wrap:wrap; }
+			.status-strip { display:flex; gap:8px; flex-wrap:wrap; }
+			.status-pill { border:1px solid #00ff41; padding:5px 9px; font-size:.78rem; }
+			.summary-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; margin-bottom:14px; }
+			.summary-card { border:1px solid #00ff41; padding:10px; }
+			.summary-label { font-size:.72rem; text-transform:uppercase; opacity:.85; }
+			.summary-value { font-size:1.25rem; font-weight:bold; margin-top:4px; }
+			.snippet-list { display:flex; flex-direction:column; gap:12px; }
+			.snippet-card { border:1px dashed #00ff41; padding:12px; background:#000000; }
+			.snippet-card.is-pinned { border-style:solid; box-shadow:0 0 14px rgba(0,255,65,.18); }
+			.snippet-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+			.snippet-title { font-weight:bold; line-height:1.35; word-break:break-word; }
+			.snippet-meta { font-size:.78rem; line-height:1.55; opacity:.9; margin-top:8px; }
+			.snippet-notes { white-space:pre-wrap; word-break:break-word; margin-top:8px; line-height:1.55; }
+			.snippet-code { border:1px solid #00ff41; padding:12px; max-height:320px; overflow:auto; margin-top:10px; white-space:pre; tab-size:4; }
+			.snippet-code code { font-family:var(--font-mono, monospace); font-size:.86rem; color:#00ff41; }
+			.snippet-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+			.tag-pill { border:1px solid #00ff41; padding:2px 6px; font-size:.72rem; }
+			.snippet-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+			.snippet-actions .t-btn { padding:4px 8px; font-size:.72rem; }
+			.empty-state { border:1px dashed #00ff41; padding:22px; text-align:center; line-height:1.7; }
+			.checkbox-row { display:flex; align-items:center; gap:8px; margin-top:10px; }
+			.checkbox-row input { width:auto; }
+
+			.version-badge { font-size:.42em; vertical-align:middle; border:1px solid #00ff41; padding:3px 7px; margin-left:8px; }
+			.snippet-code.is-highlighted code, .language-bash, .language-javascript, .language-typescript, .language-html, .language-css, .language-php, .language-python, .language-sql, .language-json, .language-yaml, .language-nginx, .language-dockerfile, .language-markdown { color:#00ff41 !important; text-shadow:none !important; }
+			.token.comment, .token.prolog, .token.doctype, .token.cdata { opacity:.68; }
+			.token.punctuation { opacity:.88; }
+			.token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol, .token.deleted, .token.selector, .token.attr-name, .token.string, .token.char, .token.builtin, .token.inserted, .token.operator, .token.entity, .token.url, .token.variable, .token.atrule, .token.attr-value, .token.function, .token.class-name, .token.keyword, .token.regex, .token.important { color:#00ff41 !important; }
+			.snippet-preview { border:1px solid #00ff41; padding:12px; margin-top:10px; line-height:1.65; max-height:360px; overflow:auto; }
+			.snippet-preview h1, .snippet-preview h2, .snippet-preview h3, .snippet-preview h4 { color:#00ff41 !important; border-bottom:1px dashed #00ff41; padding-bottom:4px; }
+			.snippet-preview a { color:#00ff41 !important; text-decoration:underline; }
+			.snippet-preview code { border:1px solid #00ff41; padding:1px 4px; }
+			.snippet-preview pre { border:1px solid #00ff41; padding:10px; overflow:auto; }
+			.snippet-preview blockquote { border-left:3px solid #00ff41; margin-left:0; padding-left:12px; opacity:.9; }
+			.editor-preview-box { border:1px dashed #00ff41; padding:12px; margin-top:10px; max-height:280px; overflow:auto; }
+			.extension-badge { border:1px solid #00ff41; padding:3px 7px; font-size:.72rem; display:inline-block; margin-top:8px; }
+			.hidden { display:none !important; }
+			.bunker-app-status { margin-bottom:16px; }
+			.bunker-app-status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px; }
+			.bunker-app-status-cell { border:1px dashed #00ff41; padding:8px; font-size:.78rem; line-height:1.55; overflow-wrap:anywhere; word-break:break-word; }
+
+			.bunker-import-summary { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.6; }
+
+			.bunker-lock-gate {
+				max-width:680px;
+				margin:0 auto 18px;
+				text-align:center;
+			}
+			.bunker-lock-gate-title {
+				font-weight:700;
+				letter-spacing:.08em;
+				font-size:clamp(1.35rem,4vw,2rem);
+				margin-bottom:.5rem;
+			}
+			.bunker-lock-gate-text {
+				max-width:560px;
+				margin:.35rem auto 1rem;
+			}
+			.bunker-unlock-panel.is-hidden,
+			.bunker-privacy-context.is-privacy-hidden {
+				display:none !important;
+			}
+
+			@media (max-width:1100px) { .snippets-grid { grid-template-columns:1fr; } }
+			.bunker-import-summary { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.6; }
+
+			@media (max-width:680px) { .control-grid, .control-grid.three, .summary-grid { grid-template-columns:1fr; } }
+			.bunker-export-warning {
+				margin-top:1rem;
+				border-style:double;
+			}
+			.bunker-export-warning.is-hidden {
+				display:none;
+			}
+			.bunker-export-warning-title {
+				font-weight:700;
+				letter-spacing:.04em;
+			}
+			.bunker-export-warning-meta {
+				margin-top:.35rem;
+			}
+			.t-btn.bunker-export-now {
+				box-shadow:0 0 0 1px currentColor inset;
+				font-weight:700;
+			}
+
+			.t-btn.bunker-panic-btn {
+				border-style:double;
+				font-weight:700;
+			}
+
+					.bunker-master-warning { white-space:pre-wrap; margin-top:8px; margin-bottom:12px; }
+		
+
+			.bunker-mobile-actionbar {
+				display:none;
+			}
+			@media (max-width:768px) {
+				body.has-mobile-actionbar {
+					padding-bottom:86px;
+				}
+				.bunker-mobile-actionbar {
+					position:fixed;
+					left:0;
+					right:0;
+					bottom:0;
+					z-index:9999;
+					display:grid;
+					grid-template-columns:repeat(5,minmax(0,1fr));
+					gap:6px;
+					padding:8px;
+					background:#000000;
+					border-top:1px solid #00ff41;
+					box-shadow:0 -4px 18px rgba(0,255,65,.12);
+				}
+				.bunker-mobile-actionbar.is-hidden {
+					display:none !important;
+				}
+				.bunker-mobile-actionbar .t-btn {
+					font-size:.68rem;
+					padding:.52rem .18rem;
+					min-width:0;
+					white-space:nowrap;
+				}
+			}
+
+			.bunker-badge-row,
+			.bunker-status-row,
+			.bookmark-tags,
+			.snippet-tags,
+			.item-tags,
+			.card-tags,
+			.bunker-tag-row,
+			.mini-list,
+			.status-strip {
+				display:flex;
+				flex-wrap:wrap;
+				gap:6px;
+				align-items:center;
+			}
+			.bunker-badge,
+			.t-badge,
+			.bunker-tag,
+			.tag-pill,
+			.mini-pill,
+			.status-pill,
+			.extension-badge,
+			.day-chip,
+			.day-count {
+				display:inline-flex;
+				align-items:center;
+				max-width:100%;
+				border:1px solid #00ff41 !important;
+				background:#000000 !important;
+				color:#00ff41 !important;
+				padding:2px 7px;
+				font-size:.72rem;
+				line-height:1.35;
+				letter-spacing:.035em;
+				text-transform:uppercase;
+				white-space:nowrap;
+				overflow:hidden;
+				text-overflow:ellipsis;
+			}
+			.bunker-badge-pinned,
+			.bunker-badge-favorite,
+			.bunker-badge-emergency,
+			.bunker-badge-urgent,
+			.bunker-badge-overdue,
+			.bunker-badge-blocked,
+			.bunker-badge-audit,
+			.bunker-badge-dirty,
+			.bunker-badge-archive,
+			.bunker-badge-archived,
+			.bunker-badge-read_later,
+			.bunker-badge-read-later {
+				border-style:double !important;
+				font-weight:700;
+			}
+			.bunker-badge-tag,
+			.bunker-badge-id,
+			.bunker-badge-updated,
+			.bunker-badge-file,
+			.bunker-tag,
+			.tag-pill {
+				border-style:dashed !important;
+			}
+			.bunker-badge-done,
+			.bunker-badge-active,
+			.bunker-badge-open,
+			.bunker-badge-clean {
+				border-style:solid !important;
+			}
+
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">BUNKER_SNIPPETS</div>
+			<div class="t-nav-links">
+				<a href="../index.html" class="t-nav-link">ROOT</a>
+				<a href="./vault.html" class="t-nav-link">VAULT</a>
+				<a href="./auth.html" class="t-nav-link">AUTH</a>
+				<a href="./notes.html" class="t-nav-link">NOTES</a>
+				<a href="./contacts.html" class="t-nav-link">CONTACTS</a>
+				<a href="./ledger.html" class="t-nav-link">LEDGER</a>
+				<a href="./board.html" class="t-nav-link">BOARD</a>
+				<a href="./planner.html" class="t-nav-link">PLANNER</a>
+			</div>
+		</nav>
+
+		<main class="t-shell">
+
+				<div id="privacyLockGate" class="t-card bunker-lock-gate" role="region" aria-label="Locked privacy screen">
+					<div class="bunker-lock-gate-title">BUNKER LOCKED</div>
+					<div class="bunker-lock-gate-text text-muted">No decrypted data, item counts, filenames, filters, or metadata are shown while this app is locked.</div>
+					<button id="btnRevealUnlock" class="t-btn" type="button">[ UNLOCK ]</button>
+				</div>
+
+			<section class="snippets-hero bunker-privacy-context">
+				<div>
+					<h1 class="t-hero-title">BUNKER SNIPPETS <span class="version-badge">V2</span></h1>
+					<p class="t-hero-subtitle">Encrypted local pastebin with syntax highlighting, Markdown preview, mapped file downloads, and private reusable technical fragments.</p>
+				</div>
+				<div class="status-strip">
+					<span id="lockStatus" class="status-pill">LOCKED</span>
+					<span id="dirtyStatus" class="status-pill">CLEAN</span>
+					<span id="snippetStatus" class="status-pill">0 SNIPPETS</span>
+				</div>
+
+				<div id="exportWarning" class="t-alert bunker-export-warning is-hidden" role="alert" aria-live="polite">
+					<div class="bunker-export-warning-title">UNSAVED CHANGES — EXPORT REQUIRED</div>
+					<div>Changes exist only in memory. Export a new <code>.enc</code> file before locking, reloading, closing, or leaving this page.</div>
+					<div class="bunker-export-warning-meta fs-small">DIRTY_SINCE: <strong id="dirtySince">UNKNOWN</strong></div>
+				</div>
+
+			</section>
+
+			<div class="t-card bunker-app-status bunker-privacy-context">
+				<div class="t-card-header">&gt; APP_STATUS</div>
+				<div class="bunker-app-status-grid">
+					<div class="bunker-app-status-cell"><strong>APP</strong><br>Bunker Snippets</div>
+					<div class="bunker-app-status-cell"><strong>SCHEMA</strong><br>v2</div>
+					<div class="bunker-app-status-cell"><strong>FORMAT</strong><br>bunker-snippets-v2-enc</div>
+					<div class="bunker-app-status-cell"><strong>CRYPTO</strong><br>Argon2id + XChaCha20-Poly1305</div>
+					<div class="bunker-app-status-cell"><strong>STORAGE</strong><br>LOCAL_ONLY / MEMORY_ONLY</div>
+					<div class="bunker-app-status-cell"><strong>EXPORT</strong><br>REQUIRED_AFTER_CHANGES</div>
+				</div>
+			</div>
+
+<section id="lockedPanel" class="t-card bunker-privacy-context">
+				<div class="t-card-header">> UNLOCK_OR_CREATE</div>
+				<div class="t-card-body">
+					<div class="control-grid">
+						<div class="form-row">
+							<label for="passphrase">Passphrase</label>
+							<input id="passphrase" class="form-control" type="password" autocomplete="current-password" placeholder="minimum 8 characters">
+						</div>
+						<div class="form-row">
+							<label for="encFile">Encrypted file</label>
+							<input id="encFile" class="form-control" type="file" accept=".enc,application/json">
+								<div id="importEnvelopeSummary" class="t-alert warning mt-3 bunker-import-summary">&gt; SELECT A .ENC FILE TO PREVIEW HEADER.</div>
+						</div>
+					</div>
+					<div class="form-actions mt-3">
+						<button id="btnUnlock" class="t-btn" type="button">[ UNLOCK_FILE ]</button>
+						<button id="btnCreate" class="t-btn" type="button">[ CREATE_NEW ]</button>
+					</div>
+					<div id="lockMessage" class="t-alert mt-3">> Choose a Bunker Snippets v2 .enc file or create a new local database. Prism.js enables syntax highlighting when ../assets/prism.min.js is present.</div>
+				</div>
+			</section>
+
+			<section id="appPanel" class="hidden">
+				<div class="snippets-grid">
+					<aside class="side-stack">
+						<section class="t-card">
+							<div class="t-card-header">> DATABASE</div>
+							<div class="t-card-body">
+								<div class="form-actions">
+									<button id="btnExport" class="t-btn" type="button">[ EXPORT_ENC ]</button>
+									<button id="btnLock" class="t-btn" type="button">[ LOCK ]</button>
+						<button id="btnPanicLock" class="t-btn bunker-panic-btn" type="button">[ PANIC_LOCK ]</button>
+								</div>
+								<div id="appMessage" class="t-alert mt-3">> Snippets unlocked in memory only.</div>
+							</div>
+						</section>
+
+						<section class="t-card">
+							<div class="t-card-header">> SNIPPET_EDITOR</div>
+							<div class="t-card-body">
+								<input id="snippetId" type="hidden">
+								<div class="form-row">
+									<label for="snippetTitle">Title</label>
+									<input id="snippetTitle" class="form-control" type="text" placeholder="Nginx reverse proxy block">
+								</div>
+								<div class="control-grid mt-2">
+									<div class="form-row">
+										<label for="snippetLanguage">Language</label>
+										<select id="snippetLanguage" class="form-select">
+											<option value="text">text</option>
+											<option value="bash">bash</option>
+											<option value="javascript">javascript</option>
+											<option value="typescript">typescript</option>
+											<option value="html">html</option>
+											<option value="css">css</option>
+											<option value="php">php</option>
+											<option value="python">python</option>
+											<option value="sql">sql</option>
+											<option value="json">json</option>
+											<option value="yaml">yaml</option>
+											<option value="nginx">nginx</option>
+											<option value="dockerfile">dockerfile</option>
+											<option value="markdown">markdown</option>
+											<option value="other">other</option>
+										</select>
+									</div>
+									<div class="form-row">
+										<label for="snippetCategory">Category</label>
+										<input id="snippetCategory" class="form-control" type="text" placeholder="server, worker, database">
+									</div>
+								</div>
+								<div class="control-grid mt-2">
+									<div class="form-row">
+										<label for="snippetTags">Tags</label>
+										<input id="snippetTags" class="form-control" type="text" placeholder="nginx, debian, reverse-proxy">
+									</div>
+									<div class="form-row">
+										<label for="snippetFilename">Download filename</label>
+										<input id="snippetFilename" class="form-control" type="text" placeholder="optional, e.g. server.conf">
+									</div>
+								</div>
+								<div class="form-row mt-2">
+									<label for="snippetCode">Content</label>
+									<textarea id="snippetCode" class="form-control" rows="13" spellcheck="false" placeholder="Paste code, command, config, query, or private reusable fragment here."></textarea>
+								</div>
+								<div id="editorMarkdownPreview" class="editor-preview-box hidden"></div>
+								<div class="form-row mt-2">
+									<label for="snippetNotes">Notes</label>
+									<textarea id="snippetNotes" class="form-control" rows="4" placeholder="Context, usage notes, warning, source, or restore steps."></textarea>
+								</div>
+								<label class="checkbox-row" for="snippetPinned">
+									<input id="snippetPinned" type="checkbox">
+									<span>PIN_SNIPPET</span>
+								</label>
+								<div class="form-actions mt-3">
+									<button id="btnSaveSnippet" class="t-btn" type="button">[ SAVE_SNIPPET ]</button>
+									<button id="btnResetSnippet" class="t-btn" type="button">[ RESET ]</button>
+								</div>
+							</div>
+						</section>
+					</aside>
+
+					<section class="side-stack">
+						<section class="t-card">
+							<div class="t-card-header">> FILTERS</div>
+							<div class="t-card-body">
+								<div class="control-grid three">
+									<div class="form-row">
+										<label for="searchInput">Search</label>
+										<input id="searchInput" class="form-control" type="search" placeholder="title, code, notes, tag">
+									</div>
+									<div class="form-row">
+										<label for="languageFilter">Language</label>
+										<select id="languageFilter" class="form-select"><option value="">ALL</option></select>
+									</div>
+									<div class="form-row">
+										<label for="tagFilter">Tag</label>
+										<select id="tagFilter" class="form-select"><option value="">ALL</option></select>
+									</div>
+								</div>
+							</div>
+						</section>
+
+						<section id="summaryGrid" class="summary-grid" aria-label="Snippets summary"></section>
+
+						<section class="t-card">
+							<div class="t-card-header">> SNIPPETS</div>
+							<div class="t-card-body">
+								<div id="snippetOutput" class="snippet-list"></div>
+							</div>
+						</section>
+					</section>
+				</div>
+			</section>
+		</main>
+
+
+		<div id="mobileActionBar" class="bunker-mobile-actionbar is-hidden" aria-label="Mobile action bar">
+			<button id="mobileBtnNew" class="t-btn" type="button">[ + ]</button>
+			<button id="mobileBtnSearch" class="t-btn" type="button">[ SEARCH ]</button>
+			<button id="mobileBtnExport" class="t-btn" type="button">[ EXPORT ]</button>
+			<button id="mobileBtnLock" class="t-btn" type="button">[ LOCK ]</button>
+			<button id="mobileBtnPanic" class="t-btn bunker-panic-btn" type="button">[ PANIC ]</button>
+		</div>
+
+		<script src="../assets/terminal.js" defer></script>
+		<script src="../assets/markdown-it.min.js"></script>
+		<script src="../assets/purify.min.js"></script>
+		<script src="../assets/prism.min.js"></script>
+		<script src="../assets/bunker-core.js"></script>
+		<script type="module">
+			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
+			await sodium.ready;
+
+			const APP_KIND = 'snippets';
+			const APP_VERSION = 2;
+			const FORMAT = 'bunker-snippets-v2-enc';
+			const KDF_OPSLIMIT = 3;
+			const KDF_MEMLIMIT = 67108864;
+			const AUTO_LOCK_MS = 10 * 60 * 1000;
+			const CLIPBOARD_CLEAR_MS = 45 * 1000;
+
+			const state = {
+				unlocked: false,
+				dirty: false,
+				database: null,
+				passphrase: '',
+				autoLockTimer: null,
+				clipboardTimer: null
+			};
+
+			const els = {
+				lockStatus: document.getElementById('lockStatus'),
+				dirtyStatus: document.getElementById('dirtyStatus'),
+				snippetStatus: document.getElementById('snippetStatus'),
+				lockedPanel: document.getElementById('lockedPanel'),
+				appPanel: document.getElementById('appPanel'),
+				passphrase: document.getElementById('passphrase'),
+				encFile: document.getElementById('encFile'),
+				btnUnlock: document.getElementById('btnUnlock'),
+				btnCreate: document.getElementById('btnCreate'),
+				lockMessage: document.getElementById('lockMessage'),
+				btnExport: document.getElementById('btnExport'),
+				btnLock: document.getElementById('btnLock'),
+				btnPanicLock: document.getElementById('btnPanicLock'),
+				appMessage: document.getElementById('appMessage'),
+				snippetId: document.getElementById('snippetId'),
+				snippetTitle: document.getElementById('snippetTitle'),
+				snippetLanguage: document.getElementById('snippetLanguage'),
+				snippetCategory: document.getElementById('snippetCategory'),
+				snippetTags: document.getElementById('snippetTags'),
+				snippetFilename: document.getElementById('snippetFilename'),
+				editorMarkdownPreview: document.getElementById('editorMarkdownPreview'),
+				snippetCode: document.getElementById('snippetCode'),
+				snippetNotes: document.getElementById('snippetNotes'),
+				snippetPinned: document.getElementById('snippetPinned'),
+				btnSaveSnippet: document.getElementById('btnSaveSnippet'),
+				btnResetSnippet: document.getElementById('btnResetSnippet'),
+				searchInput: document.getElementById('searchInput'),
+				languageFilter: document.getElementById('languageFilter'),
+				tagFilter: document.getElementById('tagFilter'),
+				summaryGrid: document.getElementById('summaryGrid'),
+				snippetOutput: document.getElementById('snippetOutput')
+			};
+
+			const textEncoder = new TextEncoder();
+			const textDecoder = new TextDecoder();
+			const markdownRenderer = window.markdownit ? window.markdownit({
+				html: false,
+				linkify: true,
+				breaks: true,
+				typographer: false
+			}) : null;
+
+			function nowIso() {
+				return new Date().toISOString();
+			}
+
+			function makeId(prefix) {
+				const bytes = sodium.randombytes_buf(8);
+				return `${prefix}_${sodium.to_hex(bytes)}`;
+			}
+
+			function aadFor(kind) {
+				return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`);
+			}
+
+
+			const bunkerCore = window.BunkerCore.create({
+				sodium,
+				appVersion: APP_VERSION,
+				textEncoder,
+				textDecoder,
+				nowIso,
+				kdfOpslimit: typeof KDF_OPSLIMIT === 'undefined' ? undefined : KDF_OPSLIMIT,
+				kdfMemlimit: typeof KDF_MEMLIMIT === 'undefined' ? undefined : KDF_MEMLIMIT
+			});
+			function appNameForKind(kind) { return bunkerCore.appNameForKind(kind); }
+			function expectedEncFormat(kind) { return bunkerCore.expectedEncFormat(kind); }
+			function encB64(bytes) { return bunkerCore.encB64(bytes); }
+			function decB64(value) { return bunkerCore.decB64(value); }
+			function makeEnvelope(kind, source, kdf, salt, nonce, cipher) { return bunkerCore.makeEnvelope(kind, source, kdf, salt, nonce, cipher); }
+			function assertEnvelope(envelope, kind) { return bunkerCore.assertEnvelope(envelope, kind); }
+
+			function bytesToBase64(bytes) {
+				return sodium.to_base64(bytes, sodium.base64_variants.ORIGINAL);
+			}
+
+			function base64ToBytes(value) {
+				return sodium.from_base64(value, sodium.base64_variants.ORIGINAL);
+			}
+
+			function requirePassphrase() {
+				const passphrase = els.passphrase.value;
+				if (!passphrase || passphrase.length < 8) throw new Error('Use a passphrase with at least 8 characters.');
+				return passphrase;
+			}
+
+
+			function getExpectedImportKind() {
+				return typeof APP_KIND !== 'undefined' ? APP_KIND : KIND;
+			}
+			function setImportEnvelopeSummary(level, lines) {
+				const panel = document.getElementById('importEnvelopeSummary');
+				if (!panel) return;
+				panel.className = `t-alert ${level || 'warning'} bunker-import-summary`;
+				panel.textContent = Array.isArray(lines) ? lines.join('\n') : String(lines || '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+			}
+			async function previewImportEnvelope(file) {
+				if (!file) {
+					setImportEnvelopeSummary('warning', '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+					return null;
+				}
+				try {
+					const raw = await file.text();
+					const preview = bunkerCore.inspectEnvelope(raw, getExpectedImportKind());
+					setImportEnvelopeSummary(preview.level, preview.lines);
+					return preview;
+				} catch (error) {
+					setImportEnvelopeSummary('danger', ['> HEADER_PREVIEW: FAILED', error.message || 'Unable to read file header.']);
+					return null;
+				}
+			}
+
+			function deriveKey(passphrase, salt, kdf) {
+				return sodium.crypto_pwhash(
+					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+					passphrase,
+					salt,
+					kdf?.opslimit || KDF_OPSLIMIT,
+					kdf?.memlimit || KDF_MEMLIMIT,
+					sodium.crypto_pwhash_ALG_ARGON2ID13
+				);
+			}
+
+			function sanitizeText(value) {
+				return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim();
+			}
+
+			function sanitizeCode(value) {
+				return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+			}
+
+			function escapeHtml(value) {
+				return String(value ?? '').replace(/[&<>'"]/g, char => ({
+					'&': '&amp;',
+					'<': '&lt;',
+					'>': '&gt;',
+					"'": '&#39;',
+					'"': '&quot;'
+				}[char]));
+			}
+
+			function normalizeTags(value) {
+				const raw = Array.isArray(value) ? value.join(',') : String(value || '');
+				return [...new Set(raw.split(',').map(tag => sanitizeText(tag).toLowerCase()).filter(Boolean))].sort();
+			}
+
+			function normalizeDatabase(input) {
+				const stamp = nowIso();
+				const database = input && typeof input === 'object' ? input : {};
+				database.kind = 'snippets';
+				database.version = APP_VERSION;
+				database.createdAt = database.createdAt || stamp;
+				database.updatedAt = database.updatedAt || stamp;
+				database.settings = database.settings && typeof database.settings === 'object' ? database.settings : {};
+				database.snippets = Array.isArray(database.snippets) ? database.snippets : [];
+				database.snippets.forEach(snippet => normalizeSnippet(snippet, stamp));
+				return database;
+			}
+
+			function normalizeSnippet(snippet, stamp = nowIso()) {
+				snippet.id = snippet.id || makeId('snippet');
+				snippet.title = sanitizeText(snippet.title || 'Untitled Snippet');
+				snippet.language = sanitizeText(snippet.language || 'text').toLowerCase() || 'text';
+				snippet.category = sanitizeText(snippet.category || '');
+				snippet.tags = normalizeTags(snippet.tags);
+				snippet.filename = sanitizeFilename(snippet.filename || '');
+				snippet.code = sanitizeCode(snippet.code || '');
+				snippet.notes = sanitizeText(snippet.notes || '');
+				snippet.pinned = Boolean(snippet.pinned);
+				snippet.createdAt = snippet.createdAt || stamp;
+				snippet.updatedAt = snippet.updatedAt || stamp;
+				return snippet;
+			}
+
+			function createEmptyDatabase() {
+				const stamp = nowIso();
+				return normalizeDatabase({
+					kind: 'snippets',
+					version: APP_VERSION,
+					createdAt: stamp,
+					updatedAt: stamp,
+					settings: {},
+					snippets: []
+				});
+			}
+
+			async function encryptDatabase(database, passphrase) {
+				const salt = sodium.randombytes_buf(16);
+				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+				const kdf = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
+				const key = deriveKey(passphrase, salt, kdf);
+				try {
+					const plaintext = textEncoder.encode(JSON.stringify(database));
+					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(APP_KIND), null, nonce, key);
+					return makeEnvelope(APP_KIND, database, kdf, salt, nonce, cipher);
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+
+			async function decryptEnvelope(envelope, passphrase) {
+				assertEnvelope(envelope, APP_KIND);
+				const salt = decB64(envelope.salt);
+				const nonce = decB64(envelope.nonce);
+				const cipher = decB64(envelope.payload);
+				const key = deriveKey(passphrase, salt, envelope.kdf);
+				try {
+					const plaintext = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(APP_KIND), nonce, key);
+					return normalizeDatabase(JSON.parse(textDecoder.decode(plaintext)));
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+
+			function markDirty() {
+				if (!state.unlocked) return;
+				if (!state.dirty) state.dirtySince = nowIso();
+				state.dirty = true;
+				state.database.updatedAt = nowIso();
+				updateStatus();
+			}
+
+
+			function updateExportWarning() {
+				const panel = document.getElementById('exportWarning');
+				if (!panel) return;
+				const dirty = Boolean(state.dirty);
+				panel.classList.toggle('is-hidden', !dirty);
+				const since = document.getElementById('dirtySince');
+				if (since) since.textContent = dirty ? (state.dirtySince || 'UNKNOWN') : 'CLEAN';
+				if (els.btnExport) {
+					els.btnExport.classList.toggle('bunker-export-now', dirty);
+					els.btnExport.textContent = dirty ? '[ EXPORT_ENC_NOW ]' : '[ EXPORT_ENC ]';
+				}
+			}
+
+			function updateStatus() {
+				const count = state.database ? state.database.snippets.length : 0;
+				els.lockStatus.textContent = state.unlocked ? 'UNLOCKED' : 'LOCKED';
+				els.dirtyStatus.textContent = state.dirty ? 'UNSAVED' : 'CLEAN';
+				updateExportWarning();
+				els.snippetStatus.textContent = `${count} SNIPPET${count === 1 ? '' : 'S'}`;
+			}
+
+			function showLockMessage(message, isError = false) {
+				els.lockMessage.innerHTML = `> ${escapeHtml(message)}`;
+				els.lockMessage.classList.toggle('text-danger', isError);
+			}
+
+			function showAppMessage(message, isError = false) {
+				els.appMessage.innerHTML = `> ${escapeHtml(message)}`;
+				els.appMessage.classList.toggle('text-danger', isError);
+			}
+
+			function setUnlocked(database, passphrase) {
+				state.unlocked = true;
+				state.database = normalizeDatabase(database);
+				state.passphrase = passphrase;
+				state.dirty = false;
+				state.dirtySince = '';
+				els.lockedPanel.classList.add('hidden');
+				els.appPanel.classList.remove('hidden');
+				resetSnippetForm();
+				renderAll();
+				resetAutoLock();
+			}
+
+			function lock() {
+				if (state.dirty && !bunkerCore.confirmDestructive('LOCK_WITH_UNEXPORTED_CHANGES', { phrase: 'LOCK' })) return;
+				state.unlocked = false;
+				state.dirty = false;
+				state.dirtySince = '';
+				state.passphrase = '';
+				state.database = null;
+				clearTimeout(state.autoLockTimer);
+				els.passphrase.value = '';
+				els.encFile.value = '';
+				setImportEnvelopeSummary('warning', '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+				els.lockedPanel.classList.remove('hidden');
+				els.appPanel.classList.add('hidden');
+				els.snippetOutput.innerHTML = '';
+				showLockMessage('Session locked.');
+				updateStatus();
+			}
+
+			function panicLock() {
+				state.dirty = false;
+				state.dirtySince = '';
+				if (state.clipboardTimer) {
+					clearTimeout(state.clipboardTimer);
+					state.clipboardTimer = null;
+				}
+				bunkerCore.clearClipboardNow();
+				bunkerCore.scrubSensitiveDom();
+				lock();
+				if (typeof showLockMessage === 'function') showLockMessage('PANIC LOCK: plaintext cleared from memory.');
+			}
+
+			function resetSnippetForm() {
+				els.snippetId.value = '';
+				els.snippetTitle.value = '';
+				els.snippetLanguage.value = 'text';
+				els.snippetCategory.value = '';
+				els.snippetTags.value = '';
+				els.snippetFilename.value = '';
+				els.snippetCode.value = '';
+				els.snippetNotes.value = '';
+				els.snippetPinned.checked = false;
+				els.btnSaveSnippet.textContent = '[ SAVE_SNIPPET ]';
+				updateEditorMarkdownPreview();
+			}
+
+			function saveSnippet() {
+				const title = sanitizeText(els.snippetTitle.value);
+				const code = sanitizeCode(els.snippetCode.value);
+				if (!title) return alert('Title is required.');
+				if (!code.trim()) return alert('Content is required.');
+
+				const existingId = els.snippetId.value;
+				const duplicate = state.database.snippets.find(snippet => snippet.id !== existingId && snippet.title.toLowerCase() === title.toLowerCase());
+				if (duplicate && !confirm(`Another snippet already uses "${title}". Save anyway?`)) return;
+
+				const stamp = nowIso();
+				const payload = {
+					title,
+					language: sanitizeText(els.snippetLanguage.value || 'text').toLowerCase(),
+					category: sanitizeText(els.snippetCategory.value),
+					tags: normalizeTags(els.snippetTags.value),
+					filename: sanitizeFilename(els.snippetFilename.value),
+					code,
+					notes: sanitizeText(els.snippetNotes.value),
+					pinned: els.snippetPinned.checked,
+					updatedAt: stamp
+				};
+
+				if (existingId) {
+					const snippet = findSnippet(existingId);
+					if (!snippet) return alert('Snippet not found.');
+					Object.assign(snippet, payload);
+				} else {
+					state.database.snippets.push(normalizeSnippet({
+						id: makeId('snippet'),
+						...payload,
+						createdAt: stamp
+					}, stamp));
+				}
+				markDirty();
+				resetSnippetForm();
+				renderAll();
+				showAppMessage('Snippet saved. Export to persist changes.');
+			}
+
+			function findSnippet(id) {
+				return state.database?.snippets.find(snippet => snippet.id === id) || null;
+			}
+
+			function editSnippet(id) {
+				const snippet = findSnippet(id);
+				if (!snippet) return;
+				if (![...els.snippetLanguage.options].some(option => option.value === snippet.language)) {
+					const option = document.createElement('option');
+					option.value = snippet.language;
+					option.textContent = snippet.language;
+					els.snippetLanguage.appendChild(option);
+				}
+				els.snippetId.value = snippet.id;
+				els.snippetTitle.value = snippet.title;
+				els.snippetLanguage.value = snippet.language;
+				els.snippetCategory.value = snippet.category || '';
+				els.snippetTags.value = snippet.tags.join(', ');
+				els.snippetFilename.value = snippet.filename || '';
+				els.snippetCode.value = snippet.code;
+				els.snippetNotes.value = snippet.notes || '';
+				els.snippetPinned.checked = snippet.pinned;
+				els.btnSaveSnippet.textContent = '[ UPDATE_SNIPPET ]';
+				updateEditorMarkdownPreview();
+				els.snippetTitle.focus();
+			}
+
+			function deleteSnippet(id) {
+				const snippet = findSnippet(id);
+				if (!snippet || !bunkerCore.confirmDestructive(`DELETE_SNIPPET ${snippet.title}`)) return;
+				state.database.snippets = state.database.snippets.filter(candidate => candidate.id !== id);
+				markDirty();
+				renderAll();
+			}
+
+			function togglePin(id) {
+				const snippet = findSnippet(id);
+				if (!snippet) return;
+				snippet.pinned = !snippet.pinned;
+				snippet.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			async function copyText(text, label = 'Text') {
+				await navigator.clipboard.writeText(text);
+				clearTimeout(state.clipboardTimer);
+				state.clipboardTimer = setTimeout(() => navigator.clipboard.writeText('').catch(() => {}), CLIPBOARD_CLEAR_MS);
+				showAppMessage(`${label} copied. Clipboard will be cleared in 45 seconds if supported.`);
+			}
+
+			async function copyCode(id) {
+				const snippet = findSnippet(id);
+				if (!snippet) return;
+				await copyText(snippet.code, 'Snippet content');
+			}
+
+			async function copyFull(id) {
+				const snippet = findSnippet(id);
+				if (!snippet) return;
+				const text = [
+					`# ${snippet.title}`,
+					`Language: ${snippet.language}`,
+					snippet.category ? `Category: ${snippet.category}` : '',
+					snippet.tags.length ? `Tags: ${snippet.tags.join(', ')}` : '',
+					snippet.notes ? `Notes: ${snippet.notes}` : '',
+					'',
+					snippet.code
+				].filter(line => line !== '').join('\n');
+				await copyText(text, 'Snippet summary');
+			}
+
+			function downloadSnippet(id) {
+				const snippet = findSnippet(id);
+				if (!snippet) return;
+				downloadText(downloadNameForSnippet(snippet), snippet.code);
+			}
+
+			function downloadNameForSnippet(snippet) {
+				if (snippet.filename) return snippet.filename;
+				const extension = extensionForLanguage(snippet.language);
+				return extension === 'Dockerfile' ? `${slugify(snippet.title)}.Dockerfile` : `${slugify(snippet.title)}.${extension}`;
+			}
+
+			function extensionForLanguage(language) {
+				return {
+					text: 'txt',
+					plaintxt: 'txt',
+					bash: 'sh',
+					shell: 'sh',
+					sh: 'sh',
+					zsh: 'zsh',
+					javascript: 'js',
+					js: 'js',
+					typescript: 'ts',
+					ts: 'ts',
+					html: 'html',
+					css: 'css',
+					php: 'php',
+					python: 'py',
+					py: 'py',
+					sql: 'sql',
+					json: 'json',
+					yaml: 'yml',
+					yml: 'yml',
+					nginx: 'conf',
+					apache: 'conf',
+					ini: 'ini',
+					toml: 'toml',
+					dockerfile: 'Dockerfile',
+					markdown: 'md',
+					md: 'md',
+					readme: 'md',
+					xml: 'xml',
+					go: 'go',
+					rust: 'rs',
+					ruby: 'rb',
+					java: 'java',
+					c: 'c',
+					cpp: 'cpp'
+				}[sanitizeText(language).toLowerCase()] || 'txt';
+			}
+
+			function prismLanguage(language) {
+				const map = {
+					sh: 'bash',
+					shell: 'bash',
+					js: 'javascript',
+					ts: 'typescript',
+					py: 'python',
+					yml: 'yaml',
+					md: 'markdown',
+					readme: 'markdown',
+					dockerfile: 'docker'
+				};
+				const normalized = sanitizeText(language).toLowerCase();
+				return map[normalized] || normalized || 'text';
+			}
+
+			function highlightedCode(snippet) {
+				const language = prismLanguage(snippet.language);
+				try {
+					if (window.Prism && window.Prism.languages && window.Prism.languages[language]) {
+						return window.Prism.highlight(snippet.code, window.Prism.languages[language], language);
+					}
+				} catch (error) {}
+				return escapeHtml(snippet.code);
+			}
+
+			function isMarkdownLanguage(language) {
+				return ['markdown', 'md', 'readme'].includes(sanitizeText(language).toLowerCase());
+			}
+
+			function renderMarkdown(text) {
+				if (!markdownRenderer) return `<pre>${escapeHtml(text)}</pre>`;
+				const rendered = markdownRenderer.render(String(text || ''));
+				return window.DOMPurify ? window.DOMPurify.sanitize(rendered) : rendered;
+			}
+
+			function updateEditorMarkdownPreview() {
+				if (!els.editorMarkdownPreview) return;
+				if (!isMarkdownLanguage(els.snippetLanguage.value) || !els.snippetCode.value.trim()) {
+					els.editorMarkdownPreview.classList.add('hidden');
+					els.editorMarkdownPreview.innerHTML = '';
+					return;
+				}
+				els.editorMarkdownPreview.classList.remove('hidden');
+				els.editorMarkdownPreview.innerHTML = `<div class="summary-label">MARKDOWN_PREVIEW</div>${renderMarkdown(els.snippetCode.value)}`;
+			}
+
+			function slugify(value) {
+				return sanitizeText(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'snippet';
+			}
+
+			function filteredSnippets() {
+				if (!state.database) return [];
+				const q = sanitizeText(els.searchInput.value).toLowerCase();
+				const language = els.languageFilter.value;
+				const tag = els.tagFilter.value;
+				return state.database.snippets.filter(snippet => {
+					const haystack = [snippet.title, snippet.language, snippet.category, snippet.notes, snippet.tags.join(' '), snippet.code].join(' ').toLowerCase();
+					if (q && !haystack.includes(q)) return false;
+					if (language && snippet.language !== language) return false;
+					if (tag && !snippet.tags.includes(tag)) return false;
+					return true;
+				}).sort(compareSnippets);
+			}
+
+			function compareSnippets(a, b) {
+				if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+				return b.updatedAt.localeCompare(a.updatedAt);
+			}
+
+			function renderAll() {
+				renderFilters();
+				renderSummary();
+				renderSnippets();
+				updateStatus();
+			}
+
+			function renderFilters() {
+				const selectedLanguage = els.languageFilter.value || '';
+				const selectedTag = els.tagFilter.value || '';
+				const languages = new Set();
+				const tags = new Set();
+				state.database.snippets.forEach(snippet => {
+					languages.add(snippet.language);
+					snippet.tags.forEach(tag => tags.add(tag));
+				});
+				els.languageFilter.innerHTML = '<option value="">ALL</option>' + [...languages].sort().map(language => `<option value="${escapeHtml(language)}">${escapeHtml(language)}</option>`).join('');
+				els.tagFilter.innerHTML = '<option value="">ALL</option>' + [...tags].sort().map(tag => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join('');
+				els.languageFilter.value = languages.has(selectedLanguage) ? selectedLanguage : '';
+				els.tagFilter.value = tags.has(selectedTag) ? selectedTag : '';
+			}
+
+			function renderSummary() {
+				const snippets = state.database.snippets;
+				const languages = new Set(snippets.map(snippet => snippet.language));
+				const pinned = snippets.filter(snippet => snippet.pinned).length;
+				const categories = new Set(snippets.map(snippet => snippet.category).filter(Boolean));
+				els.summaryGrid.innerHTML = [
+					['SNIPPETS', snippets.length],
+					['PINNED', pinned],
+					['LANGUAGES', languages.size],
+					['CATEGORIES', categories.size],
+					['MD_PREVIEW', snippets.filter(snippet => isMarkdownLanguage(snippet.language)).length]
+				].map(([label, value]) => `<div class="summary-card"><div class="summary-label">${label}</div><div class="summary-value">${value}</div></div>`).join('');
+			}
+
+			function renderSnippets() {
+				const snippets = filteredSnippets();
+				els.snippetOutput.innerHTML = snippets.length ? snippets.map(renderSnippet).join('') : '<div class="empty-state">No matching snippets.</div>';
+			}
+
+			function renderSnippet(snippet) {
+				const language = prismLanguage(snippet.language);
+				const codeHtml = highlightedCode(snippet);
+				const markdownPreview = isMarkdownLanguage(snippet.language) ? `<div class="snippet-preview">${renderMarkdown(snippet.code)}</div>` : '';
+				const downloadName = downloadNameForSnippet(snippet);
+				const snippetBadges = [
+					snippet.pinned ? '<span class="bunker-badge bunker-badge-pinned">PINNED</span>' : '',
+					`<span class="bunker-badge bunker-badge-language">${escapeHtml(snippet.language)}</span>`,
+					snippet.category ? `<span class="bunker-badge bunker-badge-category">${escapeHtml(snippet.category)}</span>` : '',
+					isMarkdownLanguage(snippet.language) ? '<span class="bunker-badge bunker-badge-markdown">MD_PREVIEW</span>' : '',
+					`<span class="bunker-badge bunker-badge-file">FILE:${escapeHtml(downloadName)}</span>`
+				].filter(Boolean).join('');
+				return `
+					<article class="snippet-card ${snippet.pinned ? 'is-pinned' : ''}" data-id="${escapeHtml(snippet.id)}">
+						<div class="snippet-top">
+							<div>
+								<div class="snippet-title">${escapeHtml(snippet.title)}</div>
+								<div class="bunker-badge-row">${snippetBadges}</div>
+								<div class="snippet-meta">Updated ${escapeHtml(new Date(snippet.updatedAt).toLocaleString())}</div>
+							</div>
+						</div>
+						${snippet.tags.length ? `<div class="snippet-tags">${snippet.tags.map(tag => `<span class="tag-pill bunker-badge-tag">#${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+						${snippet.notes ? `<div class="snippet-notes">${escapeHtml(snippet.notes)}</div>` : ''}
+						${markdownPreview}
+						<pre class="snippet-code is-highlighted"><code class="language-${escapeHtml(language)}">${codeHtml}</code></pre>
+						<div class="snippet-actions">
+							<button class="t-btn" type="button" data-action="edit" data-id="${escapeHtml(snippet.id)}">[ EDIT ]</button>
+							<button class="t-btn" type="button" data-action="pin" data-id="${escapeHtml(snippet.id)}">[ ${snippet.pinned ? 'UNPIN' : 'PIN'} ]</button>
+							<button class="t-btn" type="button" data-action="copy-code" data-id="${escapeHtml(snippet.id)}">[ COPY_CODE ]</button>
+							<button class="t-btn" type="button" data-action="copy-full" data-id="${escapeHtml(snippet.id)}">[ COPY_FULL ]</button>
+							<button class="t-btn" type="button" data-action="download" data-id="${escapeHtml(snippet.id)}">[ DOWNLOAD_FILE ]</button>
+							<button class="t-btn" type="button" data-action="delete" data-id="${escapeHtml(snippet.id)}">[ DELETE ]</button>
+						</div>
+					</article>
+				`;
+			}
+
+			function exportFilename() {
+				const date = new Date();
+				const stamp = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
+				return `bunker-snippets-${stamp}.enc`;
+			}
+
+			function downloadJson(filename, data) {
+				downloadText(filename, JSON.stringify(data, null, '\t'));
+			}
+
+			function downloadText(filename, text) {
+				const blob = new Blob([text], { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				URL.revokeObjectURL(url);
+			}
+
+			function resetAutoLock() {
+				if (!state.unlocked) return;
+				clearTimeout(state.autoLockTimer);
+				state.autoLockTimer = setTimeout(() => {
+					if (!state.unlocked) return;
+					state.dirty = false;
+					state.dirtySince = '';
+					lock();
+				}, AUTO_LOCK_MS);
+			}
+
+			async function handleUnlock() {
+				try {
+					const passphrase = requirePassphrase();
+					const file = els.encFile.files[0];
+					if (!file) throw new Error('Choose a .enc file first.');
+					const envelope = JSON.parse(await file.text());
+					const database = await decryptEnvelope(envelope, passphrase);
+					setUnlocked(database, passphrase);
+					showAppMessage('Snippets unlocked in memory only.');
+				} catch (error) {
+					showLockMessage(error.message || 'Unlock failed.', true);
+				}
+			}
+
+			function handleCreate() {
+				try {
+					const passphrase = requirePassphrase();
+					setUnlocked(createEmptyDatabase(), passphrase);
+					if (!state.dirty) state.dirtySince = nowIso();
+					state.dirty = true;
+					showAppMessage('New snippets database created. Export to save the first encrypted file.');
+					updateStatus();
+				} catch (error) {
+					showLockMessage(error.message || 'Create failed.', true);
+				}
+			}
+
+			async function handleExport() {
+				try {
+					const envelope = await encryptDatabase(state.database, state.passphrase);
+					downloadJson(exportFilename(), envelope);
+					state.dirty = false;
+					state.dirtySince = '';
+					updateStatus();
+					showAppMessage('Encrypted snippets file exported.');
+				} catch (error) {
+					showAppMessage(error.message || 'Export failed.', true);
+				}
+			}
+
+			function handleSnippetActions(event) {
+				const button = event.target.closest('button[data-action]');
+				if (!button) return;
+				const id = button.dataset.id;
+				const action = button.dataset.action;
+				if (action === 'edit') editSnippet(id);
+				if (action === 'pin') togglePin(id);
+				if (action === 'copy-code') copyCode(id).catch(error => showAppMessage(error.message || 'Copy failed.', true));
+				if (action === 'copy-full') copyFull(id).catch(error => showAppMessage(error.message || 'Copy failed.', true));
+				if (action === 'download') downloadSnippet(id);
+				if (action === 'delete') deleteSnippet(id);
+			}
+
+			['pointerdown', 'keydown', 'input'].forEach(type => {
+				window.addEventListener(type, resetAutoLock, { passive: true });
+			});
+
+			els.encFile.addEventListener('change', async () => {
+				const file = els.encFile.files && els.encFile.files[0];
+				await previewImportEnvelope(file);
+			});
+
+			els.btnUnlock.addEventListener('click', handleUnlock);
+			els.btnCreate.addEventListener('click', handleCreate);
+			els.btnExport.addEventListener('click', handleExport);
+			els.btnLock.addEventListener('click', lock);
+			els.btnPanicLock.addEventListener('click', panicLock);
+			els.btnSaveSnippet.addEventListener('click', saveSnippet);
+			els.btnResetSnippet.addEventListener('click', resetSnippetForm);
+			els.searchInput.addEventListener('input', renderSnippets);
+			els.languageFilter.addEventListener('change', renderSnippets);
+			els.tagFilter.addEventListener('change', renderSnippets);
+			els.snippetOutput.addEventListener('click', handleSnippetActions);
+			els.snippetLanguage.addEventListener('change', updateEditorMarkdownPreview);
+			els.snippetCode.addEventListener('input', updateEditorMarkdownPreview);
+
+			window.addEventListener('beforeunload', event => {
+				if (!state.dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			});
+
+			updateStatus();
+		</script>
+
+		<script>
+			(() => {
+				const gate = document.getElementById('privacyLockGate');
+				const lockedPanel = document.getElementById('lockedPanel');
+				const appPanel = document.getElementById('appPanel');
+				const reveal = document.getElementById('btnRevealUnlock');
+				const contexts = Array.from(document.querySelectorAll('.bunker-privacy-context'));
+				if (!gate || !lockedPanel || !appPanel || !reveal) return;
+				let revealed = false;
+
+				function isUnlocked() {
+					return !appPanel.classList.contains('hidden');
+				}
+
+				function clearLockedPanel() {
+					lockedPanel.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });
+					lockedPanel.querySelectorAll('input[type="file"]').forEach(input => { input.value = ''; });
+					lockedPanel.querySelectorAll('[id$="FileName"]').forEach(label => { label.textContent = '> NO FILE SELECTED'; });
+					const summary = lockedPanel.querySelector('#importEnvelopeSummary');
+					if (summary) summary.textContent = '> SELECT A .ENC FILE TO PREVIEW HEADER.';
+				}
+
+				function showPrivacyLock() {
+					if (isUnlocked()) return showUnlockedChrome();
+					revealed = false;
+					gate.classList.remove('hidden');
+					contexts.forEach(node => node.classList.add('is-privacy-hidden'));
+					lockedPanel.classList.add('hidden');
+					clearLockedPanel();
+				}
+
+				function showUnlockPanel() {
+					revealed = true;
+					gate.classList.add('hidden');
+					contexts.forEach(node => node.classList.remove('is-privacy-hidden'));
+					lockedPanel.classList.remove('hidden');
+					const focusTarget = lockedPanel.querySelector('input, button, select, textarea');
+					if (focusTarget) focusTarget.focus({ preventScroll:false });
+				}
+
+				function showUnlockedChrome() {
+					revealed = false;
+					gate.classList.add('hidden');
+					contexts.forEach(node => node.classList.remove('is-privacy-hidden'));
+					lockedPanel.classList.add('hidden');
+				}
+
+				function syncPrivacy() {
+					if (isUnlocked()) return showUnlockedChrome();
+					if (!revealed) showPrivacyLock();
+				}
+
+				reveal.addEventListener('click', showUnlockPanel);
+				showPrivacyLock();
+				const observer = new MutationObserver(syncPrivacy);
+				observer.observe(appPanel, { attributes:true, attributeFilter:['class'] });
+				observer.observe(lockedPanel, { attributes:true, attributeFilter:['class'] });
+			})();
+		</script>
+
+		<script>
+			(() => {
+				const ids = ['newPassword', 'importPassword', 'passphrase'];
+
+				function classFor(level) {
+					if (level === 'success') return 't-alert success bunker-master-warning';
+					if (level === 'danger') return 't-alert danger bunker-master-warning';
+					return 't-alert warning bunker-master-warning';
+				}
+
+				function ensureWarningPanel(input) {
+					if (!input) return null;
+					const panelId = `${input.id}MasterPasswordWarning`;
+					let panel = document.getElementById(panelId);
+					if (panel) return panel;
+					panel = document.createElement('div');
+					panel.id = panelId;
+					panel.className = 't-alert warning bunker-master-warning';
+					panel.setAttribute('aria-live', 'polite');
+					const anchor = input.closest('.bunker-input-group') || input;
+					anchor.insertAdjacentElement('afterend', panel);
+					return panel;
+				}
+
+				function adviceFor(value) {
+					if (window.BunkerCore && typeof window.BunkerCore.masterPasswordAdvice === 'function') {
+						return window.BunkerCore.masterPasswordAdvice(value);
+					}
+					const password = String(value || '');
+					const weak = password.length < 16;
+					return {
+						level: weak ? 'WEAK' : 'STRONG',
+						className: weak ? 'danger' : 'success',
+						lines: weak ? [
+							'> MASTER_PASSWORD: WEAK',
+							'> Use a unique passphrase with 16+ characters for offline .enc storage.'
+						] : [
+							'> MASTER_PASSWORD: STRONG',
+							'> This looks suitable for offline .enc storage.'
+						]
+					};
+				}
+
+				function updateWarning(input) {
+					const panel = ensureWarningPanel(input);
+					if (!panel) return;
+					const advice = adviceFor(input.value);
+					panel.className = classFor(advice.className || 'warning');
+					panel.textContent = Array.isArray(advice.lines) ? advice.lines.join('\n') : String(advice.lines || '> MASTER_PASSWORD: UNKNOWN');
+				}
+
+				function bind() {
+					ids.forEach(id => {
+						const input = document.getElementById(id);
+						if (!input) return;
+						ensureWarningPanel(input);
+						updateWarning(input);
+						input.addEventListener('input', () => updateWarning(input));
+						input.addEventListener('change', () => updateWarning(input));
+					});
+				}
+
+				bind();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				const bar = document.getElementById('mobileActionBar');
+				if (!bar) return;
+
+				const byId = id => document.getElementById(id);
+				const clickFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.click();
+							return true;
+						}
+					}
+					return false;
+				};
+				const focusFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.scrollIntoView({ behavior:'smooth', block:'center' });
+							setTimeout(() => el.focus(), 180);
+							return true;
+						}
+					}
+					return false;
+				};
+				const isHidden = el => !el || el.classList.contains('hidden') || el.classList.contains('bunker-hidden') || el.classList.contains('is-hidden') || el.classList.contains('is-privacy-hidden');
+				const isUnlocked = () => {
+					const paneApp = byId('paneApp');
+					if (paneApp) return paneApp.classList.contains('active') && !isHidden(paneApp);
+					const appPanel = byId('appPanel');
+					if (appPanel) return !isHidden(appPanel);
+					const lockedPanel = byId('lockedPanel') || byId('paneLocked');
+					if (lockedPanel) return isHidden(lockedPanel);
+					return false;
+				};
+				const refreshBar = () => {
+					const mobile = window.matchMedia('(max-width:768px)').matches;
+					const show = mobile && isUnlocked();
+					document.body.classList.toggle('has-mobile-actionbar', show);
+					bar.classList.toggle('is-hidden', !show);
+				};
+
+				byId('mobileBtnNew')?.addEventListener('click', () => {
+					if (clickFirst(['btnAdd'])) return;
+					if (clickFirst(['btnResetCard'])) return focusFirst(['cardTitle']);
+					if (clickFirst(['btnResetItem'])) return focusFirst(['itemTitle']);
+					if (clickFirst(['btnResetSnippet'])) return focusFirst(['snippetTitle']);
+					if (clickFirst(['btnResetBookmark'])) return focusFirst(['bookmarkTitle']);
+					focusFirst(['entryTitle', 'cardTitle', 'itemTitle', 'snippetTitle', 'bookmarkTitle', 'contactName', 'txTitle']);
+				});
+				byId('mobileBtnSearch')?.addEventListener('click', () => focusFirst(['searchInput']));
+				byId('mobileBtnExport')?.addEventListener('click', () => clickFirst(['btnExport']));
+				byId('mobileBtnLock')?.addEventListener('click', () => clickFirst(['btnLock']));
+				byId('mobileBtnPanic')?.addEventListener('click', () => clickFirst(['btnPanicLock']));
+
+				new MutationObserver(refreshBar).observe(document.body, { attributes:true, subtree:true, attributeFilter:['class'] });
+				window.addEventListener('resize', refreshBar, { passive:true });
+				window.addEventListener('orientationchange', refreshBar, { passive:true });
+				setInterval(refreshBar, 1000);
+				refreshBar();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				'use strict';
+				const appTitle = (document.title || 'Bunker App').replace(/\s+v\d+$/i, '');
+				function nounForApp() {
+					const lower = appTitle.toLowerCase();
+					if (lower.includes('auth')) return 'TOTP key';
+					if (lower.includes('board')) return 'card or board item';
+					if (lower.includes('bookmarks')) return 'bookmark';
+					if (lower.includes('contacts')) return 'contact';
+					if (lower.includes('ledger')) return 'transaction';
+					if (lower.includes('notes')) return 'note';
+					if (lower.includes('planner')) return 'planner item';
+					if (lower.includes('snippets')) return 'snippet';
+					if (lower.includes('vault')) return 'vault entry';
+					return 'item';
+				}
+				function escapeHtml(value) {
+					return String(value || '').replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+				}
+				function classify(rawText) {
+					const text = String(rawText || '').replace(/\s+/g, ' ').trim();
+					const upper = text.toUpperCase();
+					const noun = nounForApp();
+					if (upper.includes('NO_BOARD') || upper.includes('NO BOARD')) {
+						return {
+							code: 'NO_BOARD_AVAILABLE',
+							title: 'No board is available yet.',
+							line: 'Create a board first, then add columns and cards.',
+							next: 'After editing, export a fresh .enc file to keep the board.'
+						};
+					}
+					if (upper.includes('NO CARDS')) {
+						return {
+							code: 'COLUMN_EMPTY',
+							title: 'This column has no cards.',
+							line: 'Add a card here or drag an existing card into this column.',
+							next: 'Export a fresh .enc file after changing the board.'
+						};
+					}
+					if (upper.includes('NO_RECURRING')) {
+						return {
+							code: 'NO_RECURRING_TEMPLATE',
+							title: 'No recurring template exists yet.',
+							line: 'Create a recurring template for repeated transactions, tasks, or events.',
+							next: 'Run the generator when you want to create real dated entries.'
+						};
+					}
+					if (upper.includes('NO_ACCOUNTS')) {
+						return {
+							code: 'NO_ACCOUNTS_YET',
+							title: 'No account or wallet exists yet.',
+							line: 'Create an account such as Cash, Bank, Wallet, Savings, or another balance source.',
+							next: 'Export a fresh .enc file after adding account data.'
+						};
+					}
+					if (upper.includes('NO_BUDGETS')) {
+						return {
+							code: 'NO_BUDGETS_YET',
+							title: 'No budget rule exists yet.',
+							line: 'Create a monthly category budget to compare spending against a planned limit.',
+							next: 'Export a fresh .enc file after adding budget data.'
+						};
+					}
+					if (upper.includes('NO_OPEN_DEBT')) {
+						return { code:'NO_OPEN_DEBT', title:'No open debt is currently visible.', line:'Add debt transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_OPEN_LOAN')) {
+						return { code:'NO_OPEN_LOAN', title:'No open loan is currently visible.', line:'Add loan transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_SUMMARY')) {
+						return { code:'NO_SUMMARY_FOR_CURRENT_FILTER', title:'No summary can be calculated for this filter.', line:'Add matching records or adjust the date/type/search filters.', next:'Summary updates automatically after data changes.' };
+					}
+					if (upper.includes('NO ITEM ON SELECTED DATE')) {
+						return { code:'NO_SELECTED_DATE_ITEMS', title:'No item exists on the selected date.', line:'Select another date or create a task/event for this day.', next:'Export a fresh .enc file after editing planner data.' };
+					}
+					if (upper.includes('MATCH') || upper.includes('CURRENT FILTER') || upper.includes('FOUND')) {
+						return {
+							code: 'NO_VISIBLE_RESULTS',
+							title: `No ${noun}s match the current view.`,
+							line: 'Clear search/filter, switch tabs, or create a new item.',
+							next: 'After creating or editing data, export a fresh .enc file before closing.'
+						};
+					}
+					return {
+						code: 'EMPTY_DATASET',
+						title: `No ${noun}s yet.`,
+						line: `Create your first ${noun}, then review it in this list.`,
+						next: 'Export a fresh .enc file after changes so the data is not lost.'
+					};
+				}
+				function enhanceEmptyState(node) {
+					if (!node || node.dataset.bunkerEmptyEnhanced === '1') return;
+					const rawText = node.textContent || '';
+					if (!rawText.trim()) return;
+					const data = classify(rawText);
+					node.dataset.bunkerEmptyEnhanced = '1';
+					node.classList.add('bunker-empty-state');
+					node.innerHTML = [
+						'<div class="bunker-empty-state-icon">[ ∅ ]</div>',
+						`<div class="bunker-empty-state-title">&gt; EMPTY_STATE: ${escapeHtml(data.code)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.title)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.line)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.next)}</div>`
+					].join('');
+				}
+				function enhanceAllEmptyStates() {
+					document.querySelectorAll('.empty-state, .t-empty-state').forEach(enhanceEmptyState);
+				}
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', enhanceAllEmptyStates);
+				} else {
+					enhanceAllEmptyStates();
+				}
+				const observer = new MutationObserver(() => enhanceAllEmptyStates());
+				observer.observe(document.documentElement, { childList:true, subtree:true });
+			})();
+		</script>
+
+	</body>
+</html>

@@ -1,1 +1,1 @@
-importScripts('./assets/sw-core.js');
+importScripts('/assets/sw-core.js');

@@ -7,10 +7,7 @@
 		<meta name="theme-color" content="#000000">
 		<meta name="robots" content="noindex,nofollow,noarchive">
 		<link rel="stylesheet" href="../assets/terminal.css">
-		<link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
-		<link rel="icon" type="image/svg+xml" href="../assets/npc-icon.svg">
+
 		<style>
 			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
 			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
@@ -28,7 +25,7 @@
 			.bunker-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; align-items:center; }
 			.bunker-secret { letter-spacing:2px; overflow-wrap:anywhere; word-break:break-word; }
 			.bunker-pre { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; }
-			.bunker-wide-modal { max-width:780px; }
+			.bunker-wide-modal { max-width:820px; }
 			.bunker-hidden { display:none !important; }
 			.bunker-hero { text-align:center; padding:0 0 24px; }
 			.bunker-hero .t-hero-title { margin:0 0 6px; }
@@ -42,10 +39,165 @@
 			.bunker-tag-row { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
 			.bunker-tag { display:inline-block; border:1px dashed #00ff41; padding:1px 6px; font-size:11px; }
 			.bunker-meta { font-size:11px; opacity:.86; overflow-wrap:anywhere; word-break:break-word; }
-			.bunker-strength { display:block; margin-top:-8px; margin-bottom:15px; font-size:11px; }
-			.bunker-generator { border:1px dashed #00ff41; padding:12px; margin-bottom:15px; }
-			.bunker-checkbox-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 12px; }
-			@media (max-width:768px) { .bunker-form-grid,.bunker-checkbox-grid { grid-template-columns:1fr; } .bunker-actions { justify-content:flex-start; } }
+			.bunker-group { margin-bottom:22px; }
+			.bunker-group-header { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-top:1px dashed #00ff41; border-bottom:1px dashed #00ff41; margin-bottom:14px; }
+			.bunker-code { font-size:2rem; line-height:1.1; letter-spacing:.12em; font-weight:bold; }
+			.bunker-qr-panel { border:1px dashed #00ff41; padding:12px; margin-bottom:15px; }
+			.bunker-card-warning { border:1px dashed #00ff41; padding:8px; margin-top:10px; }
+			.bunker-app-status { margin-bottom:16px; }
+			.bunker-app-status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px; }
+			.bunker-app-status-cell { border:1px dashed #00ff41; padding:8px; font-size:.78rem; line-height:1.55; overflow-wrap:anywhere; word-break:break-word; }
+
+			.bunker-import-summary { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.6; }
+
+			.bunker-lock-gate {
+				max-width:680px;
+				margin:0 auto 18px;
+				text-align:center;
+			}
+			.bunker-lock-gate-title {
+				font-weight:700;
+				letter-spacing:.08em;
+				font-size:clamp(1.35rem,4vw,2rem);
+				margin-bottom:.5rem;
+			}
+			.bunker-lock-gate-text {
+				max-width:560px;
+				margin:.35rem auto 1rem;
+			}
+			.bunker-unlock-panel.is-hidden,
+			.bunker-privacy-context.is-privacy-hidden {
+				display:none !important;
+			}
+
+			@media (max-width:768px) { .bunker-form-grid { grid-template-columns:1fr; } .bunker-actions { justify-content:flex-start; } .bunker-group-header { align-items:flex-start; flex-direction:column; } }
+			.bunker-export-warning {
+				margin-top:1rem;
+				border-style:double;
+			}
+			.bunker-export-warning.is-hidden {
+				display:none;
+			}
+			.bunker-export-warning-title {
+				font-weight:700;
+				letter-spacing:.04em;
+			}
+			.bunker-export-warning-meta {
+				margin-top:.35rem;
+			}
+			.t-btn.bunker-export-now {
+				box-shadow:0 0 0 1px currentColor inset;
+				font-weight:700;
+			}
+
+			.t-btn.bunker-panic-btn {
+				border-style:double;
+				font-weight:700;
+			}
+
+					.bunker-master-warning { white-space:pre-wrap; margin-top:8px; margin-bottom:12px; }
+		
+
+			.bunker-mobile-actionbar {
+				display:none;
+			}
+			@media (max-width:768px) {
+				body.has-mobile-actionbar {
+					padding-bottom:86px;
+				}
+				.bunker-mobile-actionbar {
+					position:fixed;
+					left:0;
+					right:0;
+					bottom:0;
+					z-index:9999;
+					display:grid;
+					grid-template-columns:repeat(5,minmax(0,1fr));
+					gap:6px;
+					padding:8px;
+					background:#000000;
+					border-top:1px solid #00ff41;
+					box-shadow:0 -4px 18px rgba(0,255,65,.12);
+				}
+				.bunker-mobile-actionbar.is-hidden {
+					display:none !important;
+				}
+				.bunker-mobile-actionbar .t-btn {
+					font-size:.68rem;
+					padding:.52rem .18rem;
+					min-width:0;
+					white-space:nowrap;
+				}
+			}
+
+			.bunker-badge-row,
+			.bunker-status-row,
+			.bookmark-tags,
+			.snippet-tags,
+			.item-tags,
+			.card-tags,
+			.bunker-tag-row,
+			.mini-list,
+			.status-strip {
+				display:flex;
+				flex-wrap:wrap;
+				gap:6px;
+				align-items:center;
+			}
+			.bunker-badge,
+			.t-badge,
+			.bunker-tag,
+			.tag-pill,
+			.mini-pill,
+			.status-pill,
+			.extension-badge,
+			.day-chip,
+			.day-count {
+				display:inline-flex;
+				align-items:center;
+				max-width:100%;
+				border:1px solid #00ff41 !important;
+				background:#000000 !important;
+				color:#00ff41 !important;
+				padding:2px 7px;
+				font-size:.72rem;
+				line-height:1.35;
+				letter-spacing:.035em;
+				text-transform:uppercase;
+				white-space:nowrap;
+				overflow:hidden;
+				text-overflow:ellipsis;
+			}
+			.bunker-badge-pinned,
+			.bunker-badge-favorite,
+			.bunker-badge-emergency,
+			.bunker-badge-urgent,
+			.bunker-badge-overdue,
+			.bunker-badge-blocked,
+			.bunker-badge-audit,
+			.bunker-badge-dirty,
+			.bunker-badge-archive,
+			.bunker-badge-archived,
+			.bunker-badge-read_later,
+			.bunker-badge-read-later {
+				border-style:double !important;
+				font-weight:700;
+			}
+			.bunker-badge-tag,
+			.bunker-badge-id,
+			.bunker-badge-updated,
+			.bunker-badge-file,
+			.bunker-tag,
+			.tag-pill {
+				border-style:dashed !important;
+			}
+			.bunker-badge-done,
+			.bunker-badge-active,
+			.bunker-badge-open,
+			.bunker-badge-clean {
+				border-style:solid !important;
+			}
+
 		</style>
 	</head>
 	<body class="t-crt">
@@ -56,11 +208,28 @@
 
 		<main class="t-shell">
 			<section id="paneLocked" class="t-pane active">
+				<div id="privacyLockGate" class="t-card bunker-lock-gate" role="region" aria-label="Locked privacy screen">
+					<div class="bunker-lock-gate-title">BUNKER LOCKED</div>
+					<div class="bunker-lock-gate-text text-muted">No decrypted data, item counts, filenames, filters, or metadata are shown while this app is locked.</div>
+					<button id="btnRevealUnlock" class="t-btn" type="button">[ UNLOCK ]</button>
+				</div>
+				<div id="unlockPanel" class="bunker-unlock-panel is-hidden">
+
 				<div class="bunker-hero">
 					<h1 class="t-hero-title">BUNKER_AUTH</h1>
 					<p class="t-hero-subtitle">Static 2FA/TOTP manager. Import an encrypted <i>.enc</i> file or create a new auth vault. Secrets and codes are calculated locally in your browser.</p>
 				</div>
-				<div class="t-grid t-grid-2">
+				<div class="t-card bunker-app-status">
+					<div class="t-card-header">&gt; APP_STATUS</div>
+					<div class="bunker-app-status-grid">
+						<div class="bunker-app-status-cell"><strong>APP</strong><br>Bunker Auth</div>
+						<div class="bunker-app-status-cell"><strong>SCHEMA</strong><br>v2</div>
+						<div class="bunker-app-status-cell"><strong>FORMAT</strong><br>bunker-auth-v2-enc</div>
+						<div class="bunker-app-status-cell"><strong>CRYPTO</strong><br>Argon2id + XChaCha20-Poly1305</div>
+						<div class="bunker-app-status-cell"><strong>STORAGE</strong><br>LOCAL_ONLY / MEMORY_ONLY</div>
+						<div class="bunker-app-status-cell"><strong>EXPORT</strong><br>REQUIRED_AFTER_CHANGES</div>
+					</div>
+				</div>
 					<div class="t-card">
 						<div class="t-card-header">&gt; IMPORT_EXISTING_AUTH</div>
 						<label class="t-form-label">&gt; encrypted file</label>
@@ -69,6 +238,7 @@
 							<span class="t-file-btn">[ SELECT .ENC ]</span>
 						</div>
 						<span id="importFileName" class="bunker-file-name fs-small text-muted mb-3">&gt; NO FILE SELECTED</span>
+						<div id="importEnvelopeSummary" class="t-alert warning bunker-import-summary">&gt; SELECT A .ENC FILE TO PREVIEW HEADER.</div>
 						<label class="t-form-label">&gt; master password</label>
 						<div class="bunker-input-group">
 							<input id="importPassword" class="t-input" type="password" autocomplete="current-password" placeholder="ENTER MASTER PASSWORD">
@@ -94,6 +264,7 @@
 				<div class="t-alert">&gt; Use a different master password from your password vault. Keep passwords and second-factor secrets separated.</div>
 			</section>
 
+				</div>
 			<section id="paneApp" class="t-pane">
 				<div class="t-toolbar">
 					<div class="t-toolbar-group">
@@ -102,6 +273,19 @@
 					</div>
 					<div class="t-toolbar-group">
 						<button id="btnLock" class="t-btn">[ LOCK ]</button>
+						<button id="btnPanicLock" class="t-btn bunker-panic-btn" type="button">[ PANIC_LOCK ]</button>
+					</div>
+				</div>
+
+				<div class="t-card bunker-app-status">
+					<div class="t-card-header">&gt; APP_STATUS</div>
+					<div class="bunker-app-status-grid">
+						<div class="bunker-app-status-cell"><strong>APP</strong><br>Bunker Auth</div>
+						<div class="bunker-app-status-cell"><strong>SCHEMA</strong><br>v2</div>
+						<div class="bunker-app-status-cell"><strong>FORMAT</strong><br>bunker-auth-v2-enc</div>
+						<div class="bunker-app-status-cell"><strong>CRYPTO</strong><br>Argon2id + XChaCha20-Poly1305</div>
+						<div class="bunker-app-status-cell"><strong>STORAGE</strong><br>LOCAL_ONLY / MEMORY_ONLY</div>
+						<div class="bunker-app-status-cell"><strong>EXPORT</strong><br>REQUIRED_AFTER_CHANGES</div>
 					</div>
 				</div>
 
@@ -110,12 +294,26 @@
 					<span>STATE: <strong id="statusDirty" class="text-success">CLEAN</strong></span>
 					<span>AUTO_LOCK: <strong id="statusAutoLock">10:00</strong></span>
 					<span>KEYS: <strong id="countAll">0</strong></span>
+					<span>ISSUERS: <strong id="countIssuers">0</strong></span>
 				</div>
 
+				<div id="exportWarning" class="t-alert bunker-export-warning is-hidden" role="alert" aria-live="polite">
+					<div class="bunker-export-warning-title">UNSAVED CHANGES — EXPORT REQUIRED</div>
+					<div>Changes exist only in memory. Export a new <code>.enc</code> file before locking, reloading, closing, or leaving this page.</div>
+					<div class="bunker-export-warning-meta fs-small">DIRTY_SINCE: <strong id="dirtySince">UNKNOWN</strong></div>
+				</div>
+
+
 				<div class="t-card">
-					<div class="t-command mb-3">
-						<span class="t-command-prompt">$</span>
-						<input id="searchInput" class="t-input" type="search" placeholder="SEARCH ISSUER / ACCOUNT / TAG / NOTE...">
+					<div class="bunker-form-grid">
+						<div class="t-command mb-3">
+							<span class="t-command-prompt">$</span>
+							<input id="searchInput" class="t-input" type="search" placeholder="SEARCH ISSUER / ACCOUNT / GROUP / TAG / NOTE...">
+						</div>
+						<div>
+							<label class="t-form-label">&gt; issuer group filter</label>
+							<select id="groupFilter" class="t-select"><option value="ALL">ALL GROUPS</option></select>
+						</div>
 					</div>
 					<div class="t-tabs-header flex-wrap">
 						<button class="t-tab-btn filter-tab active" data-filter="ALL">ALL:<span id="countAllTab">0</span></button>
@@ -143,657 +341,1077 @@
 						</div>
 					</div>
 
+					<div class="bunker-qr-panel">
+						<label class="t-form-label">&gt; qr image import optional</label>
+						<div class="t-file-wrapper">
+							<input id="qrFile" type="file" accept="image/*">
+							<span class="t-file-btn">[ SELECT_QR_IMAGE ]</span>
+						</div>
+						<span id="qrFileName" class="bunker-file-name fs-small text-muted">&gt; NO QR IMAGE SELECTED</span>
+						<div class="bunker-actions mt-2"><button id="btnReadQr" type="button" class="t-btn t-btn-sm">[ READ_QR ]</button></div>
+						<p class="fs-small text-muted mb-0">&gt; QR import uses the browser BarcodeDetector API when available. If unavailable, paste the otpauth URI manually.</p>
+					</div>
+
 					<div class="bunker-form-grid">
 						<div><label class="t-form-label">&gt; issuer</label><input id="entryIssuer" class="t-input" type="text" placeholder="GitHub"></div>
 						<div><label class="t-form-label">&gt; account</label><input id="entryAccount" class="t-input" type="text" placeholder="user@example.com"></div>
 					</div>
 					<div class="bunker-form-grid">
-						<div><label class="t-checkbox-label"><input id="entryPinned" type="checkbox"><span class="t-checkmark"></span>PINNED</label></div>
+						<div><label class="t-form-label">&gt; issuer group</label><input id="entryGroup" class="t-input" type="text" placeholder="GitHub / Work / Personal"></div>
 						<div><label class="t-form-label">&gt; tags comma separated</label><input id="entryTags" class="t-input" type="text" placeholder="main, email, admin"></div>
+					</div>
+					<div class="bunker-form-grid">
+						<div><label class="t-checkbox-label"><input id="entryPinned" type="checkbox"><span class="t-checkmark"></span>PINNED</label></div>
+						<div><label class="t-form-label">&gt; algorithm</label><select id="entryAlgorithm" class="t-select"><option value="SHA1">SHA1</option><option value="SHA256">SHA256</option><option value="SHA512">SHA512</option></select></div>
 					</div>
 					<label class="t-form-label">&gt; base32 secret</label>
 					<div class="bunker-input-group">
 						<input id="entrySecret" class="t-input bunker-secret" type="password" placeholder="JBSWY3DPEHPK3PXP" autocomplete="off">
 						<div class="bunker-input-actions"><button type="button" class="t-input-action-btn" data-eye="entrySecret" aria-label="Show value" title="Show value">[ ◉ ]</button></div>
 					</div>
-					<span id="secretValidation" class="bunker-strength text-muted">SECRET_STATUS: EMPTY</span>
-
 					<div class="bunker-form-grid">
-						<div>
-							<label class="t-form-label">&gt; algorithm</label>
-							<select id="entryAlgorithm" class="t-select">
-								<option value="SHA1">SHA1</option>
-								<option value="SHA256">SHA256</option>
-								<option value="SHA512">SHA512</option>
-							</select>
-						</div>
-						<div>
-							<label class="t-form-label">&gt; digits</label>
-							<select id="entryDigits" class="t-select">
-								<option value="6">6</option>
-								<option value="7">7</option>
-								<option value="8">8</option>
-							</select>
-						</div>
+						<div><label class="t-form-label">&gt; digits</label><select id="entryDigits" class="t-select"><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
 						<div><label class="t-form-label">&gt; period seconds</label><input id="entryPeriod" class="t-input" type="number" min="10" max="120" step="1" value="30"></div>
 					</div>
-
-					<label class="t-form-label">&gt; private notes</label>
-					<textarea id="entryNotes" class="t-textarea" rows="4"></textarea>
-					<div class="bunker-actions">
-						<button id="btnCancelModal" class="t-btn" type="button">[ ABORT ]</button>
-						<button id="btnSaveEntry" class="t-btn" type="button">[ SAVE_TO_MEMORY ]</button>
+					<label class="t-form-label">&gt; notes</label>
+					<textarea id="entryNotes" class="t-textarea" rows="4" placeholder="Private account notes..."></textarea>
+					<div id="duplicateWarning" class="bunker-card-warning bunker-hidden fs-small">&gt; WARNING: SAME ISSUER + ACCOUNT ALREADY EXISTS.</div>
+					<div class="bunker-actions mt-3">
+						<button id="btnDelete" type="button" class="t-btn danger bunker-hidden">[ DELETE ]</button>
+						<button id="btnSave" type="button" class="t-btn">[ SAVE_KEY ]</button>
 					</div>
 				</form>
 			</div>
 		</div>
 
-		<script src="../assets/terminal.js" defer></script>
+		<div id="toast" class="t-toast" role="status"></div>
 
+		<div id="mobileActionBar" class="bunker-mobile-actionbar is-hidden" aria-label="Mobile action bar">
+			<button id="mobileBtnNew" class="t-btn" type="button">[ + ]</button>
+			<button id="mobileBtnSearch" class="t-btn" type="button">[ SEARCH ]</button>
+			<button id="mobileBtnExport" class="t-btn" type="button">[ EXPORT ]</button>
+			<button id="mobileBtnLock" class="t-btn" type="button">[ LOCK ]</button>
+			<button id="mobileBtnPanic" class="t-btn bunker-panic-btn" type="button">[ PANIC ]</button>
+		</div>
+
+		<script src="../assets/terminal.js" defer></script>
+		<script src="../assets/bunker-core.js"></script>
 		<script type="module">
 			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
 			await sodium.ready;
-			window.sodium = sodium;
 
-			const APP_VERSION = 1;
-			const KDF_OPSLIMIT = 3;
-			const KDF_MEMLIMIT = 64 * 1024 * 1024;
-			const AUTO_LOCK_MS = 10 * 60 * 1000;
-			const CLIPBOARD_CLEAR_MS = 45 * 1000;
+			const APP_KIND = 'auth';
+			const APP_VERSION = 2;
+			const FORMAT = 'bunker-auth-v2-enc';
+			const KDF = {
+				name: 'argon2id',
+				opslimit: 3,
+				memlimit: 67108864,
+				alg: 'argon2id13'
+			};
+			const AUTO_LOCK_SECONDS = 600;
+			const CLIPBOARD_CLEAR_SECONDS = 45;
 			const textEncoder = new TextEncoder();
 			const textDecoder = new TextDecoder();
-			const B64 = sodium.base64_variants.ORIGINAL;
 
-			function toast(message, type = 'normal') {
-				if (window.Terminal && typeof window.Terminal.toast === 'function') window.Terminal.toast(message, 'normal');
-				else console[type === 'danger' ? 'error' : 'log']('> ' + message);
+			const els = {
+				paneLocked: document.getElementById('paneLocked'),
+				paneApp: document.getElementById('paneApp'),
+				importFile: document.getElementById('importFile'),
+				importFileName: document.getElementById('importFileName'),
+				importPassword: document.getElementById('importPassword'),
+				newPassword: document.getElementById('newPassword'),
+				newConfirm: document.getElementById('newConfirm'),
+				btnImport: document.getElementById('btnImport'),
+				btnCreate: document.getElementById('btnCreate'),
+				btnAdd: document.getElementById('btnAdd'),
+				btnExport: document.getElementById('btnExport'),
+				btnLock: document.getElementById('btnLock'),
+				btnPanicLock: document.getElementById('btnPanicLock'),
+				statusFile: document.getElementById('statusFile'),
+				statusDirty: document.getElementById('statusDirty'),
+				statusAutoLock: document.getElementById('statusAutoLock'),
+				countAll: document.getElementById('countAll'),
+				countAllTab: document.getElementById('countAllTab'),
+				countPinned: document.getElementById('countPinned'),
+				countIssuers: document.getElementById('countIssuers'),
+				searchInput: document.getElementById('searchInput'),
+				groupFilter: document.getElementById('groupFilter'),
+				authList: document.getElementById('authList'),
+				entryModal: document.getElementById('entryModal'),
+				modalTitle: document.getElementById('modalTitle'),
+				btnCloseModal: document.getElementById('btnCloseModal'),
+				entryUri: document.getElementById('entryUri'),
+				btnParseUri: document.getElementById('btnParseUri'),
+				qrFile: document.getElementById('qrFile'),
+				qrFileName: document.getElementById('qrFileName'),
+				btnReadQr: document.getElementById('btnReadQr'),
+				entryIssuer: document.getElementById('entryIssuer'),
+				entryAccount: document.getElementById('entryAccount'),
+				entryGroup: document.getElementById('entryGroup'),
+				entryTags: document.getElementById('entryTags'),
+				entryPinned: document.getElementById('entryPinned'),
+				entryAlgorithm: document.getElementById('entryAlgorithm'),
+				entrySecret: document.getElementById('entrySecret'),
+				entryDigits: document.getElementById('entryDigits'),
+				entryPeriod: document.getElementById('entryPeriod'),
+				entryNotes: document.getElementById('entryNotes'),
+				duplicateWarning: document.getElementById('duplicateWarning'),
+				btnDelete: document.getElementById('btnDelete'),
+				btnSave: document.getElementById('btnSave'),
+				toast: document.getElementById('toast')
+			};
+
+			let db = null;
+			let masterPassword = '';
+			let currentFileName = 'MEMORY_ONLY';
+			let dirty = false;
+			let dirtySince = '';
+			let activeFilter = 'ALL';
+			let editingId = null;
+			let autoLockRemaining = AUTO_LOCK_SECONDS;
+			let autoLockTimer = null;
+			let codeTimer = null;
+			let clipboardTimer = null;
+			let revealedSecrets = new Set();
+			let codeCache = new Map();
+
+			function nowIso() {
+				return new Date().toISOString();
 			}
-			function $(id) { return document.getElementById(id); }
-			function qsa(selector, scope = document) { return Array.from(scope.querySelectorAll(selector)); }
-			function createEl(tag, className = '', text = '') {
-				const el = document.createElement(tag);
-				if (className) el.className = className;
-				if (text !== '') el.textContent = text;
-				return el;
+
+			function uid(prefix) {
+				return `${prefix}_${crypto.randomUUID()}`;
 			}
-			function nowIso() { return new Date().toISOString(); }
-			function uid() {
-				if (crypto.randomUUID) return crypto.randomUUID();
-				const bytes = crypto.getRandomValues(new Uint8Array(16));
-				bytes[6] = (bytes[6] & 0x0f) | 0x40;
-				bytes[8] = (bytes[8] & 0x3f) | 0x80;
-				const hex = [...bytes].map(byte => byte.toString(16).padStart(2, '0'));
-				return `${hex.slice(0,4).join('')}-${hex.slice(4,6).join('')}-${hex.slice(6,8).join('')}-${hex.slice(8,10).join('')}-${hex.slice(10).join('')}`;
+
+			function escapeHtml(value) {
+				return String(value ?? '')
+					.replaceAll('&', '&amp;')
+					.replaceAll('<', '&lt;')
+					.replaceAll('>', '&gt;')
+					.replaceAll('"', '&quot;')
+					.replaceAll("'", '&#039;');
 			}
-			function normalizeText(value) { return String(value || '').trim(); }
-			function parseTags(value) {
-				return Array.from(new Set(String(value || '').split(',').map(tag => tag.trim().toLowerCase()).filter(Boolean))).slice(0, 12);
+
+			function normalizeTags(value) {
+				return String(value || '')
+					.split(',')
+					.map(tag => tag.trim())
+					.filter(Boolean)
+					.filter((tag, index, list) => list.findIndex(item => item.toLowerCase() === tag.toLowerCase()) === index);
 			}
-			function tagsToText(tags) { return Array.isArray(tags) ? tags.join(', ') : ''; }
-			function toB64(bytes) { return sodium.to_base64(bytes, B64); }
-			function fromB64(text) { return sodium.from_base64(text, B64); }
-			function aadFor(kind) { return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`); }
-			async function deriveKey(password, salt, params) {
+
+			function normalizeGroup(value, issuer = '') {
+				return String(value || issuer || 'Ungrouped').trim() || 'Ungrouped';
+			}
+
+			function defaultDb() {
+				const ts = nowIso();
+				return {
+					kind: APP_KIND,
+					version: APP_VERSION,
+					createdAt: ts,
+					updatedAt: ts,
+					settings: {
+						groupMode: 'ISSUER'
+					},
+					items: []
+				};
+			}
+
+			function aadFor() {
+				return textEncoder.encode(`BUNKER|${APP_KIND}|v${APP_VERSION}`);
+			}
+
+
+			const bunkerCore = window.BunkerCore.create({
+				sodium,
+				appVersion: APP_VERSION,
+				textEncoder,
+				textDecoder,
+				nowIso,
+				kdfOpslimit: typeof KDF_OPSLIMIT === 'undefined' ? undefined : KDF_OPSLIMIT,
+				kdfMemlimit: typeof KDF_MEMLIMIT === 'undefined' ? undefined : KDF_MEMLIMIT
+			});
+			function appNameForKind(kind) { return bunkerCore.appNameForKind(kind); }
+			function expectedEncFormat(kind) { return bunkerCore.expectedEncFormat(kind); }
+			function encB64(bytes) { return bunkerCore.encB64(bytes); }
+			function decB64(value) { return bunkerCore.decB64(value); }
+			function makeEnvelope(kind, source, kdf, salt, nonce, cipher) { return bunkerCore.makeEnvelope(kind, source, kdf, salt, nonce, cipher); }
+			function assertEnvelope(envelope, kind) { return bunkerCore.assertEnvelope(envelope, kind); }
+
+
+			function getExpectedImportKind() {
+				return typeof APP_KIND !== 'undefined' ? APP_KIND : KIND;
+			}
+			function setImportEnvelopeSummary(level, lines) {
+				const panel = document.getElementById('importEnvelopeSummary');
+				if (!panel) return;
+				panel.className = `t-alert ${level || 'warning'} bunker-import-summary`;
+				panel.textContent = Array.isArray(lines) ? lines.join('\n') : String(lines || '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+			}
+			async function previewImportEnvelope(file) {
+				if (!file) {
+					setImportEnvelopeSummary('warning', '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+					return null;
+				}
+				try {
+					const raw = await file.text();
+					const preview = bunkerCore.inspectEnvelope(raw, getExpectedImportKind());
+					setImportEnvelopeSummary(preview.level, preview.lines);
+					return preview;
+				} catch (error) {
+					setImportEnvelopeSummary('danger', ['> HEADER_PREVIEW: FAILED', error.message || 'Unable to read file header.']);
+					return null;
+				}
+			}
+
+			function deriveKey(password, salt) {
 				return sodium.crypto_pwhash(
 					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
 					password,
 					salt,
-					Number(params.opslimit || KDF_OPSLIMIT),
-					Number(params.memlimit || KDF_MEMLIMIT),
+					KDF.opslimit,
+					KDF.memlimit,
 					sodium.crypto_pwhash_ALG_ARGON2ID13
 				);
 			}
-			async function encryptEnvelope(kind, payloadObject, password) {
-				const salt = sodium.randombytes_buf(16);
+
+			function encryptDb(password) {
+				const salt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
 				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
-				const params = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
-				const key = await deriveKey(password, salt, params);
+				const key = deriveKey(password, salt);
 				try {
-					const plaintext = textEncoder.encode(JSON.stringify(payloadObject));
-					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(kind), null, nonce, key);
-					return JSON.stringify({
-						bunker: kind,
-						version: APP_VERSION,
-						format: `bunker-${kind}-enc`,
-						kdf: params,
-						aead: 'xchacha20-poly1305-ietf',
-						salt: toB64(salt),
-						nonce: toB64(nonce),
-						payload: toB64(cipher),
-						createdAt: payloadObject.createdAt || nowIso(),
-						updatedAt: nowIso()
-					}, null, 2);
+					const payload = textEncoder.encode(JSON.stringify(db));
+					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(payload, aadFor(), null, nonce, key);
+					return makeEnvelope(APP_KIND, db, KDF, salt, nonce, cipher);
 				} finally {
 					if (key && key.fill) key.fill(0);
 				}
 			}
-			async function decryptEnvelope(kind, rawText, password) {
-				const envelope = JSON.parse(rawText.trim());
-				if (!envelope || envelope.bunker !== kind || envelope.version !== APP_VERSION) throw new Error('INVALID_BUNKER_FILE');
-				if (envelope.aead !== 'xchacha20-poly1305-ietf') throw new Error('UNSUPPORTED_CIPHER');
-				if (!envelope.kdf || envelope.kdf.name !== 'argon2id') throw new Error('UNSUPPORTED_KDF');
-				const salt = fromB64(envelope.salt);
-				const nonce = fromB64(envelope.nonce);
-				const cipher = fromB64(envelope.payload);
-				const key = await deriveKey(password, salt, envelope.kdf);
+
+			function decryptContainer(container, password) {
+				assertEnvelope(container, APP_KIND);
+				const salt = decB64(container.salt);
+				const nonce = decB64(container.nonce);
+				const cipher = decB64(container.payload);
+				const key = deriveKey(password, salt);
 				try {
-					const plain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(kind), nonce, key);
-					return JSON.parse(textDecoder.decode(plain));
+					const plain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(), nonce, key);
+					const parsed = JSON.parse(textDecoder.decode(plain));
+					if (parsed.kind !== APP_KIND || parsed.version !== APP_VERSION) throw new Error('Decrypted payload is not Bunker Auth v2.');
+					parsed.items = Array.isArray(parsed.items) ? parsed.items.map(normalizeItem) : [];
+					parsed.settings = parsed.settings || { groupMode: 'ISSUER' };
+					return parsed;
 				} finally {
 					if (key && key.fill) key.fill(0);
 				}
 			}
-			async function readFileAsText(file) { return await file.text(); }
-			function downloadText(filename, text) {
-				const blob = new Blob([text], { type: 'application/octet-stream' });
+
+			function normalizeItem(item) {
+				const issuer = String(item.issuer || '').trim();
+				return {
+					id: item.id || uid('totp'),
+					issuer,
+					account: String(item.account || '').trim(),
+					group: normalizeGroup(item.group, issuer),
+					secret: cleanSecret(item.secret || ''),
+					algorithm: ['SHA1', 'SHA256', 'SHA512'].includes(item.algorithm) ? item.algorithm : 'SHA1',
+					digits: [6, 7, 8].includes(Number(item.digits)) ? Number(item.digits) : 6,
+					period: Math.max(10, Math.min(120, Number(item.period) || 30)),
+					tags: Array.isArray(item.tags) ? item.tags : normalizeTags(item.tags),
+					pinned: Boolean(item.pinned),
+					notes: String(item.notes || ''),
+					createdAt: item.createdAt || nowIso(),
+					updatedAt: item.updatedAt || nowIso()
+				};
+			}
+
+
+			function updateExportWarning() {
+				const panel = document.getElementById('exportWarning');
+				if (!panel) return;
+				panel.classList.toggle('is-hidden', !dirty);
+				const since = document.getElementById('dirtySince');
+				if (since) since.textContent = dirty ? (dirtySince || 'UNKNOWN') : 'CLEAN';
+				if (els.btnExport) {
+					els.btnExport.classList.toggle('bunker-export-now', dirty);
+					els.btnExport.textContent = dirty ? '[ EXPORT_ENC_NOW ]' : '[ EXPORT_ENC ]';
+				}
+			}
+
+			function setDirty(value = true) {
+				const next = Boolean(value);
+				if (next && !dirty) dirtySince = nowIso();
+				if (!next) dirtySince = '';
+				dirty = next;
+				els.statusDirty.textContent = dirty ? 'DIRTY_EXPORT_REQUIRED' : 'CLEAN';
+				els.statusDirty.classList.toggle('text-warning', dirty);
+				els.statusDirty.classList.toggle('text-success', !dirty);
+				updateExportWarning();
+			}
+
+			function showToast(message, mode = '') {
+				els.toast.textContent = `> ${message}`;
+				els.toast.className = `t-toast show ${mode}`.trim();
+				setTimeout(() => els.toast.classList.remove('show'), 2600);
+			}
+
+			function switchPane(name) {
+				els.paneLocked.classList.toggle('active', name === 'locked');
+				els.paneApp.classList.toggle('active', name === 'app');
+			}
+
+			function resetAutoLock() {
+				if (!db) return;
+				autoLockRemaining = AUTO_LOCK_SECONDS;
+				updateAutoLockStatus();
+			}
+
+			function updateAutoLockStatus() {
+				const minutes = Math.floor(autoLockRemaining / 60).toString().padStart(2, '0');
+				const seconds = (autoLockRemaining % 60).toString().padStart(2, '0');
+				els.statusAutoLock.textContent = `${minutes}:${seconds}`;
+			}
+
+			function startTimers() {
+				clearInterval(autoLockTimer);
+				clearInterval(codeTimer);
+				autoLockRemaining = AUTO_LOCK_SECONDS;
+				autoLockTimer = setInterval(() => {
+					if (!db) return;
+					autoLockRemaining -= 1;
+					updateAutoLockStatus();
+					if (autoLockRemaining <= 0) lockApp(true);
+				}, 1000);
+				codeTimer = setInterval(render, 1000);
+			}
+
+			function stopTimers() {
+				clearInterval(autoLockTimer);
+				clearInterval(codeTimer);
+			}
+
+			function lockApp(isAuto = false) {
+				if (dirty && !isAuto && !bunkerCore.confirmDestructive('LOCK_WITH_UNEXPORTED_CHANGES', { phrase: 'LOCK' })) return;
+				db = null;
+				masterPassword = '';
+				dirty = false;
+				dirtySince = '';
+				revealedSecrets.clear();
+				codeCache.clear();
+				stopTimers();
+				switchPane('locked');
+				showToast(isAuto ? 'AUTO LOCKED.' : 'LOCKED.');
+			}
+
+			function panicLock() {
+				dirty = false;
+				dirtySince = '';
+				if (clipboardTimer) {
+					clearTimeout(clipboardTimer);
+					clipboardTimer = null;
+				}
+				bunkerCore.clearClipboardNow();
+				bunkerCore.scrubSensitiveDom();
+				lockApp(true);
+				showToast('PANIC LOCK: PLAINTEXT CLEARED.');
+			}
+
+			function unlockWith(database, password, fileName = 'MEMORY_ONLY') {
+				db = database;
+				masterPassword = password;
+				currentFileName = fileName;
+				els.statusFile.textContent = currentFileName;
+				setDirty(false);
+				switchPane('app');
+				startTimers();
+				render();
+				showToast('AUTH VAULT UNLOCKED.');
+			}
+
+			async function copyText(value, label = 'COPIED') {
+				await navigator.clipboard.writeText(value);
+				showToast(label);
+				clearTimeout(clipboardTimer);
+				clipboardTimer = setTimeout(() => navigator.clipboard.writeText('').catch(() => {}), CLIPBOARD_CLEAR_SECONDS * 1000);
+			}
+
+			function downloadFile(name, type, content) {
+				const blob = new Blob([content], { type });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
 				a.href = url;
-				a.download = filename;
+				a.download = name;
 				document.body.appendChild(a);
 				a.click();
 				a.remove();
-				setTimeout(() => URL.revokeObjectURL(url), 1200);
+				setTimeout(() => URL.revokeObjectURL(url), 1000);
 			}
-			function stampName(kind) {
-				const d = new Date();
-				const pad = value => String(value).padStart(2, '0');
-				return `bunker-${kind}-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.enc`;
-			}
-			async function copyText(text, label = 'COPIED TO CLIPBOARD') {
-				const copied = String(text || '');
-				try {
-					await navigator.clipboard.writeText(copied);
-					toast(label, 'normal');
-					setTimeout(async () => {
-						try {
-							if (navigator.clipboard.readText) {
-								const current = await navigator.clipboard.readText();
-								if (current === copied) await navigator.clipboard.writeText('');
-							}
-						} catch (error) {}
-					}, CLIPBOARD_CLEAR_MS);
-				} catch (error) {
-					toast('CLIPBOARD PERMISSION DENIED', 'warning');
-				}
-			}
-			function formatTimeLeft(ms) {
-				const total = Math.max(0, Math.ceil(ms / 1000));
-				const minutes = Math.floor(total / 60);
-				const seconds = total % 60;
-				return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-			}
-			function selectedFileNameLabel() {
-				const fileInput = $('importFile');
-				const label = $('importFileName');
-				if (!fileInput || !label) return;
-				const file = fileInput.files && fileInput.files[0];
-				label.textContent = file ? `> SELECTED: ${file.name}` : '> NO FILE SELECTED';
-			}
-			function setSensitiveInputsHidden() {
-				qsa('[data-eye]').forEach(btn => {
-					const input = $(btn.dataset.eye);
-					if (!input) return;
-					input.type = 'password';
-					btn.textContent = '[ ◉ ]';
-					btn.setAttribute('aria-label', 'Show value');
-					btn.setAttribute('title', 'Show value');
-				});
-			}
-			function bindEyeToggles() {
-				qsa('[data-eye]').forEach(btn => {
-					btn.addEventListener('click', () => {
-						const input = $(btn.dataset.eye);
-						if (!input) return;
-						const show = input.type === 'password';
-						input.type = show ? 'text' : 'password';
-						btn.textContent = show ? '[ ◌ ]' : '[ ◉ ]';
-						btn.setAttribute('aria-label', show ? 'Hide value' : 'Show value');
-						btn.setAttribute('title', show ? 'Hide value' : 'Show value');
-						input.focus();
-					});
-				});
-			}
-			function preventDirtyUnload(event) {
-				if (!state.dirty) return;
-				event.preventDefault();
-				event.returnValue = '';
-			}
-			window.addEventListener('beforeunload', preventDirtyUnload);
 
-			const KIND = 'auth';
-			const state = { unlocked: false, password: '', items: [], fileName: '', dirty: false, editingId: null, filter: 'ALL', createdAt: '', lockAt: 0 };
-			let ticker = null;
-			let autoLockTimer = null;
+			function exportEncrypted() {
+				if (!db || !masterPassword) return;
+				db.updatedAt = nowIso();
+				const container = encryptDb(masterPassword);
+				const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+				downloadFile(`bunker-auth-${stamp}.enc`, 'application/json', JSON.stringify(container, null, '\t'));
+				setDirty(false);
+				showToast('ENCRYPTED AUTH EXPORTED.');
+			}
 
-			function normalizeSecret(value) { return String(value || '').toUpperCase().replace(/[^A-Z2-7=]/g, '').replace(/=+$/g, ''); }
-			function normalizeAuthItem(item) {
-				const createdAt = item.createdAt || item.date || nowIso();
-				return {
-					id: item.id || uid(),
-					issuer: normalizeText(item.issuer || item.title || ''),
-					account: normalizeText(item.account || item.email || item.label || ''),
-					secret: normalizeSecret(item.secret || ''),
-					algorithm: String(item.algorithm || 'SHA1').toUpperCase(),
-					digits: Number(item.digits || 6),
-					period: Number(item.period || 30),
-					pinned: Boolean(item.pinned),
-					tags: Array.isArray(item.tags) ? parseTags(item.tags.join(',')) : parseTags(item.tags),
-					notes: normalizeText(item.notes || item.content || ''),
-					createdAt,
-					updatedAt: item.updatedAt || createdAt
-				};
+			function cleanSecret(value) {
+				return String(value || '').toUpperCase().replace(/[^A-Z2-7]/g, '');
 			}
-			function normalizeAuthItems(items) { return (Array.isArray(items) ? items : []).map(normalizeAuthItem); }
-			function setPane(name) {
-				qsa('.t-pane').forEach(pane => pane.classList.remove('active'));
-				$(name).classList.add('active');
-			}
-			function markDirty() {
-				state.dirty = true;
-				updateStatus();
-			}
-			function resetAutoLock() {
-				if (!state.unlocked) return;
-				state.lockAt = Date.now() + AUTO_LOCK_MS;
-				updateAutoLockStatus();
-			}
-			function updateAutoLockStatus() {
-				const el = $('statusAutoLock');
-				if (!el) return;
-				el.textContent = state.unlocked ? formatTimeLeft(state.lockAt - Date.now()) : 'LOCKED';
-			}
-			function startAutoLock() {
-				if (autoLockTimer) clearInterval(autoLockTimer);
-				resetAutoLock();
-				autoLockTimer = setInterval(() => {
-					if (!state.unlocked) return;
-					if (Date.now() >= state.lockAt) {
-						lockAuth('AUTO_LOCK_TIMEOUT');
-						return;
-					}
-					updateAutoLockStatus();
-				}, 1000);
-			}
-			function updateStatus() {
-				$('countAll').textContent = String(state.items.length);
-				$('countAllTab').textContent = String(state.items.length);
-				$('countPinned').textContent = String(state.items.filter(item => item.pinned).length);
-				$('statusFile').textContent = state.fileName || 'MEMORY_ONLY';
-				$('statusDirty').textContent = state.dirty ? 'DIRTY_EXPORT_REQUIRED' : 'CLEAN';
-				$('statusDirty').className = state.dirty ? 'text-warning' : 'text-success';
-				updateAutoLockStatus();
-			}
-			function unlockUi() {
-				state.unlocked = true;
-				setPane('paneApp');
-				renderAuth();
-				startTicker();
-				startAutoLock();
-				updateStatus();
-			}
-			async function createNewAuth() {
-				const pass = $('newPassword').value;
-				const confirm = $('newConfirm').value;
-				if (!pass || pass.length < 10) return toast('MASTER PASSWORD MINIMUM 10 CHARACTERS', 'danger');
-				if (pass !== confirm) return toast('PASSWORD CONFIRMATION MISMATCH', 'danger');
-				state.password = pass;
-				state.items = [];
-				state.fileName = 'NEW_AUTH';
-				state.createdAt = nowIso();
-				state.dirty = true;
-				$('newPassword').value = '';
-				$('newConfirm').value = '';
-				unlockUi();
-				toast('NEW AUTH DATABASE INITIALIZED. EXPORT FILE AFTER ADDING DATA.', 'warning');
-			}
-			async function importAuth() {
-				const file = $('importFile').files[0];
-				const pass = $('importPassword').value;
-				if (!file) return toast('SELECT .ENC FILE FIRST', 'danger');
-				if (!pass) return toast('MASTER PASSWORD REQUIRED', 'danger');
-				try {
-					toast('DECRYPTING AUTH DATABASE. ARGON2ID MAY TAKE A MOMENT.', 'warning');
-					const raw = await readFileAsText(file);
-					const payload = await decryptEnvelope(KIND, raw, pass);
-					if (!payload || !Array.isArray(payload.items)) throw new Error('INVALID_PAYLOAD');
-					state.password = pass;
-					state.items = normalizeAuthItems(payload.items);
-					state.fileName = file.name;
-					state.createdAt = payload.createdAt || nowIso();
-					state.dirty = false;
-					$('importPassword').value = '';
-					unlockUi();
-					toast('AUTH DATABASE UNLOCKED', 'normal');
-				} catch (error) {
-					console.error(error);
-					toast('DECRYPT FAILED. WRONG PASSWORD OR INVALID FILE.', 'danger');
-				}
-			}
-			async function exportAuth() {
-				if (!state.unlocked || !state.password) return toast('AUTH LOCKED', 'danger');
-				try {
-					toast('ENCRYPTING AUTH DATABASE.', 'warning');
-					const payload = { kind: KIND, version: APP_VERSION, createdAt: state.createdAt || nowIso(), exportedAt: nowIso(), items: state.items };
-					const text = await encryptEnvelope(KIND, payload, state.password);
-					downloadText(stampName(KIND), text);
-					state.dirty = false;
-					updateStatus();
-					toast('ENCRYPTED FILE EXPORTED', 'normal');
-				} catch (error) {
-					console.error(error);
-					toast('EXPORT FAILED', 'danger');
-				}
-			}
-			function lockAuth(reason = 'AUTH LOCKED AND MEMORY CLEARED') {
-				state.unlocked = false;
-				state.password = '';
-				state.items = [];
-				state.fileName = '';
-				state.dirty = false;
-				state.editingId = null;
-				state.createdAt = '';
-				state.lockAt = 0;
-				$('searchInput').value = '';
-				if (ticker) clearInterval(ticker);
-				if (autoLockTimer) clearInterval(autoLockTimer);
-				setPane('paneLocked');
-				updateStatus();
-				toast(reason, 'warning');
-			}
-			function sortedItems(items) {
-				return [...items].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || String(a.issuer || '').localeCompare(String(b.issuer || '')) || String(a.account || '').localeCompare(String(b.account || '')));
-			}
-			function parseOtpAuthUri() {
-				resetAutoLock();
-				const raw = normalizeText($('entryUri').value);
-				if (!raw) return toast('PASTE OTPAUTH URI FIRST', 'warning');
-				try {
-					const url = new URL(raw);
-					if (url.protocol !== 'otpauth:') throw new Error('NOT_OTPAUTH');
-					const label = decodeURIComponent(url.pathname.replace(/^\//, ''));
-					const parts = label.includes(':') ? label.split(/:(.*)/s).filter(Boolean) : ['', label];
-					const issuer = url.searchParams.get('issuer') || parts[0] || '';
-					const account = parts[1] || parts[0] || '';
-					$('entryIssuer').value = issuer;
-					$('entryAccount').value = account;
-					$('entrySecret').value = normalizeSecret(url.searchParams.get('secret') || '');
-					$('entryAlgorithm').value = (url.searchParams.get('algorithm') || 'SHA1').toUpperCase();
-					$('entryDigits').value = url.searchParams.get('digits') || '6';
-					$('entryPeriod').value = url.searchParams.get('period') || '30';
-					validateSecretPreview();
-					toast('OTPAUTH URI PARSED', 'normal');
-				} catch (error) {
-					toast('INVALID OTPAUTH URI', 'danger');
-				}
-			}
-			function openEntryModal(id = null) {
-				resetAutoLock();
-				state.editingId = id;
-				$('entryForm').reset();
-				$('entryPinned').checked = false;
-				setSensitiveInputsHidden();
-				const item = state.items.find(entry => entry.id === id);
-				$('modalTitle').textContent = item ? '> EDIT_TOTP_KEY' : '> ADD_TOTP_KEY';
-				$('entryAlgorithm').value = 'SHA1';
-				$('entryDigits').value = '6';
-				$('entryPeriod').value = '30';
-				if (item) {
-					$('entryIssuer').value = item.issuer || '';
-					$('entryAccount').value = item.account || '';
-					$('entrySecret').value = item.secret || '';
-					$('entryAlgorithm').value = item.algorithm || 'SHA1';
-					$('entryDigits').value = String(item.digits || 6);
-					$('entryPeriod').value = String(item.period || 30);
-					$('entryPinned').checked = Boolean(item.pinned);
-					$('entryTags').value = tagsToText(item.tags);
-					$('entryNotes').value = item.notes || '';
-				}
-				validateSecretPreview();
-				window.Terminal ? Terminal.modal.open('entryModal') : $('entryModal').classList.add('is-open');
-			}
-			function closeEntryModal() { window.Terminal ? Terminal.modal.close('entryModal') : $('entryModal').classList.remove('is-open'); }
-			async function saveEntry() {
-				resetAutoLock();
-				const issuer = normalizeText($('entryIssuer').value);
-				const account = normalizeText($('entryAccount').value);
-				const secret = normalizeSecret($('entrySecret').value);
-				const algorithm = $('entryAlgorithm').value;
-				const digits = Number($('entryDigits').value || 6);
-				const period = Number($('entryPeriod').value || 30);
-				if (!issuer) return toast('ISSUER REQUIRED', 'danger');
-				if (!secret || !/^[A-Z2-7]+$/.test(secret)) return toast('VALID BASE32 SECRET REQUIRED', 'danger');
-				if (![6, 7, 8].includes(digits)) return toast('DIGITS MUST BE 6, 7, OR 8', 'danger');
-				if (period < 10 || period > 120) return toast('PERIOD MUST BE 10-120 SECONDS', 'danger');
-				try {
-					await generateTotp({ secret, algorithm, digits, period });
-				} catch (error) {
-					return toast('SECRET VALIDATION FAILED', 'danger');
-				}
-				const previous = state.items.find(item => item.id === state.editingId);
-				const createdAt = previous ? previous.createdAt : nowIso();
-				const base = {
-					id: state.editingId || uid(),
-					issuer,
-					account,
-					secret,
-					algorithm,
-					digits,
-					period,
-					pinned: $('entryPinned').checked,
-					tags: parseTags($('entryTags').value),
-					notes: normalizeText($('entryNotes').value),
-					createdAt,
-					updatedAt: nowIso()
-				};
-				const index = state.items.findIndex(item => item.id === state.editingId);
-				if (index >= 0) state.items[index] = base;
-				else state.items.unshift(base);
-				markDirty();
-				closeEntryModal();
-				renderAuth();
-				toast('TOTP KEY SAVED. EXPORT UPDATED FILE.', 'warning');
-			}
-			function deleteEntry(id) {
-				resetAutoLock();
-				if (!confirm('Purge this TOTP key from memory? Export is required to persist the deletion.')) return;
-				state.items = state.items.filter(item => item.id !== id);
-				markDirty();
-				renderAuth();
-				toast('TOTP KEY PURGED. EXPORT UPDATED FILE.', 'warning');
-			}
-			function togglePin(id) {
-				resetAutoLock();
-				const item = state.items.find(entry => entry.id === id);
-				if (!item) return;
-				item.pinned = !item.pinned;
-				item.updatedAt = nowIso();
-				markDirty();
-				renderAuth();
-				toast(item.pinned ? 'TOTP KEY PINNED' : 'TOTP KEY UNPINNED', 'normal');
-			}
-			function base32ToBytes(base32) {
+
+			function base32Decode(value) {
 				const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-				const clean = normalizeSecret(base32);
-				let bits = 0;
-				let value = 0;
-				const out = [];
-				for (const ch of clean) {
-					const idx = alphabet.indexOf(ch);
-					if (idx === -1) throw new Error('INVALID_BASE32');
-					value = (value << 5) | idx;
-					bits += 5;
-					if (bits >= 8) {
-						out.push((value >>> (bits - 8)) & 255);
-						bits -= 8;
-					}
+				const clean = cleanSecret(value);
+				let bits = '';
+				for (const char of clean) {
+					const index = alphabet.indexOf(char);
+					if (index < 0) throw new Error('Invalid Base32 secret.');
+					bits += index.toString(2).padStart(5, '0');
 				}
-				return new Uint8Array(out);
+				const bytes = [];
+				for (let i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i + 8), 2));
+				return new Uint8Array(bytes);
 			}
-			async function generateTotp(item, timestamp = Date.now()) {
-				const period = Number(item.period || 30);
-				const counter = Math.floor(timestamp / 1000 / period);
-				const buffer = new ArrayBuffer(8);
-				const view = new DataView(buffer);
-				const high = Math.floor(counter / 0x100000000);
-				const low = counter >>> 0;
-				view.setUint32(0, high, false);
-				view.setUint32(4, low, false);
-				const algo = String(item.algorithm || 'SHA1').toUpperCase().replace('-', '');
-				const hash = algo === 'SHA256' ? 'SHA-256' : algo === 'SHA512' ? 'SHA-512' : 'SHA-1';
-				const key = await crypto.subtle.importKey('raw', base32ToBytes(item.secret), { name: 'HMAC', hash }, false, ['sign']);
-				const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, buffer));
-				const offset = sig[sig.length - 1] & 0x0f;
-				const binary = ((sig[offset] & 0x7f) << 24) | ((sig[offset + 1] & 0xff) << 16) | ((sig[offset + 2] & 0xff) << 8) | (sig[offset + 3] & 0xff);
-				const modulo = 10 ** Number(item.digits || 6);
-				return String(binary % modulo).padStart(Number(item.digits || 6), '0');
+
+			function cryptoAlgorithmName(value) {
+				return { SHA1: 'SHA-1', SHA256: 'SHA-256', SHA512: 'SHA-512' }[value] || 'SHA-1';
 			}
-			async function validateSecretPreview() {
-				const el = $('secretValidation');
-				const secret = normalizeSecret($('entrySecret').value);
-				if (!secret) { el.textContent = 'SECRET_STATUS: EMPTY'; return; }
-				try {
-					await generateTotp({ secret, algorithm: $('entryAlgorithm').value, digits: Number($('entryDigits').value || 6), period: Number($('entryPeriod').value || 30) });
-					el.textContent = 'SECRET_STATUS: VALID';
-				} catch (error) {
-					el.textContent = 'SECRET_STATUS: INVALID';
+
+			async function totpCode(item) {
+				const step = Number(item.period) || 30;
+				const counter = Math.floor(Date.now() / 1000 / step);
+				const cacheKey = `${item.id}:${counter}`;
+				if (codeCache.has(cacheKey)) return codeCache.get(cacheKey);
+				const keyData = base32Decode(item.secret);
+				const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: cryptoAlgorithmName(item.algorithm) }, false, ['sign']);
+				const counterBytes = new ArrayBuffer(8);
+				const view = new DataView(counterBytes);
+				if (view.setBigUint64) view.setBigUint64(0, BigInt(counter));
+				else {
+					view.setUint32(0, Math.floor(counter / 0x100000000));
+					view.setUint32(4, counter >>> 0);
 				}
+				const hmac = new Uint8Array(await crypto.subtle.sign('HMAC', key, counterBytes));
+				const offset = hmac[hmac.length - 1] & 0x0f;
+				const binary = ((hmac[offset] & 0x7f) << 24) | ((hmac[offset + 1] & 0xff) << 16) | ((hmac[offset + 2] & 0xff) << 8) | (hmac[offset + 3] & 0xff);
+				const mod = 10 ** Number(item.digits || 6);
+				const code = String(binary % mod).padStart(Number(item.digits || 6), '0');
+				codeCache.clear();
+				codeCache.set(cacheKey, code);
+				return code;
 			}
-			function setFilter(type, btn) {
-				state.filter = type;
-				qsa('.filter-tab').forEach(button => button.classList.remove('active'));
-				btn.classList.add('active');
-				renderAuth();
+
+			function secondsRemaining(item) {
+				const period = Number(item.period) || 30;
+				return period - (Math.floor(Date.now() / 1000) % period);
 			}
+
+			function progressPercent(item) {
+				const period = Number(item.period) || 30;
+				return Math.max(0, Math.min(100, secondsRemaining(item) / period * 100));
+			}
+
 			function filteredItems() {
-				const q = normalizeText($('searchInput').value).toLowerCase();
-				return sortedItems(state.items.filter(item => {
-					if (state.filter === 'PINNED' && !item.pinned) return false;
-					if (!q) return true;
-					return [item.issuer, item.account, item.notes, item.algorithm, ...(item.tags || [])].some(value => String(value || '').toLowerCase().includes(q));
-				}));
+				if (!db) return [];
+				const q = els.searchInput.value.trim().toLowerCase();
+				const group = els.groupFilter.value;
+				return db.items
+					.filter(item => activeFilter !== 'PINNED' || item.pinned)
+					.filter(item => group === 'ALL' || normalizeGroup(item.group, item.issuer) === group)
+					.filter(item => {
+						if (!q) return true;
+						const haystack = [item.issuer, item.account, item.group, item.notes, ...(item.tags || [])].join(' ').toLowerCase();
+						return haystack.includes(q);
+					})
+					.sort((a, b) => Number(b.pinned) - Number(a.pinned) || normalizeGroup(a.group, a.issuer).localeCompare(normalizeGroup(b.group, b.issuer)) || a.issuer.localeCompare(b.issuer) || a.account.localeCompare(b.account));
 			}
-			function addTags(parent, tags) {
-				if (!Array.isArray(tags) || !tags.length) return;
-				const row = createEl('div', 'bunker-tag-row');
-				tags.forEach(tag => row.appendChild(createEl('span', 'bunker-tag', '#' + tag)));
-				parent.appendChild(row);
+
+			function groupedItems(items) {
+				return items.reduce((map, item) => {
+					const group = normalizeGroup(item.group, item.issuer);
+					if (!map.has(group)) map.set(group, []);
+					map.get(group).push(item);
+					return map;
+				}, new Map());
 			}
-			function addMeta(parent, item) {
-				parent.appendChild(createEl('div', 'bunker-meta mt-2', `CREATED: ${item.createdAt || '-'}`));
-				parent.appendChild(createEl('div', 'bunker-meta', `UPDATED: ${item.updatedAt || '-'}`));
+
+			function updateGroupFilter() {
+				const current = els.groupFilter.value;
+				const groups = [...new Set(db.items.map(item => normalizeGroup(item.group, item.issuer)))].sort((a, b) => a.localeCompare(b));
+				els.groupFilter.innerHTML = '<option value="ALL">ALL GROUPS</option>' + groups.map(group => `<option value="${escapeHtml(group)}">${escapeHtml(group)}</option>`).join('');
+				els.groupFilter.value = groups.includes(current) ? current : 'ALL';
 			}
-			function renderAuth() {
-				const container = $('authList');
-				container.textContent = '';
+
+			async function render() {
+				if (!db) return;
+				updateGroupFilter();
 				const items = filteredItems();
+				const pinned = db.items.filter(item => item.pinned).length;
+				const issuers = new Set(db.items.map(item => normalizeGroup(item.group, item.issuer))).size;
+				els.countAll.textContent = db.items.length;
+				els.countAllTab.textContent = db.items.length;
+				els.countPinned.textContent = pinned;
+				els.countIssuers.textContent = issuers;
+
 				if (!items.length) {
-					const empty = createEl('div', 't-empty-state');
-					empty.append(createEl('span', 't-empty-state-icon', '[*]'));
-					empty.append(createEl('div', 'font-bold', '> NO_TOTP_KEY_FOUND'));
-					empty.append(createEl('div', 'text-muted fs-small mt-2', 'Add a TOTP key or change your search/filter.'));
-					container.appendChild(empty);
+					els.authList.innerHTML = '<div class="t-empty-state">&gt; NO TOTP KEYS FOUND.</div>';
 					return;
 				}
-				const grid = createEl('div', 'bunker-card-grid');
-				items.forEach(item => {
-					const card = createEl('article', 't-card');
-					card.dataset.id = item.id;
-					const header = createEl('div', 't-card-header d-flex justify-content-between align-items-center gap-2');
-					const title = createEl('span', '', '> ' + (item.issuer || 'UNKNOWN'));
-					const badges = createEl('div', 'd-flex gap-2 flex-wrap justify-content-end');
-					if (item.pinned) badges.appendChild(createEl('span', 't-badge', 'PINNED'));
-					badges.appendChild(createEl('span', 't-badge muted', `${item.algorithm || 'SHA1'} / ${item.digits || 6}`));
-					header.append(title, badges);
-					const account = createEl('div', 'text-muted mb-2 text-break', item.account || 'NO_ACCOUNT_LABEL');
-					const code = createEl('div', 't-totp-code', '------');
-					code.id = 'code-' + item.id;
-					code.title = 'Click to copy current code';
-					code.addEventListener('click', () => { resetAutoLock(); copyText(code.textContent.replace(/\s/g, ''), 'TOTP CODE COPIED'); });
-					const timerBg = createEl('div', 't-timer-line-bg');
-					const timerLine = createEl('div', 't-timer-line');
-					timerLine.id = 'bar-' + item.id;
-					timerBg.appendChild(timerLine);
-					const countdown = createEl('div', 'text-muted fs-small mt-2 text-center');
-					countdown.id = 'timer-' + item.id;
-					const secretBox = createEl('div', 't-alert mt-3 bunker-pre', '> SECRET\n••••••••••••');
-					const actions = createEl('div', 'bunker-actions t-border-top pt-3 mt-3');
-					const pin = createEl('button', 't-btn t-btn-sm ghost', item.pinned ? '[ UNPIN ]' : '[ PIN ]');
-					pin.type = 'button'; pin.addEventListener('click', () => togglePin(item.id));
-					const reveal = createEl('button', 't-btn t-btn-sm ghost', '[ REVEAL_SECRET ]');
-					reveal.type = 'button'; reveal.addEventListener('click', () => {
-						resetAutoLock();
-						secretBox.textContent = '> SECRET\n' + item.secret;
-						setTimeout(() => { secretBox.textContent = '> SECRET\n••••••••••••'; }, 12000);
-					});
-					const copySecret = createEl('button', 't-btn t-btn-sm', '[ COPY_SECRET ]');
-					copySecret.type = 'button'; copySecret.addEventListener('click', () => { resetAutoLock(); copyText(item.secret, 'BASE32 SECRET COPIED'); });
-					const edit = createEl('button', 't-btn t-btn-sm', '[ EDIT ]');
-					edit.type = 'button'; edit.addEventListener('click', () => openEntryModal(item.id));
-					const del = createEl('button', 't-btn t-btn-sm ghost', '[ PURGE ]');
-					del.type = 'button'; del.addEventListener('click', () => deleteEntry(item.id));
-					actions.append(pin, reveal, copySecret, edit, del);
-					card.append(header, account);
-					addTags(card, item.tags);
-					card.append(code, timerBg, countdown, secretBox);
-					if (item.notes) card.appendChild(createEl('div', 't-alert mt-3 bunker-pre', '> NOTES\n' + item.notes));
-					addMeta(card, item);
-					card.appendChild(actions);
-					grid.appendChild(card);
-				});
-				container.appendChild(grid);
-				updateTotpCodes();
-			}
-			async function updateTotpCodes() {
-				if (!state.unlocked) return;
-				const now = Date.now();
-				for (const item of filteredItems()) {
-					const period = Number(item.period || 30);
-					const remaining = period - (Math.floor(now / 1000) % period);
-					const codeEl = $('code-' + item.id);
-					const barEl = $('bar-' + item.id);
-					const timerEl = $('timer-' + item.id);
-					if (!codeEl || !barEl || !timerEl) continue;
-					try {
-						const code = await generateTotp(item, now);
-						codeEl.textContent = code.length > 6 ? code : code.replace(/(.{3})/g, '$1 ').trim();
-						codeEl.classList.toggle('warning', remaining <= 5);
-						barEl.style.width = `${(remaining / period) * 100}%`;
-						barEl.classList.toggle('warning', remaining <= 5);
-						timerEl.textContent = `refresh in ${remaining}s`;
-					} catch (error) {
-						codeEl.textContent = 'ERROR';
-						timerEl.textContent = 'invalid secret';
+
+				const groups = groupedItems(items);
+				const htmlParts = [];
+				for (const [group, groupItems] of groups.entries()) {
+					htmlParts.push(`<section class="bunker-group"><div class="bunker-group-header"><strong>&gt; ${escapeHtml(group.toUpperCase())}</strong><span>${groupItems.length} KEY${groupItems.length === 1 ? '' : 'S'}</span></div><div class="bunker-card-grid">`);
+					for (const item of groupItems) {
+						let code = 'ERROR';
+						try { code = await totpCode(item); } catch (error) { code = 'INVALID'; }
+						const remaining = secondsRemaining(item);
+						const tags = (item.tags || []).map(tag => `<span class="bunker-tag bunker-badge-tag">#${escapeHtml(tag)}</span>`).join('');
+						const secret = revealedSecrets.has(item.id) ? item.secret : '••••••••••••••••';
+						const badgeRow = [
+							item.pinned ? '<span class="bunker-badge bunker-badge-pinned">PINNED</span>' : '',
+							'<span class="bunker-badge bunker-badge-type">TOTP</span>',
+							`<span class="bunker-badge bunker-badge-group">${escapeHtml(normalizeGroup(item.group, item.issuer))}</span>`
+						].filter(Boolean).join('');
+						htmlParts.push(`
+							<article class="t-card" data-id="${escapeHtml(item.id)}">
+								<div class="t-card-header d-flex justify-content-between gap-2 flex-wrap"><span>&gt; ${escapeHtml(item.issuer || 'NO ISSUER')}</span><span class="bunker-badge-row">${badgeRow}</span></div>
+								<div class="bunker-code">${escapeHtml(code)}</div>
+								<div class="t-timer-line-bg mt-2 mb-2"><div class="t-timer-line" style="width:${progressPercent(item)}%"></div></div>
+								<div class="bunker-meta">ACCOUNT: ${escapeHtml(item.account || '-')}</div>
+								<div class="bunker-meta">GROUP: ${escapeHtml(normalizeGroup(item.group, item.issuer))}</div>
+								<div class="bunker-meta">ALGO: ${escapeHtml(item.algorithm)} · DIGITS: ${escapeHtml(item.digits)} · PERIOD: ${escapeHtml(item.period)}S · NEXT: ${remaining}S</div>
+								<div class="bunker-tag-row">${tags || '<span class="bunker-tag">NO_TAGS</span>'}</div>
+								<div class="bunker-meta bunker-secret">SECRET: ${escapeHtml(secret)}</div>
+								${item.notes ? `<div class="bunker-pre fs-small mt-2">${escapeHtml(item.notes)}</div>` : ''}
+								<div class="bunker-actions mt-3">
+									<button class="t-btn t-btn-sm" data-action="copy-code" data-id="${escapeHtml(item.id)}">[ COPY_CODE ]</button>
+									<button class="t-btn t-btn-sm" data-action="toggle-secret" data-id="${escapeHtml(item.id)}">[ ${revealedSecrets.has(item.id) ? 'HIDE_SECRET' : 'REVEAL_SECRET'} ]</button>
+									<button class="t-btn t-btn-sm" data-action="copy-secret" data-id="${escapeHtml(item.id)}">[ COPY_SECRET ]</button>
+									<button class="t-btn t-btn-sm" data-action="toggle-pin" data-id="${escapeHtml(item.id)}">[ ${item.pinned ? 'UNPIN' : 'PIN'} ]</button>
+									<button class="t-btn t-btn-sm" data-action="edit" data-id="${escapeHtml(item.id)}">[ EDIT ]</button>
+								</div>
+							</article>
+						`);
 					}
+					htmlParts.push('</div></section>');
+				}
+				els.authList.innerHTML = htmlParts.join('');
+			}
+
+			function openModal(id = null) {
+				editingId = id;
+				const item = id ? db.items.find(entry => entry.id === id) : null;
+				els.modalTitle.textContent = item ? '> EDIT_TOTP_KEY' : '> ADD_TOTP_KEY';
+				els.entryUri.value = '';
+				els.qrFile.value = '';
+				els.qrFileName.textContent = '> NO QR IMAGE SELECTED';
+				els.entryIssuer.value = item?.issuer || '';
+				els.entryAccount.value = item?.account || '';
+				els.entryGroup.value = item?.group || item?.issuer || '';
+				els.entryTags.value = (item?.tags || []).join(', ');
+				els.entryPinned.checked = Boolean(item?.pinned);
+				els.entryAlgorithm.value = item?.algorithm || 'SHA1';
+				els.entrySecret.value = item?.secret || '';
+				els.entryDigits.value = String(item?.digits || 6);
+				els.entryPeriod.value = String(item?.period || 30);
+				els.entryNotes.value = item?.notes || '';
+				els.btnDelete.classList.toggle('bunker-hidden', !item);
+				els.duplicateWarning.classList.add('bunker-hidden');
+				els.entryModal.classList.add('show');
+				els.entryIssuer.focus();
+			}
+
+			function closeModal() {
+				els.entryModal.classList.remove('show');
+				editingId = null;
+			}
+
+			function findDuplicate(issuer, account) {
+				return db.items.find(item => item.id !== editingId && item.issuer.toLowerCase() === issuer.toLowerCase() && item.account.toLowerCase() === account.toLowerCase());
+			}
+
+			function saveEntry() {
+				const issuer = els.entryIssuer.value.trim();
+				const account = els.entryAccount.value.trim();
+				const secret = cleanSecret(els.entrySecret.value);
+				if (!issuer) return showToast('ISSUER IS REQUIRED.', 'warning');
+				if (!account) return showToast('ACCOUNT IS REQUIRED.', 'warning');
+				if (!secret || base32Decode(secret).length < 10) return showToast('VALID BASE32 SECRET IS REQUIRED.', 'warning');
+				const duplicate = findDuplicate(issuer, account);
+				if (duplicate && !confirm('Same issuer + account already exists. Save anyway?')) return;
+				const ts = nowIso();
+				const payload = {
+					issuer,
+					account,
+					group: normalizeGroup(els.entryGroup.value, issuer),
+					secret,
+					algorithm: els.entryAlgorithm.value,
+					digits: Number(els.entryDigits.value),
+					period: Math.max(10, Math.min(120, Number(els.entryPeriod.value) || 30)),
+					tags: normalizeTags(els.entryTags.value),
+					pinned: els.entryPinned.checked,
+					notes: els.entryNotes.value.trim(),
+					updatedAt: ts
+				};
+				if (editingId) {
+					const index = db.items.findIndex(item => item.id === editingId);
+					db.items[index] = normalizeItem({ ...db.items[index], ...payload });
+				} else {
+					db.items.push(normalizeItem({ id: uid('totp'), ...payload, createdAt: ts }));
+				}
+				db.updatedAt = ts;
+				setDirty(true);
+				closeModal();
+				render();
+				showToast('TOTP KEY SAVED.');
+			}
+
+			function deleteEntry() {
+				if (!editingId) return;
+				const item = db.items.find(entry => entry.id === editingId);
+				if (!item || !bunkerCore.confirmDestructive(`DELETE_TOTP ${item.issuer} / ${item.account}`)) return;
+				db.items = db.items.filter(entry => entry.id !== editingId);
+				revealedSecrets.delete(editingId);
+				db.updatedAt = nowIso();
+				setDirty(true);
+				closeModal();
+				render();
+				showToast('TOTP KEY DELETED.');
+			}
+
+			function parseOtpAuthUri(uri) {
+				const parsed = new URL(uri.trim());
+				if (parsed.protocol !== 'otpauth:' || parsed.hostname !== 'totp') throw new Error('Only otpauth://totp URIs are supported.');
+				const label = decodeURIComponent(parsed.pathname.replace(/^\//, ''));
+				const [labelIssuer, ...accountParts] = label.split(':');
+				const params = parsed.searchParams;
+				const issuer = params.get('issuer') || labelIssuer || '';
+				const account = accountParts.join(':') || (params.get('account') || '');
+				const secret = cleanSecret(params.get('secret') || '');
+				if (!secret) throw new Error('otpauth URI does not contain a secret.');
+				els.entryIssuer.value = issuer;
+				els.entryAccount.value = account;
+				els.entryGroup.value = normalizeGroup(els.entryGroup.value || issuer, issuer);
+				els.entrySecret.value = secret;
+				els.entryAlgorithm.value = String(params.get('algorithm') || 'SHA1').toUpperCase().replace('-', '');
+				els.entryDigits.value = String(Number(params.get('digits')) || 6);
+				els.entryPeriod.value = String(Number(params.get('period')) || 30);
+				els.entryTags.value = normalizeTags(els.entryTags.value).join(', ');
+				showToast('OTPAUTH URI PARSED.');
+			}
+
+			async function readQrImage() {
+				const file = els.qrFile.files?.[0];
+				if (!file) return showToast('SELECT A QR IMAGE FIRST.', 'warning');
+				if (!('BarcodeDetector' in window)) return showToast('QR IMPORT IS NOT SUPPORTED BY THIS BROWSER. PASTE THE OTPAUTH URI MANUALLY.', 'warning');
+				const detector = new BarcodeDetector({ formats: ['qr_code'] });
+				const bitmap = await createImageBitmap(file);
+				const codes = await detector.detect(bitmap);
+				if (!codes.length) return showToast('NO QR CODE FOUND IN IMAGE.', 'warning');
+				const value = codes[0].rawValue || '';
+				if (!value.startsWith('otpauth://')) return showToast('QR CODE IS NOT AN OTPAUTH URI.', 'warning');
+				els.entryUri.value = value;
+				parseOtpAuthUri(value);
+			}
+
+			function updateDuplicateWarning() {
+				const issuer = els.entryIssuer.value.trim();
+				const account = els.entryAccount.value.trim();
+				const duplicate = issuer && account && findDuplicate(issuer, account);
+				els.duplicateWarning.classList.toggle('bunker-hidden', !duplicate);
+			}
+
+			async function handleListAction(event) {
+				const button = event.target.closest('[data-action]');
+				if (!button) return;
+				const item = db.items.find(entry => entry.id === button.dataset.id);
+				if (!item) return;
+				const action = button.dataset.action;
+				if (action === 'edit') return openModal(item.id);
+				if (action === 'copy-code') return copyText(await totpCode(item), 'CODE COPIED.');
+				if (action === 'copy-secret') return copyText(item.secret, 'SECRET COPIED.');
+				if (action === 'toggle-secret') {
+					if (revealedSecrets.has(item.id)) revealedSecrets.delete(item.id);
+					else revealedSecrets.add(item.id);
+					render();
+				}
+				if (action === 'toggle-pin') {
+					item.pinned = !item.pinned;
+					item.updatedAt = nowIso();
+					db.updatedAt = item.updatedAt;
+					setDirty(true);
+					render();
 				}
 			}
-			function startTicker() {
-				if (ticker) clearInterval(ticker);
-				ticker = setInterval(updateTotpCodes, 1000);
-				updateTotpCodes();
-			}
-			function bindAuth() {
-				$('btnCreate').addEventListener('click', createNewAuth);
-				$('btnImport').addEventListener('click', importAuth);
-				$('importFile').addEventListener('change', selectedFileNameLabel);
-				bindEyeToggles();
-				$('btnExport').addEventListener('click', exportAuth);
-				$('btnLock').addEventListener('click', () => lockAuth());
-				$('btnAdd').addEventListener('click', () => openEntryModal());
-				$('btnSaveEntry').addEventListener('click', saveEntry);
-				$('btnCloseModal').addEventListener('click', closeEntryModal);
-				$('btnCancelModal').addEventListener('click', closeEntryModal);
-				$('btnParseUri').addEventListener('click', parseOtpAuthUri);
-				$('entrySecret').addEventListener('input', validateSecretPreview);
-				$('entryAlgorithm').addEventListener('change', validateSecretPreview);
-				$('entryDigits').addEventListener('change', validateSecretPreview);
-				$('entryPeriod').addEventListener('input', validateSecretPreview);
-				$('searchInput').addEventListener('input', renderAuth);
-				qsa('[data-filter]').forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter, btn)));
-				['click', 'keydown', 'input', 'touchstart'].forEach(eventName => document.addEventListener(eventName, resetAutoLock, { passive: true }));
-			}
-			bindAuth();
-			toast('CRYPTO READY: ARGON2ID + XCHACHA20-POLY1305', 'normal');
+
+			els.importFile.addEventListener('change', async () => {
+				const file = els.importFile.files?.[0];
+				els.importFileName.textContent = file ? `> SELECTED: ${file.name}` : '> NO FILE SELECTED';
+				await previewImportEnvelope(file);
+			});
+
+			els.qrFile.addEventListener('change', () => {
+				els.qrFileName.textContent = els.qrFile.files?.[0] ? `> ${els.qrFile.files[0].name}` : '> NO QR IMAGE SELECTED';
+			});
+
+			els.btnImport.addEventListener('click', async () => {
+				try {
+					const file = els.importFile.files?.[0];
+					const password = els.importPassword.value;
+					if (!file) return showToast('SELECT AN .ENC FILE.', 'warning');
+					if (!password) return showToast('MASTER PASSWORD IS REQUIRED.', 'warning');
+					const container = JSON.parse(await file.text());
+					unlockWith(decryptContainer(container, password), password, file.name);
+				} catch (error) {
+					showToast(error.message || 'IMPORT FAILED.', 'danger');
+				}
+			});
+
+			els.btnCreate.addEventListener('click', () => {
+				const password = els.newPassword.value;
+				if (password.length < 10) return showToast('MASTER PASSWORD MUST BE AT LEAST 10 CHARACTERS.', 'warning');
+				if (password !== els.newConfirm.value) return showToast('PASSWORD CONFIRMATION DOES NOT MATCH.', 'warning');
+				unlockWith(defaultDb(), password);
+			});
+
+			els.btnAdd.addEventListener('click', () => openModal());
+			els.btnExport.addEventListener('click', exportEncrypted);
+			els.btnLock.addEventListener('click', () => lockApp(false));
+				els.btnPanicLock.addEventListener('click', panicLock);
+			els.btnCloseModal.addEventListener('click', closeModal);
+			els.btnSave.addEventListener('click', saveEntry);
+			els.btnDelete.addEventListener('click', deleteEntry);
+			els.btnParseUri.addEventListener('click', () => {
+				try { parseOtpAuthUri(els.entryUri.value); }
+				catch (error) { showToast(error.message || 'URI PARSE FAILED.', 'warning'); }
+			});
+			els.btnReadQr.addEventListener('click', () => readQrImage().catch(error => showToast(error.message || 'QR IMPORT FAILED.', 'warning')));
+			els.searchInput.addEventListener('input', render);
+			els.groupFilter.addEventListener('change', render);
+			els.authList.addEventListener('click', handleListAction);
+
+			document.querySelectorAll('.filter-tab').forEach(button => button.addEventListener('click', () => {
+				document.querySelectorAll('.filter-tab').forEach(item => item.classList.remove('active'));
+				button.classList.add('active');
+				activeFilter = button.dataset.filter;
+				render();
+			}));
+
+			document.addEventListener('input', event => {
+				if (event.target.closest('#entryModal')) updateDuplicateWarning();
+			});
+
+			document.addEventListener('click', event => {
+				const button = event.target.closest('[data-eye]');
+				if (!button) return;
+				const input = document.getElementById(button.dataset.eye);
+				if (!input) return;
+				input.type = input.type === 'password' ? 'text' : 'password';
+			});
+
+			['click', 'keydown', 'mousemove', 'touchstart'].forEach(type => document.addEventListener(type, resetAutoLock, { passive: true }));
+
+			window.addEventListener('beforeunload', event => {
+				if (!dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			});
 		</script>
+
+		<script>
+			(() => {
+				const gate = document.getElementById('privacyLockGate');
+				const panel = document.getElementById('unlockPanel');
+				const pane = document.getElementById('paneLocked');
+				const reveal = document.getElementById('btnRevealUnlock');
+				if (!gate || !panel || !pane || !reveal) return;
+
+				function clearLockedPanel() {
+					panel.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });
+					panel.querySelectorAll('input[type="file"]').forEach(input => { input.value = ''; });
+					panel.querySelectorAll('[id$="FileName"]').forEach(label => { label.textContent = '> NO FILE SELECTED'; });
+					const summary = panel.querySelector('#importEnvelopeSummary');
+					if (summary) summary.textContent = '> SELECT A .ENC FILE TO PREVIEW HEADER.';
+				}
+
+				function showPrivacyLock() {
+					gate.classList.remove('bunker-hidden');
+					panel.classList.add('is-hidden');
+					clearLockedPanel();
+				}
+
+				function showUnlockPanel() {
+					gate.classList.add('bunker-hidden');
+					panel.classList.remove('is-hidden');
+					const focusTarget = panel.querySelector('input, button, select, textarea');
+					if (focusTarget) focusTarget.focus({ preventScroll:false });
+				}
+
+				reveal.addEventListener('click', showUnlockPanel);
+				showPrivacyLock();
+
+				new MutationObserver(() => {
+					if (pane.classList.contains('active')) showPrivacyLock();
+				}).observe(pane, { attributes:true, attributeFilter:['class'] });
+			})();
+		</script>
+
+		<script>
+			(() => {
+				const ids = ['newPassword', 'importPassword', 'passphrase'];
+
+				function classFor(level) {
+					if (level === 'success') return 't-alert success bunker-master-warning';
+					if (level === 'danger') return 't-alert danger bunker-master-warning';
+					return 't-alert warning bunker-master-warning';
+				}
+
+				function ensureWarningPanel(input) {
+					if (!input) return null;
+					const panelId = `${input.id}MasterPasswordWarning`;
+					let panel = document.getElementById(panelId);
+					if (panel) return panel;
+					panel = document.createElement('div');
+					panel.id = panelId;
+					panel.className = 't-alert warning bunker-master-warning';
+					panel.setAttribute('aria-live', 'polite');
+					const anchor = input.closest('.bunker-input-group') || input;
+					anchor.insertAdjacentElement('afterend', panel);
+					return panel;
+				}
+
+				function adviceFor(value) {
+					if (window.BunkerCore && typeof window.BunkerCore.masterPasswordAdvice === 'function') {
+						return window.BunkerCore.masterPasswordAdvice(value);
+					}
+					const password = String(value || '');
+					const weak = password.length < 16;
+					return {
+						level: weak ? 'WEAK' : 'STRONG',
+						className: weak ? 'danger' : 'success',
+						lines: weak ? [
+							'> MASTER_PASSWORD: WEAK',
+							'> Use a unique passphrase with 16+ characters for offline .enc storage.'
+						] : [
+							'> MASTER_PASSWORD: STRONG',
+							'> This looks suitable for offline .enc storage.'
+						]
+					};
+				}
+
+				function updateWarning(input) {
+					const panel = ensureWarningPanel(input);
+					if (!panel) return;
+					const advice = adviceFor(input.value);
+					panel.className = classFor(advice.className || 'warning');
+					panel.textContent = Array.isArray(advice.lines) ? advice.lines.join('\n') : String(advice.lines || '> MASTER_PASSWORD: UNKNOWN');
+				}
+
+				function bind() {
+					ids.forEach(id => {
+						const input = document.getElementById(id);
+						if (!input) return;
+						ensureWarningPanel(input);
+						updateWarning(input);
+						input.addEventListener('input', () => updateWarning(input));
+						input.addEventListener('change', () => updateWarning(input));
+					});
+				}
+
+				bind();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				const bar = document.getElementById('mobileActionBar');
+				if (!bar) return;
+
+				const byId = id => document.getElementById(id);
+				const clickFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.click();
+							return true;
+						}
+					}
+					return false;
+				};
+				const focusFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.scrollIntoView({ behavior:'smooth', block:'center' });
+							setTimeout(() => el.focus(), 180);
+							return true;
+						}
+					}
+					return false;
+				};
+				const isHidden = el => !el || el.classList.contains('hidden') || el.classList.contains('bunker-hidden') || el.classList.contains('is-hidden') || el.classList.contains('is-privacy-hidden');
+				const isUnlocked = () => {
+					const paneApp = byId('paneApp');
+					if (paneApp) return paneApp.classList.contains('active') && !isHidden(paneApp);
+					const appPanel = byId('appPanel');
+					if (appPanel) return !isHidden(appPanel);
+					const lockedPanel = byId('lockedPanel') || byId('paneLocked');
+					if (lockedPanel) return isHidden(lockedPanel);
+					return false;
+				};
+				const refreshBar = () => {
+					const mobile = window.matchMedia('(max-width:768px)').matches;
+					const show = mobile && isUnlocked();
+					document.body.classList.toggle('has-mobile-actionbar', show);
+					bar.classList.toggle('is-hidden', !show);
+				};
+
+				byId('mobileBtnNew')?.addEventListener('click', () => {
+					if (clickFirst(['btnAdd'])) return;
+					if (clickFirst(['btnResetCard'])) return focusFirst(['cardTitle']);
+					if (clickFirst(['btnResetItem'])) return focusFirst(['itemTitle']);
+					if (clickFirst(['btnResetSnippet'])) return focusFirst(['snippetTitle']);
+					if (clickFirst(['btnResetBookmark'])) return focusFirst(['bookmarkTitle']);
+					focusFirst(['entryTitle', 'cardTitle', 'itemTitle', 'snippetTitle', 'bookmarkTitle', 'contactName', 'txTitle']);
+				});
+				byId('mobileBtnSearch')?.addEventListener('click', () => focusFirst(['searchInput']));
+				byId('mobileBtnExport')?.addEventListener('click', () => clickFirst(['btnExport']));
+				byId('mobileBtnLock')?.addEventListener('click', () => clickFirst(['btnLock']));
+				byId('mobileBtnPanic')?.addEventListener('click', () => clickFirst(['btnPanicLock']));
+
+				new MutationObserver(refreshBar).observe(document.body, { attributes:true, subtree:true, attributeFilter:['class'] });
+				window.addEventListener('resize', refreshBar, { passive:true });
+				window.addEventListener('orientationchange', refreshBar, { passive:true });
+				setInterval(refreshBar, 1000);
+				refreshBar();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				'use strict';
+				const appTitle = (document.title || 'Bunker App').replace(/\s+v\d+$/i, '');
+				function nounForApp() {
+					const lower = appTitle.toLowerCase();
+					if (lower.includes('auth')) return 'TOTP key';
+					if (lower.includes('board')) return 'card or board item';
+					if (lower.includes('bookmarks')) return 'bookmark';
+					if (lower.includes('contacts')) return 'contact';
+					if (lower.includes('ledger')) return 'transaction';
+					if (lower.includes('notes')) return 'note';
+					if (lower.includes('planner')) return 'planner item';
+					if (lower.includes('snippets')) return 'snippet';
+					if (lower.includes('vault')) return 'vault entry';
+					return 'item';
+				}
+				function escapeHtml(value) {
+					return String(value || '').replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+				}
+				function classify(rawText) {
+					const text = String(rawText || '').replace(/\s+/g, ' ').trim();
+					const upper = text.toUpperCase();
+					const noun = nounForApp();
+					if (upper.includes('NO_BOARD') || upper.includes('NO BOARD')) {
+						return {
+							code: 'NO_BOARD_AVAILABLE',
+							title: 'No board is available yet.',
+							line: 'Create a board first, then add columns and cards.',
+							next: 'After editing, export a fresh .enc file to keep the board.'
+						};
+					}
+					if (upper.includes('NO CARDS')) {
+						return {
+							code: 'COLUMN_EMPTY',
+							title: 'This column has no cards.',
+							line: 'Add a card here or drag an existing card into this column.',
+							next: 'Export a fresh .enc file after changing the board.'
+						};
+					}
+					if (upper.includes('NO_RECURRING')) {
+						return {
+							code: 'NO_RECURRING_TEMPLATE',
+							title: 'No recurring template exists yet.',
+							line: 'Create a recurring template for repeated transactions, tasks, or events.',
+							next: 'Run the generator when you want to create real dated entries.'
+						};
+					}
+					if (upper.includes('NO_ACCOUNTS')) {
+						return {
+							code: 'NO_ACCOUNTS_YET',
+							title: 'No account or wallet exists yet.',
+							line: 'Create an account such as Cash, Bank, Wallet, Savings, or another balance source.',
+							next: 'Export a fresh .enc file after adding account data.'
+						};
+					}
+					if (upper.includes('NO_BUDGETS')) {
+						return {
+							code: 'NO_BUDGETS_YET',
+							title: 'No budget rule exists yet.',
+							line: 'Create a monthly category budget to compare spending against a planned limit.',
+							next: 'Export a fresh .enc file after adding budget data.'
+						};
+					}
+					if (upper.includes('NO_OPEN_DEBT')) {
+						return { code:'NO_OPEN_DEBT', title:'No open debt is currently visible.', line:'Add debt transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_OPEN_LOAN')) {
+						return { code:'NO_OPEN_LOAN', title:'No open loan is currently visible.', line:'Add loan transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_SUMMARY')) {
+						return { code:'NO_SUMMARY_FOR_CURRENT_FILTER', title:'No summary can be calculated for this filter.', line:'Add matching records or adjust the date/type/search filters.', next:'Summary updates automatically after data changes.' };
+					}
+					if (upper.includes('NO ITEM ON SELECTED DATE')) {
+						return { code:'NO_SELECTED_DATE_ITEMS', title:'No item exists on the selected date.', line:'Select another date or create a task/event for this day.', next:'Export a fresh .enc file after editing planner data.' };
+					}
+					if (upper.includes('MATCH') || upper.includes('CURRENT FILTER') || upper.includes('FOUND')) {
+						return {
+							code: 'NO_VISIBLE_RESULTS',
+							title: `No ${noun}s match the current view.`,
+							line: 'Clear search/filter, switch tabs, or create a new item.',
+							next: 'After creating or editing data, export a fresh .enc file before closing.'
+						};
+					}
+					return {
+						code: 'EMPTY_DATASET',
+						title: `No ${noun}s yet.`,
+						line: `Create your first ${noun}, then review it in this list.`,
+						next: 'Export a fresh .enc file after changes so the data is not lost.'
+					};
+				}
+				function enhanceEmptyState(node) {
+					if (!node || node.dataset.bunkerEmptyEnhanced === '1') return;
+					const rawText = node.textContent || '';
+					if (!rawText.trim()) return;
+					const data = classify(rawText);
+					node.dataset.bunkerEmptyEnhanced = '1';
+					node.classList.add('bunker-empty-state');
+					node.innerHTML = [
+						'<div class="bunker-empty-state-icon">[ ∅ ]</div>',
+						`<div class="bunker-empty-state-title">&gt; EMPTY_STATE: ${escapeHtml(data.code)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.title)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.line)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.next)}</div>`
+					].join('');
+				}
+				function enhanceAllEmptyStates() {
+					document.querySelectorAll('.empty-state, .t-empty-state').forEach(enhanceEmptyState);
+				}
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', enhanceAllEmptyStates);
+				} else {
+					enhanceAllEmptyStates();
+				}
+				const observer = new MutationObserver(() => enhanceAllEmptyStates());
+				observer.observe(document.documentElement, { childList:true, subtree:true });
+			})();
+		</script>
+
 	</body>
 </html>

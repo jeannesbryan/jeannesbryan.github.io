@@ -60,7 +60,7 @@
 			}
 			.bunker-card-grid {
 				display:grid;
-				grid-template-columns:repeat(auto-fill, minmax(290px,1fr));
+				grid-template-columns:repeat(auto-fill, minmax(320px,1fr));
 				gap:20px;
 			}
 			.bunker-actions {
@@ -77,7 +77,7 @@
 			.bunker-hero .t-hero-title { margin-bottom:6px; }
 			.bunker-hero .t-hero-subtitle {
 				margin:0 auto;
-				max-width:760px;
+				max-width:820px;
 			}
 			.bunker-file-name {
 				display:block;
@@ -107,7 +107,7 @@
 				min-width:58px;
 				border-left:1px dashed #00ff41;
 			}
-			.bunker-wide-modal { max-width:920px; }
+			.bunker-wide-modal { max-width:1040px; }
 			.bunker-hidden { display:none !important; }
 			.bunker-pre {
 				white-space:pre-wrap;
@@ -146,26 +146,194 @@
 				border-left:3px solid #00ff41;
 				padding-left:12px;
 			}
-			.bunker-tag-row {
+			.bunker-preview a {
+				color:#00ff41 !important;
+				text-decoration:underline;
+			}
+			.bunker-tag-row,
+			.bunker-meta,
+			.bunker-link-row,
+			.bunker-toc-list {
 				display:flex;
 				flex-wrap:wrap;
 				gap:8px;
 				align-items:center;
 			}
 			.bunker-note-card .bunker-preview {
-				max-height:280px;
+				max-height:260px;
 				overflow:auto;
 			}
-			.bunker-meta {
-				display:flex;
-				flex-wrap:wrap;
-				gap:8px;
-				align-items:center;
+			.bunker-toc-panel,
+			.bunker-backlink-panel {
+				border:1px dashed #00ff41;
+				padding:12px;
+				margin-bottom:15px;
 			}
+			.bunker-toc-item[data-level="2"] { margin-left:14px; }
+			.bunker-toc-item[data-level="3"] { margin-left:28px; }
+			.bunker-toc-item[data-level="4"] { margin-left:42px; }
+			.bunker-toc-item[data-level="5"] { margin-left:56px; }
+			.bunker-toc-item[data-level="6"] { margin-left:70px; }
+			.bunker-missing-link {
+				border-style:dotted !important;
+			}
+			.bunker-app-status { margin-bottom:16px; }
+			.bunker-app-status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px; }
+			.bunker-app-status-cell { border:1px dashed #00ff41; padding:8px; font-size:.78rem; line-height:1.55; overflow-wrap:anywhere; word-break:break-word; }
+
+			.bunker-import-summary { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.6; }
+
+			.bunker-lock-gate {
+				max-width:680px;
+				margin:0 auto 18px;
+				text-align:center;
+			}
+			.bunker-lock-gate-title {
+				font-weight:700;
+				letter-spacing:.08em;
+				font-size:clamp(1.35rem,4vw,2rem);
+				margin-bottom:.5rem;
+			}
+			.bunker-lock-gate-text {
+				max-width:560px;
+				margin:.35rem auto 1rem;
+			}
+			.bunker-unlock-panel.is-hidden,
+			.bunker-privacy-context.is-privacy-hidden {
+				display:none !important;
+			}
+
 			@media (max-width:768px) {
 				.bunker-form-grid { grid-template-columns:1fr; }
 				.bunker-actions { justify-content:flex-start; }
 			}
+			.bunker-export-warning {
+				margin-top:1rem;
+				border-style:double;
+			}
+			.bunker-export-warning.is-hidden {
+				display:none;
+			}
+			.bunker-export-warning-title {
+				font-weight:700;
+				letter-spacing:.04em;
+			}
+			.bunker-export-warning-meta {
+				margin-top:.35rem;
+			}
+			.t-btn.bunker-export-now {
+				box-shadow:0 0 0 1px currentColor inset;
+				font-weight:700;
+			}
+
+			.t-btn.bunker-panic-btn {
+				border-style:double;
+				font-weight:700;
+			}
+
+					.bunker-master-warning { white-space:pre-wrap; margin-top:8px; margin-bottom:12px; }
+		
+
+			.bunker-mobile-actionbar {
+				display:none;
+			}
+			@media (max-width:768px) {
+				body.has-mobile-actionbar {
+					padding-bottom:86px;
+				}
+				.bunker-mobile-actionbar {
+					position:fixed;
+					left:0;
+					right:0;
+					bottom:0;
+					z-index:9999;
+					display:grid;
+					grid-template-columns:repeat(5,minmax(0,1fr));
+					gap:6px;
+					padding:8px;
+					background:#000000;
+					border-top:1px solid #00ff41;
+					box-shadow:0 -4px 18px rgba(0,255,65,.12);
+				}
+				.bunker-mobile-actionbar.is-hidden {
+					display:none !important;
+				}
+				.bunker-mobile-actionbar .t-btn {
+					font-size:.68rem;
+					padding:.52rem .18rem;
+					min-width:0;
+					white-space:nowrap;
+				}
+			}
+
+			.bunker-badge-row,
+			.bunker-status-row,
+			.bookmark-tags,
+			.snippet-tags,
+			.item-tags,
+			.card-tags,
+			.bunker-tag-row,
+			.mini-list,
+			.status-strip {
+				display:flex;
+				flex-wrap:wrap;
+				gap:6px;
+				align-items:center;
+			}
+			.bunker-badge,
+			.t-badge,
+			.bunker-tag,
+			.tag-pill,
+			.mini-pill,
+			.status-pill,
+			.extension-badge,
+			.day-chip,
+			.day-count {
+				display:inline-flex;
+				align-items:center;
+				max-width:100%;
+				border:1px solid #00ff41 !important;
+				background:#000000 !important;
+				color:#00ff41 !important;
+				padding:2px 7px;
+				font-size:.72rem;
+				line-height:1.35;
+				letter-spacing:.035em;
+				text-transform:uppercase;
+				white-space:nowrap;
+				overflow:hidden;
+				text-overflow:ellipsis;
+			}
+			.bunker-badge-pinned,
+			.bunker-badge-favorite,
+			.bunker-badge-emergency,
+			.bunker-badge-urgent,
+			.bunker-badge-overdue,
+			.bunker-badge-blocked,
+			.bunker-badge-audit,
+			.bunker-badge-dirty,
+			.bunker-badge-archive,
+			.bunker-badge-archived,
+			.bunker-badge-read_later,
+			.bunker-badge-read-later {
+				border-style:double !important;
+				font-weight:700;
+			}
+			.bunker-badge-tag,
+			.bunker-badge-id,
+			.bunker-badge-updated,
+			.bunker-badge-file,
+			.bunker-tag,
+			.tag-pill {
+				border-style:dashed !important;
+			}
+			.bunker-badge-done,
+			.bunker-badge-active,
+			.bunker-badge-open,
+			.bunker-badge-clean {
+				border-style:solid !important;
+			}
+
 		</style>
 	</head>
 	<body class="t-crt">
@@ -176,11 +344,28 @@
 
 		<main class="t-shell">
 			<section id="paneLocked" class="t-pane active">
+				<div id="privacyLockGate" class="t-card bunker-lock-gate" role="region" aria-label="Locked privacy screen">
+					<div class="bunker-lock-gate-title">BUNKER LOCKED</div>
+					<div class="bunker-lock-gate-text text-muted">No decrypted data, item counts, filenames, filters, or metadata are shown while this app is locked.</div>
+					<button id="btnRevealUnlock" class="t-btn" type="button">[ UNLOCK ]</button>
+				</div>
+				<div id="unlockPanel" class="bunker-unlock-panel is-hidden">
+
 				<div class="bunker-hero">
 					<h1 class="t-hero-title">BUNKER_NOTES</h1>
-					<p class="t-hero-subtitle">Static encrypted Markdown notes. Import an encrypted <i>.enc</i> file or create a new notes database. Everything is decrypted and rendered locally in your browser.</p>
+					<p class="t-hero-subtitle">Static encrypted Markdown notes with wiki-style links, backlinks, table of contents, and local .md export. Everything is decrypted and rendered locally in your browser.</p>
 				</div>
-				<div class="t-grid t-grid-2">
+				<div class="t-card bunker-app-status">
+					<div class="t-card-header">&gt; APP_STATUS</div>
+					<div class="bunker-app-status-grid">
+						<div class="bunker-app-status-cell"><strong>APP</strong><br>Bunker Notes</div>
+						<div class="bunker-app-status-cell"><strong>SCHEMA</strong><br>v2</div>
+						<div class="bunker-app-status-cell"><strong>FORMAT</strong><br>bunker-notes-v2-enc</div>
+						<div class="bunker-app-status-cell"><strong>CRYPTO</strong><br>Argon2id + XChaCha20-Poly1305</div>
+						<div class="bunker-app-status-cell"><strong>STORAGE</strong><br>LOCAL_ONLY / MEMORY_ONLY</div>
+						<div class="bunker-app-status-cell"><strong>EXPORT</strong><br>REQUIRED_AFTER_CHANGES</div>
+					</div>
+				</div>
 					<div class="t-card">
 						<div class="t-card-header">> IMPORT_EXISTING_NOTES</div>
 						<label class="t-form-label">> encrypted file</label>
@@ -189,6 +374,7 @@
 							<span class="t-file-btn">[ SELECT .ENC ]</span>
 						</div>
 						<span id="importFileName" class="bunker-file-name fs-small text-muted mb-3">> NO FILE SELECTED</span>
+						<div id="importEnvelopeSummary" class="t-alert warning bunker-import-summary">&gt; SELECT A .ENC FILE TO PREVIEW HEADER.</div>
 						<label class="t-form-label">> master password</label>
 						<div class="bunker-input-group">
 							<input id="importPassword" class="t-input" type="password" autocomplete="current-password" placeholder="ENTER MASTER PASSWORD">
@@ -220,14 +406,29 @@
 				<div class="t-alert warning">> Keep your master password safe. Without it, the .enc file cannot be recovered.</div>
 			</section>
 
+				</div>
 			<section id="paneApp" class="t-pane">
 				<div class="t-toolbar">
 					<div class="t-toolbar-group">
 						<button id="btnAdd" class="t-btn">[ + ADD_NOTE ]</button>
 						<button id="btnExport" class="t-btn">[ EXPORT_ENC ]</button>
+						<button id="btnExportMd" class="t-btn">[ EXPORT_MD_BUNDLE ]</button>
 					</div>
 					<div class="t-toolbar-group">
 						<button id="btnLock" class="t-btn">[ LOCK ]</button>
+						<button id="btnPanicLock" class="t-btn bunker-panic-btn" type="button">[ PANIC_LOCK ]</button>
+					</div>
+				</div>
+
+				<div class="t-card bunker-app-status">
+					<div class="t-card-header">&gt; APP_STATUS</div>
+					<div class="bunker-app-status-grid">
+						<div class="bunker-app-status-cell"><strong>APP</strong><br>Bunker Notes</div>
+						<div class="bunker-app-status-cell"><strong>SCHEMA</strong><br>v2</div>
+						<div class="bunker-app-status-cell"><strong>FORMAT</strong><br>bunker-notes-v2-enc</div>
+						<div class="bunker-app-status-cell"><strong>CRYPTO</strong><br>Argon2id + XChaCha20-Poly1305</div>
+						<div class="bunker-app-status-cell"><strong>STORAGE</strong><br>LOCAL_ONLY / MEMORY_ONLY</div>
+						<div class="bunker-app-status-cell"><strong>EXPORT</strong><br>REQUIRED_AFTER_CHANGES</div>
 					</div>
 				</div>
 
@@ -236,16 +437,26 @@
 					<span>STATE: <strong id="statusDirty" class="text-success">CLEAN</strong></span>
 					<span>NOTES: <strong id="countAll">0</strong></span>
 					<span>PINNED: <strong id="countPinned">0</strong></span>
+					<span>LINKS: <strong id="countLinks">0</strong></span>
 				</div>
+
+				<div id="exportWarning" class="t-alert bunker-export-warning is-hidden" role="alert" aria-live="polite">
+					<div class="bunker-export-warning-title">UNSAVED CHANGES — EXPORT REQUIRED</div>
+					<div>Changes exist only in memory. Export a new <code>.enc</code> file before locking, reloading, closing, or leaving this page.</div>
+					<div class="bunker-export-warning-meta fs-small">DIRTY_SINCE: <strong id="dirtySince">UNKNOWN</strong></div>
+				</div>
+
 
 				<div class="t-card">
 					<div class="t-command mb-3">
 						<span class="t-command-prompt">$</span>
-						<input id="searchInput" class="t-input" type="search" placeholder="QUERY_NOTES...">
+						<input id="searchInput" class="t-input" type="search" placeholder="QUERY_NOTES_LINKS_BACKLINKS...">
 					</div>
 					<div class="t-tabs-header flex-wrap mb-3">
 						<button class="t-tab-btn filter-tab active" data-filter="ALL">ALL</button>
 						<button class="t-tab-btn filter-tab" data-filter="PINNED">PINNED</button>
+						<button class="t-tab-btn filter-tab" data-filter="LINKED">LINKED</button>
+						<button class="t-tab-btn filter-tab" data-filter="ORPHAN">ORPHAN</button>
 					</div>
 					<div id="tagFilters" class="bunker-tag-row"></div>
 				</div>
@@ -278,7 +489,21 @@
 					</label>
 
 					<label class="t-form-label">> markdown content</label>
-					<textarea id="entryContent" class="t-textarea" rows="12" placeholder="# Title&#10;&#10;Write encrypted Markdown here..."></textarea>
+					<textarea id="entryContent" class="t-textarea" rows="13" placeholder="# Title&#10;&#10;Link another note with [[Note Title]] or [[Note Title|custom label]]."></textarea>
+
+					<div class="t-grid t-grid-2">
+						<div class="t-card p-3">
+							<div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-3">
+								<span class="font-bold">> TABLE_OF_CONTENTS</span>
+								<button id="btnInsertLink" class="t-btn t-btn-sm" type="button">[ INSERT_LINK ]</button>
+							</div>
+							<div id="entryToc" class="bunker-toc-panel fs-small">> NO HEADINGS</div>
+						</div>
+						<div class="t-card p-3">
+							<div class="font-bold mb-3">> BACKLINKS</div>
+							<div id="entryBacklinks" class="bunker-backlink-panel fs-small">> NO BACKLINKS</div>
+						</div>
+					</div>
 
 					<div class="t-card p-3">
 						<div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-3">
@@ -296,15 +521,25 @@
 			</div>
 		</div>
 
+
+		<div id="mobileActionBar" class="bunker-mobile-actionbar is-hidden" aria-label="Mobile action bar">
+			<button id="mobileBtnNew" class="t-btn" type="button">[ + ]</button>
+			<button id="mobileBtnSearch" class="t-btn" type="button">[ SEARCH ]</button>
+			<button id="mobileBtnExport" class="t-btn" type="button">[ EXPORT ]</button>
+			<button id="mobileBtnLock" class="t-btn" type="button">[ LOCK ]</button>
+			<button id="mobileBtnPanic" class="t-btn bunker-panic-btn" type="button">[ PANIC ]</button>
+		</div>
+
 		<script src="../assets/terminal.js" defer></script>
 		<script src="../assets/markdown-it.min.js"></script>
 		<script src="../assets/purify.min.js"></script>
+		<script src="../assets/bunker-core.js"></script>
 		<script type="module">
 			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
 			await sodium.ready;
 			window.sodium = sodium;
 
-			const APP_VERSION = 1;
+			const APP_VERSION = 2;
 			const KDF_OPSLIMIT = 3;
 			const KDF_MEMLIMIT = 64 * 1024 * 1024;
 			const AUTO_LOCK_MS = 10 * 60 * 1000;
@@ -317,7 +552,7 @@
 			const state = {
 				unlocked:false,
 				password:'',
-				items:[],
+				db:null,
 				fileName:'',
 				dirty:false,
 				editingId:null,
@@ -353,13 +588,112 @@
 				if (Array.isArray(value)) return [...new Set(value.map(v => normalizeText(v).toLowerCase()).filter(Boolean))];
 				return [...new Set(String(value || '').split(',').map(v => normalizeText(v).toLowerCase()).filter(Boolean))];
 			}
+			function slugify(value) {
+				return normalizeText(value)
+					.toLowerCase()
+					.normalize('NFKD')
+					.replace(/[\u0300-\u036f]/g, '')
+					.replace(/[^a-z0-9]+/g, '-')
+					.replace(/^-+|-+$/g, '') || 'note';
+			}
+			function uniqueSlug(title, id = '') {
+				const base = slugify(title);
+				let slug = base;
+				let i = 2;
+				while ((state.db?.notes || []).some(note => note.id !== id && note.slug === slug)) slug = `${base}-${i++}`;
+				return slug;
+			}
 			function toB64(bytes) { return sodium.to_base64(bytes, B64); }
 			function fromB64(text) { return sodium.from_base64(text, B64); }
 			function aadFor(kind) { return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`); }
+
+
+			const bunkerCore = window.BunkerCore.create({
+				sodium,
+				appVersion: APP_VERSION,
+				textEncoder,
+				textDecoder,
+				nowIso,
+				kdfOpslimit: typeof KDF_OPSLIMIT === 'undefined' ? undefined : KDF_OPSLIMIT,
+				kdfMemlimit: typeof KDF_MEMLIMIT === 'undefined' ? undefined : KDF_MEMLIMIT
+			});
+			function appNameForKind(kind) { return bunkerCore.appNameForKind(kind); }
+			function expectedEncFormat(kind) { return bunkerCore.expectedEncFormat(kind); }
+			function encB64(bytes) { return bunkerCore.encB64(bytes); }
+			function decB64(value) { return bunkerCore.decB64(value); }
+			function makeEnvelope(kind, source, kdf, salt, nonce, cipher) { return bunkerCore.makeEnvelope(kind, source, kdf, salt, nonce, cipher); }
+			function assertEnvelope(envelope, kind) { return bunkerCore.assertEnvelope(envelope, kind); }
+			function wikiToMarkdown(markdown) {
+				return String(markdown || '').replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, target, label) => {
+					const cleanTarget = normalizeText(target);
+					const cleanLabel = normalizeText(label || target);
+					return `[${cleanLabel}](#note:${encodeURIComponent(cleanTarget)})`;
+				});
+			}
 			function renderMarkdown(markdown) {
-				const dirty = md.render(String(markdown || ''));
+				const dirty = md.render(wikiToMarkdown(markdown));
 				return DOMPurify.sanitize(dirty);
 			}
+			function extractLinks(markdown) {
+				const links = [];
+				const re = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
+				let match;
+				while ((match = re.exec(String(markdown || ''))) !== null) {
+					const target = normalizeText(match[1]);
+					if (!target) continue;
+					links.push({ target, slug:slugify(target), label:normalizeText(match[2] || match[1]) });
+				}
+				return links;
+			}
+			function headingId(text, index) { return `${slugify(text)}-${index + 1}`; }
+			function extractHeadings(markdown) {
+				const headings = [];
+				String(markdown || '').split(/\r?\n/).forEach(line => {
+					const match = /^(#{1,6})\s+(.+?)\s*$/.exec(line);
+					if (!match) return;
+					const title = match[2].replace(/[#*_`~\[\]()]/g, '').trim();
+					if (title) headings.push({ level:match[1].length, title, id:headingId(title, headings.length) });
+				});
+				return headings;
+			}
+			function findNoteByTarget(target) {
+				const wanted = slugify(target);
+				return (state.db?.notes || []).find(note => note.slug === wanted || slugify(note.title) === wanted) || null;
+			}
+			function noteLinks(note) {
+				return extractLinks(note.content).map(link => ({ ...link, note:findNoteByTarget(link.target) }));
+			}
+			function backlinksFor(noteId) {
+				const target = (state.db?.notes || []).find(note => note.id === noteId);
+				if (!target) return [];
+				return (state.db?.notes || []).filter(note => note.id !== noteId && noteLinks(note).some(link => link.note?.id === noteId || link.slug === target.slug));
+			}
+
+			function getExpectedImportKind() {
+				return typeof APP_KIND !== 'undefined' ? APP_KIND : KIND;
+			}
+			function setImportEnvelopeSummary(level, lines) {
+				const panel = document.getElementById('importEnvelopeSummary');
+				if (!panel) return;
+				panel.className = `t-alert ${level || 'warning'} bunker-import-summary`;
+				panel.textContent = Array.isArray(lines) ? lines.join('\n') : String(lines || '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+			}
+			async function previewImportEnvelope(file) {
+				if (!file) {
+					setImportEnvelopeSummary('warning', '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+					return null;
+				}
+				try {
+					const raw = await file.text();
+					const preview = bunkerCore.inspectEnvelope(raw, getExpectedImportKind());
+					setImportEnvelopeSummary(preview.level, preview.lines);
+					return preview;
+				} catch (error) {
+					setImportEnvelopeSummary('danger', ['> HEADER_PREVIEW: FAILED', error.message || 'Unable to read file header.']);
+					return null;
+				}
+			}
+
 			async function deriveKey(password, salt, params) {
 				return sodium.crypto_pwhash(
 					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
@@ -373,35 +707,22 @@
 			async function encryptEnvelope(kind, payloadObject, password) {
 				const salt = sodium.randombytes_buf(16);
 				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
-				const params = { name:'argon2id', opslimit:KDF_OPSLIMIT, memlimit:KDF_MEMLIMIT, alg:'argon2id13' };
+				const params = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
 				const key = await deriveKey(password, salt, params);
 				try {
 					const plaintext = textEncoder.encode(JSON.stringify(payloadObject));
 					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(kind), null, nonce, key);
-					return JSON.stringify({
-						bunker:kind,
-						version:APP_VERSION,
-						format:`bunker-${kind}-enc`,
-						kdf:params,
-						aead:'xchacha20-poly1305-ietf',
-						salt:toB64(salt),
-						nonce:toB64(nonce),
-						payload:toB64(cipher),
-						createdAt:payloadObject.createdAt || nowIso(),
-						updatedAt:nowIso()
-					}, null, 2);
+					return JSON.stringify(makeEnvelope(kind, payloadObject, params, salt, nonce, cipher), null, 2);
 				} finally {
 					if (key && key.fill) key.fill(0);
 				}
 			}
 			async function decryptEnvelope(kind, rawText, password) {
 				const envelope = JSON.parse(rawText.trim());
-				if (!envelope || envelope.bunker !== kind || envelope.version !== APP_VERSION) throw new Error('INVALID_BUNKER_FILE');
-				if (envelope.aead !== 'xchacha20-poly1305-ietf') throw new Error('UNSUPPORTED_CIPHER');
-				if (!envelope.kdf || envelope.kdf.name !== 'argon2id') throw new Error('UNSUPPORTED_KDF');
-				const salt = fromB64(envelope.salt);
-				const nonce = fromB64(envelope.nonce);
-				const cipher = fromB64(envelope.payload);
+				assertEnvelope(envelope, kind);
+				const salt = decB64(envelope.salt);
+				const nonce = decB64(envelope.nonce);
+				const cipher = decB64(envelope.payload);
 				const key = await deriveKey(password, salt, envelope.kdf);
 				try {
 					const plain = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(kind), nonce, key);
@@ -411,8 +732,8 @@
 				}
 			}
 			async function readFileAsText(file) { return await file.text(); }
-			function downloadText(filename, text) {
-				const blob = new Blob([text], { type:'application/octet-stream' });
+			function downloadText(filename, text, mime = 'text/plain;charset=utf-8') {
+				const blob = new Blob([text], { type:mime });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
 				a.href = url;
@@ -420,314 +741,484 @@
 				document.body.appendChild(a);
 				a.click();
 				a.remove();
-				setTimeout(() => URL.revokeObjectURL(url), 1200);
+				URL.revokeObjectURL(url);
 			}
-			function stampName(kind) {
+			function stampName(kind, ext = 'enc') {
 				const d = new Date();
 				const pad = n => String(n).padStart(2, '0');
-				return `bunker-${kind}-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.enc`;
+				return `bunker-${kind}-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.${ext}`;
 			}
 			async function copyText(text, label = 'COPIED TO CLIPBOARD') {
-				try {
-					await navigator.clipboard.writeText(text || '');
-					toast(label, 'normal');
-					setTimeout(async () => {
-						try { await navigator.clipboard.writeText(''); } catch (e) {}
-					}, CLIPBOARD_CLEAR_MS);
-				} catch (e) {
-					toast('CLIPBOARD PERMISSION DENIED', 'warning');
-				}
+				await navigator.clipboard.writeText(text);
+				toast(label, 'success');
+				setTimeout(() => navigator.clipboard.writeText('').catch(() => {}), CLIPBOARD_CLEAR_MS);
 			}
 			function preventDirtyUnload(event) {
-				if (!state.dirty) return;
+				if (!state.unlocked || !state.dirty) return;
 				event.preventDefault();
 				event.returnValue = '';
 			}
-			window.addEventListener('beforeunload', preventDirtyUnload);
-
 			function markActivity() { state.lastActivity = Date.now(); }
 			function startAutoLock() {
 				stopAutoLock();
-				state.lastActivity = Date.now();
 				state.autoLockTimer = setInterval(() => {
-					if (state.unlocked && Date.now() - state.lastActivity >= AUTO_LOCK_MS) lockNotes('AUTO_LOCKED AFTER IDLE TIMEOUT');
-				}, 15000);
+					if (state.unlocked && Date.now() - state.lastActivity > AUTO_LOCK_MS) lockNotes('AUTO_LOCKED_AFTER_IDLE');
+				}, 30000);
 			}
 			function stopAutoLock() {
 				if (state.autoLockTimer) clearInterval(state.autoLockTimer);
 				state.autoLockTimer = null;
 			}
-			['click','keydown','input','touchstart','mousemove'].forEach(eventName => document.addEventListener(eventName, markActivity, { passive:true }));
-
 			function setPane(name) {
-				qsa('.t-pane').forEach(p => p.classList.remove('active'));
-				$(name).classList.add('active');
+				$('paneLocked').classList.toggle('active', name === 'locked');
+				$('paneApp').classList.toggle('active', name === 'app');
 			}
+			function emptyDb() {
+				const now = nowIso();
+				return { kind:KIND, version:APP_VERSION, schema:'bunker-notes-v2', createdAt:now, updatedAt:now, notes:[] };
+			}
+			function normalizeImportedDb(payload) {
+				if (!payload || payload.kind !== KIND || payload.version !== APP_VERSION || payload.schema !== 'bunker-notes-v2' || !Array.isArray(payload.notes)) throw new Error('INVALID_NOTES_PAYLOAD');
+				const seen = new Set();
+				const notes = payload.notes.map(item => {
+					const id = normalizeText(item.id) || uid();
+					const title = normalizeText(item.title) || 'Untitled note';
+					let slug = normalizeText(item.slug) || slugify(title);
+					while (seen.has(slug)) slug = `${slugify(title)}-${seen.size + 1}`;
+					seen.add(slug);
+					return {
+						id,
+						title,
+						slug,
+						content:String(item.content || ''),
+						tags:normalizeTags(item.tags),
+						pinned:Boolean(item.pinned),
+						createdAt:normalizeText(item.createdAt) || nowIso(),
+						updatedAt:normalizeText(item.updatedAt) || nowIso()
+					};
+				});
+				return { ...emptyDb(), createdAt:payload.createdAt || nowIso(), updatedAt:payload.updatedAt || nowIso(), notes };
+			}
+
+			function updateExportWarning() {
+				const panel = $('exportWarning');
+				if (!panel) return;
+				const dirty = Boolean(state.dirty);
+				panel.classList.toggle('is-hidden', !dirty);
+				const since = $('dirtySince');
+				if (since) since.textContent = dirty ? (state.dirtySince || 'UNKNOWN') : 'CLEAN';
+				const exportButton = $('btnExport');
+				if (exportButton) {
+					exportButton.classList.toggle('bunker-export-now', dirty);
+					exportButton.textContent = dirty ? '[ EXPORT_ENC_NOW ]' : '[ EXPORT_ENC ]';
+				}
+			}
+
 			function updateStatus() {
-				$('countAll').textContent = String(state.items.length);
-				$('countPinned').textContent = String(state.items.filter(i => i.pinned).length);
+				const notes = state.db?.notes || [];
 				$('statusFile').textContent = state.fileName || 'MEMORY_ONLY';
-				$('statusDirty').textContent = state.dirty ? 'DIRTY_EXPORT_REQUIRED' : 'CLEAN';
+				$('statusDirty').textContent = state.dirty ? 'DIRTY' : 'CLEAN';
 				$('statusDirty').className = state.dirty ? 'text-warning' : 'text-success';
-				renderTagFilters();
-			}
-			function normalizeImportedItems(items) {
-				return items.map(item => ({
-					id:item.id || uid(),
-					title:normalizeText(item.title) || 'Untitled Note',
-					content:String(item.content || item.body || item.markdown || ''),
-					tags:normalizeTags(item.tags),
-					pinned:Boolean(item.pinned),
-					createdAt:item.createdAt || item.date || nowIso(),
-					updatedAt:item.updatedAt || nowIso()
-				}));
+				updateExportWarning();
+				$('countAll').textContent = notes.length;
+				$('countPinned').textContent = notes.filter(item => item.pinned).length;
+				$('countLinks').textContent = notes.reduce((sum, note) => sum + extractLinks(note.content).length, 0);
 			}
 			function unlockUi() {
 				state.unlocked = true;
-				setPane('paneApp');
+				setPane('app');
+				startAutoLock();
+				renderTagFilters();
 				renderNotes();
 				updateStatus();
-				startAutoLock();
 			}
 			async function createNewNotes() {
 				const pass = $('newPassword').value;
 				const confirm = $('newConfirm').value;
-				if (!pass || pass.length < 10) return toast('MASTER PASSWORD MINIMUM 10 CHARACTERS', 'danger');
-				if (pass !== confirm) return toast('PASSWORD CONFIRMATION MISMATCH', 'danger');
+				if (pass.length < 10) return toast('MASTER PASSWORD MUST BE AT LEAST 10 CHARACTERS', 'danger');
+				if (pass !== confirm) return toast('PASSWORD CONFIRMATION DOES NOT MATCH', 'danger');
 				state.password = pass;
-				state.items = [];
-				state.fileName = 'NEW_NOTES';
+				state.db = emptyDb();
+				state.fileName = 'MEMORY_ONLY';
+				if (!state.dirty) state.dirtySince = nowIso();
 				state.dirty = true;
 				$('newPassword').value = '';
 				$('newConfirm').value = '';
 				unlockUi();
-				toast('NEW NOTES DATABASE INITIALIZED. EXPORT FILE AFTER ADDING DATA.', 'warning');
+				toast('EMPTY NOTES DATABASE INITIALIZED', 'success');
 			}
 			async function importNotes() {
 				const file = $('importFile').files[0];
 				const pass = $('importPassword').value;
-				if (!file) return toast('SELECT .ENC FILE FIRST', 'danger');
-				if (!pass) return toast('MASTER PASSWORD REQUIRED', 'danger');
+				if (!file) return toast('SELECT AN .ENC FILE FIRST', 'danger');
+				if (!pass) return toast('ENTER MASTER PASSWORD', 'danger');
 				try {
-					toast('DECRYPTING NOTES. ARGON2ID MAY TAKE A MOMENT.', 'warning');
 					const raw = await readFileAsText(file);
 					const payload = await decryptEnvelope(KIND, raw, pass);
-					if (!payload || !Array.isArray(payload.items)) throw new Error('INVALID_PAYLOAD');
+					state.db = normalizeImportedDb(payload);
 					state.password = pass;
-					state.items = normalizeImportedItems(payload.items);
 					state.fileName = file.name;
 					state.dirty = false;
+					state.dirtySince = '';
 					$('importPassword').value = '';
 					unlockUi();
-					toast('NOTES DATABASE UNLOCKED', 'normal');
-				} catch (e) {
-					console.error(e);
-					toast('DECRYPT FAILED. WRONG PASSWORD OR INVALID FILE.', 'danger');
+					toast('NOTES DECRYPTED', 'success');
+				} catch (err) {
+					console.error(err);
+					toast('FAILED TO DECRYPT OR PARSE NOTES V2 FILE', 'danger');
 				}
 			}
 			async function exportNotes() {
-				if (!state.unlocked || !state.password) return toast('NOTES LOCKED', 'danger');
+				if (!state.unlocked || !state.db) return;
 				try {
-					toast('ENCRYPTING NOTES DATABASE.', 'warning');
-					const payload = { kind:KIND, version:APP_VERSION, createdAt:nowIso(), exportedAt:nowIso(), items:state.items };
-					const text = await encryptEnvelope(KIND, payload, state.password);
-					downloadText(stampName(KIND), text);
+					state.db.updatedAt = nowIso();
+					const raw = await encryptEnvelope(KIND, state.db, state.password);
+					downloadText(stampName('notes'), raw, 'application/json;charset=utf-8');
 					state.dirty = false;
+					state.dirtySince = '';
 					updateStatus();
-					toast('ENCRYPTED FILE EXPORTED', 'normal');
-				} catch (e) {
-					console.error(e);
+					toast('ENCRYPTED NOTES EXPORTED', 'success');
+				} catch (err) {
+					console.error(err);
 					toast('EXPORT FAILED', 'danger');
 				}
+			}
+			function noteToMarkdown(note) {
+				const tags = note.tags.length ? note.tags.map(tag => `#${tag}`).join(' ') : '-';
+				return `# ${note.title}\n\n> slug: ${note.slug}\n> tags: ${tags}\n> created: ${note.createdAt}\n> updated: ${note.updatedAt}\n\n${note.content.trim()}\n`;
+			}
+			function exportSingleMd(id) {
+				const note = state.db.notes.find(item => item.id === id);
+				if (!note) return;
+				downloadText(`${note.slug || slugify(note.title)}.md`, noteToMarkdown(note), 'text/markdown;charset=utf-8');
+				toast('MARKDOWN NOTE EXPORTED', 'success');
+			}
+			function exportMdBundle() {
+				const notes = [...(state.db?.notes || [])].sort(sortNotes);
+				const body = notes.map(noteToMarkdown).join('\n---\n\n');
+				downloadText(stampName('notes-bundle', 'md'), body || '# Bunker Notes\n', 'text/markdown;charset=utf-8');
+				toast('MARKDOWN BUNDLE EXPORTED', 'success');
 			}
 			function lockNotes(message = 'NOTES LOCKED AND MEMORY CLEARED') {
 				state.unlocked = false;
 				state.password = '';
-				state.items = [];
+				state.db = null;
 				state.fileName = '';
 				state.dirty = false;
+				state.dirtySince = '';
 				state.editingId = null;
-				state.filter = 'ALL';
-				state.tagFilter = '';
-				$('searchInput').value = '';
 				stopAutoLock();
-				setPane('paneLocked');
-				updateStatus();
-				toast(message, 'warning');
+				setPane('locked');
+				$('noteList').innerHTML = '';
+				$('importFile').value = '';
+				$('importFileName').textContent = '> NO FILE SELECTED';
+				setImportEnvelopeSummary('warning', '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+				setSensitiveInputsHidden();
+				toast(message, 'success');
 			}
+			function panicLockNotes() {
+				state.dirty = false;
+				state.dirtySince = '';
+				bunkerCore.clearClipboardNow();
+				bunkerCore.scrubSensitiveDom();
+				lockNotes('PANIC LOCK: PLAINTEXT CLEARED FROM MEMORY');
+			}
+
 			function openEntryModal(id = null) {
 				state.editingId = id;
-				$('entryForm').reset();
-				const item = state.items.find(x => x.id === id);
-				$('modalTitle').textContent = item ? '> EDIT_NOTE' : '> ADD_NOTE';
-				if (item) {
-					$('entryTitle').value = item.title || '';
-					$('entryTags').value = (item.tags || []).join(', ');
-					$('entryPinned').checked = Boolean(item.pinned);
-					$('entryContent').value = item.content || '';
-				} else {
-					$('entryContent').value = '# New note\n\n';
-				}
+				const note = id ? state.db.notes.find(item => item.id === id) : null;
+				$('modalTitle').textContent = note ? '> EDIT_NOTE' : '> ADD_NOTE';
+				$('entryTitle').value = note?.title || '';
+				$('entryTags').value = note?.tags?.join(', ') || '';
+				$('entryPinned').checked = Boolean(note?.pinned);
+				$('entryContent').value = note?.content || '';
 				renderEntryPreview();
-				window.Terminal ? Terminal.modal.open('entryModal') : $('entryModal').classList.add('is-open');
+				$('entryModal').classList.add('active');
+				$('entryTitle').focus();
 			}
 			function closeEntryModal() {
-				window.Terminal ? Terminal.modal.close('entryModal') : $('entryModal').classList.remove('is-open');
+				$('entryModal').classList.remove('active');
+				state.editingId = null;
+			}
+			function renderTocInto(container, markdown, compact = false) {
+				const headings = extractHeadings(markdown);
+				container.innerHTML = '';
+				if (!headings.length) {
+					container.textContent = '> NO HEADINGS';
+					return;
+				}
+				headings.forEach(heading => {
+					const item = createEl('button', 't-btn t-btn-sm bunker-toc-item', `${'#'.repeat(heading.level)} ${heading.title}`);
+					item.type = 'button';
+					item.dataset.level = String(heading.level);
+					if (!compact) item.addEventListener('click', () => toast('TOC points to headings in preview/export', 'normal'));
+					container.appendChild(item);
+				});
+			}
+			function renderBacklinksInto(container, id) {
+				container.innerHTML = '';
+				if (!id) {
+					container.textContent = '> SAVE NOTE FIRST TO CALCULATE BACKLINKS';
+					return;
+				}
+				const backlinks = backlinksFor(id);
+				if (!backlinks.length) {
+					container.textContent = '> NO BACKLINKS';
+					return;
+				}
+				backlinks.forEach(note => {
+					const btn = createEl('button', 't-btn t-btn-sm', `[ ${note.title} ]`);
+					btn.type = 'button';
+					btn.addEventListener('click', () => {
+						closeEntryModal();
+						focusNote(note.id);
+					});
+					container.appendChild(btn);
+				});
 			}
 			function renderEntryPreview() {
-				$('entryPreview').innerHTML = renderMarkdown($('entryContent').value || '*Nothing to preview yet.*');
+				$('entryPreview').innerHTML = renderMarkdown($('entryContent').value);
+				renderTocInto($('entryToc'), $('entryContent').value);
+				renderBacklinksInto($('entryBacklinks'), state.editingId);
 			}
 			function saveEntry() {
 				const title = normalizeText($('entryTitle').value);
+				if (!title) return toast('TITLE IS REQUIRED', 'danger');
 				const content = String($('entryContent').value || '');
-				if (!title) return toast('TITLE REQUIRED', 'danger');
-				if (!content.trim()) return toast('NOTE CONTENT REQUIRED', 'danger');
-				const base = {
-					id:state.editingId || uid(),
-					title,
-					content,
-					tags:normalizeTags($('entryTags').value),
-					pinned:$('entryPinned').checked,
-					updatedAt:nowIso()
-				};
-				if (!state.editingId) base.createdAt = nowIso();
-				const index = state.items.findIndex(x => x.id === state.editingId);
-				if (index >= 0) state.items[index] = { ...state.items[index], ...base };
-				else state.items.unshift(base);
+				const tags = normalizeTags($('entryTags').value);
+				const pinned = $('entryPinned').checked;
+				const now = nowIso();
+				if (state.editingId) {
+					const note = state.db.notes.find(item => item.id === state.editingId);
+					if (!note) return toast('NOTE NOT FOUND', 'danger');
+					note.title = title;
+					note.slug = uniqueSlug(title, note.id);
+					note.content = content;
+					note.tags = tags;
+					note.pinned = pinned;
+					note.updatedAt = now;
+				} else {
+					const id = uid();
+					state.db.notes.push({ id, title, slug:uniqueSlug(title, id), content, tags, pinned, createdAt:now, updatedAt:now });
+				}
+				state.db.updatedAt = now;
+				if (!state.dirty) state.dirtySince = nowIso();
 				state.dirty = true;
 				closeEntryModal();
+				renderTagFilters();
 				renderNotes();
 				updateStatus();
-				toast('NOTE SAVED. EXPORT UPDATED FILE.', 'warning');
+				toast('NOTE SAVED TO MEMORY', 'success');
 			}
 			function deleteEntry(id) {
-				if (!confirm('PURGE THIS NOTE FROM MEMORY?')) return;
-				state.items = state.items.filter(x => x.id !== id);
+				const note = state.db.notes.find(item => item.id === id);
+				if (!note) return;
+				if (!bunkerCore.confirmDestructive(`DELETE_NOTE ${note.title}`)) return;
+				state.db.notes = state.db.notes.filter(item => item.id !== id);
+				state.db.updatedAt = nowIso();
+				if (!state.dirty) state.dirtySince = nowIso();
 				state.dirty = true;
+				renderTagFilters();
 				renderNotes();
 				updateStatus();
-				toast('NOTE PURGED. EXPORT UPDATED FILE.', 'warning');
+				toast('NOTE DELETED', 'success');
 			}
 			function togglePin(id) {
-				const item = state.items.find(x => x.id === id);
-				if (!item) return;
-				item.pinned = !item.pinned;
-				item.updatedAt = nowIso();
+				const note = state.db.notes.find(item => item.id === id);
+				if (!note) return;
+				note.pinned = !note.pinned;
+				note.updatedAt = nowIso();
+				state.db.updatedAt = nowIso();
+				if (!state.dirty) state.dirtySince = nowIso();
 				state.dirty = true;
 				renderNotes();
 				updateStatus();
-				toast(item.pinned ? 'NOTE PINNED' : 'NOTE UNPINNED', 'warning');
 			}
 			function setFilter(type, btn) {
 				state.filter = type;
-				qsa('.filter-tab').forEach(b => b.classList.remove('active'));
+				qsa('.filter-tab').forEach(tab => tab.classList.remove('active'));
 				btn.classList.add('active');
 				renderNotes();
 			}
 			function setTagFilter(tag) {
 				state.tagFilter = state.tagFilter === tag ? '' : tag;
-				renderNotes();
 				renderTagFilters();
+				renderNotes();
 			}
 			function allTags() {
-				return [...new Set(state.items.flatMap(item => item.tags || []))].sort((a, b) => a.localeCompare(b));
+				return [...new Set((state.db?.notes || []).flatMap(item => item.tags))].sort();
 			}
 			function renderTagFilters() {
-				const wrap = $('tagFilters');
-				wrap.textContent = '';
-				const tags = allTags();
-				if (!tags.length) {
-					wrap.appendChild(createEl('span', 'text-muted fs-small', '> NO_TAGS_YET'));
-					return;
-				}
-				wrap.appendChild(createEl('span', 'text-muted fs-small', '> TAGS:'));
-				tags.forEach(tag => {
-					const btn = createEl('button', `t-btn t-btn-sm ${state.tagFilter === tag ? '' : 'ghost'}`, `[ ${tag} ]`);
-					btn.type = 'button';
-					btn.addEventListener('click', () => setTagFilter(tag));
-					wrap.appendChild(btn);
-				});
+				const box = $('tagFilters');
+				box.innerHTML = '';
 				if (state.tagFilter) {
 					const clear = createEl('button', 't-btn t-btn-sm', '[ CLEAR_TAG ]');
 					clear.type = 'button';
 					clear.addEventListener('click', () => setTagFilter(''));
-					wrap.appendChild(clear);
+					box.appendChild(clear);
 				}
+				allTags().forEach(tag => {
+					const btn = createEl('button', `t-btn t-btn-sm ${state.tagFilter === tag ? 'active' : ''}`, `#${tag}`);
+					btn.type = 'button';
+					btn.addEventListener('click', () => setTagFilter(tag));
+					box.appendChild(btn);
+				});
+				if (!box.children.length) box.textContent = '> NO TAGS';
+			}
+			function sortNotes(a, b) {
+				if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+				return String(b.updatedAt || '').localeCompare(String(a.updatedAt || ''));
 			}
 			function filteredItems() {
-				const q = normalizeText($('searchInput').value).toLowerCase();
-				return state.items
-					.filter(item => {
-						if (state.filter === 'PINNED' && !item.pinned) return false;
-						if (state.tagFilter && !(item.tags || []).includes(state.tagFilter)) return false;
-						if (!q) return true;
-						return [item.title, item.content, (item.tags || []).join(' ')].some(v => String(v || '').toLowerCase().includes(q));
-					})
-					.sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+				const query = normalizeText($('searchInput').value).toLowerCase();
+				return [...(state.db?.notes || [])].filter(note => {
+					const links = noteLinks(note);
+					const backlinks = backlinksFor(note.id);
+					if (state.filter === 'PINNED' && !note.pinned) return false;
+					if (state.filter === 'LINKED' && !links.length && !backlinks.length) return false;
+					if (state.filter === 'ORPHAN' && (links.length || backlinks.length)) return false;
+					if (state.tagFilter && !note.tags.includes(state.tagFilter)) return false;
+					const hay = [note.title, note.slug, note.content, note.tags.join(' '), links.map(link => link.target).join(' '), backlinks.map(item => item.title).join(' ')].join(' ').toLowerCase();
+					return !query || hay.includes(query);
+				}).sort(sortNotes);
+			}
+			function renderLinksRow(note, card) {
+				const links = noteLinks(note);
+				const row = createEl('div', 'bunker-link-row fs-small mb-3');
+				if (!links.length) {
+					row.textContent = '> LINKS: NONE';
+					card.appendChild(row);
+					return;
+				}
+				row.appendChild(createEl('span', '', '> LINKS:'));
+				links.forEach(link => {
+					const btn = createEl('button', `t-btn t-btn-sm ${link.note ? '' : 'bunker-missing-link'}`, link.note ? `[ ${link.note.title} ]` : `[ MISSING:${link.target} ]`);
+					btn.type = 'button';
+					if (link.note) btn.addEventListener('click', () => focusNote(link.note.id));
+					else btn.addEventListener('click', () => toast(`NO NOTE FOUND FOR ${link.target}`, 'warning'));
+					row.appendChild(btn);
+				});
+				card.appendChild(row);
+			}
+			function renderBacklinksRow(note, card) {
+				const backlinks = backlinksFor(note.id);
+				const row = createEl('div', 'bunker-link-row fs-small mb-3');
+				if (!backlinks.length) {
+					row.textContent = '> BACKLINKS: NONE';
+					card.appendChild(row);
+					return;
+				}
+				row.appendChild(createEl('span', '', '> BACKLINKS:'));
+				backlinks.forEach(linkingNote => {
+					const btn = createEl('button', 't-btn t-btn-sm', `[ ${linkingNote.title} ]`);
+					btn.type = 'button';
+					btn.addEventListener('click', () => focusNote(linkingNote.id));
+					row.appendChild(btn);
+				});
+				card.appendChild(row);
 			}
 			function renderNotes() {
-				const container = $('noteList');
-				container.textContent = '';
+				const host = $('noteList');
+				host.innerHTML = '';
 				const items = filteredItems();
 				if (!items.length) {
-					const empty = createEl('div', 't-empty-state');
-					empty.append(createEl('span', 't-empty-state-icon', '[#]'));
-					empty.append(createEl('div', 'font-bold', '> NO_NOTE_FOUND'));
-					empty.append(createEl('div', 'text-muted fs-small mt-2', 'Create a note or change your search/filter.'));
-					container.appendChild(empty);
+					const empty = createEl('div', 't-empty-state', '> NO NOTES MATCH CURRENT FILTER');
+					host.appendChild(empty);
+					updateStatus();
 					return;
 				}
 				const grid = createEl('div', 'bunker-card-grid');
-				items.forEach(item => {
+				items.forEach(note => {
 					const card = createEl('article', 't-card bunker-note-card');
-					const header = createEl('div', 't-card-header d-flex justify-content-between align-items-center gap-2');
-					header.append(createEl('span', '', '> ' + (item.title || 'UNTITLED')));
-					const meta = createEl('div', 'bunker-meta');
-					if (item.pinned) meta.appendChild(createEl('span', 't-badge', 'PINNED'));
-					meta.appendChild(createEl('span', 't-badge muted', 'MARKDOWN'));
-					header.appendChild(meta);
-					const tags = createEl('div', 'bunker-tag-row mb-3');
-					(item.tags || []).forEach(tag => tags.appendChild(createEl('span', 't-badge muted', tag)));
-					const preview = createEl('div', 'bunker-preview');
-					preview.innerHTML = renderMarkdown(item.content || '*Empty note.*');
-					const dates = createEl('div', 'text-muted fs-small mt-3', `UPDATED: ${item.updatedAt || 'UNKNOWN'}`);
-					const actions = createEl('div', 'bunker-actions t-border-top pt-3 mt-3');
-					const pin = createEl('button', 't-btn t-btn-sm', item.pinned ? '[ UNPIN ]' : '[ PIN ]');
-					pin.type = 'button';
-					pin.addEventListener('click', () => togglePin(item.id));
-					const copy = createEl('button', 't-btn t-btn-sm ghost', '[ COPY_MD ]');
-					copy.type = 'button';
-					copy.addEventListener('click', () => copyText(item.content, 'MARKDOWN COPIED'));
-					const edit = createEl('button', 't-btn t-btn-sm', '[ EDIT ]');
-					edit.type = 'button';
-					edit.addEventListener('click', () => openEntryModal(item.id));
-					const del = createEl('button', 't-btn t-btn-sm danger', '[ PURGE ]');
-					del.type = 'button';
-					del.addEventListener('click', () => deleteEntry(item.id));
-					actions.append(pin, copy, edit, del);
-					card.append(header);
-					if ((item.tags || []).length) card.append(tags);
-					card.append(preview, dates, actions);
+					card.id = `note-${note.id}`;
+					const header = createEl('div', 't-card-header d-flex justify-content-between gap-2 flex-wrap');
+					const titleWrap = createEl('span', 'bunker-badge-row');
+					titleWrap.appendChild(createEl('span', '', `> ${note.title}`));
+					if (note.pinned) titleWrap.appendChild(createEl('span', 't-badge bunker-badge bunker-badge-pinned', 'PINNED'));
+					header.appendChild(titleWrap);
+					const headerBtns = createEl('span', 'bunker-actions');
+					const pinBtn = createEl('button', 't-btn t-btn-sm', note.pinned ? '[ UNPIN ]' : '[ PIN ]');
+					pinBtn.type = 'button';
+					pinBtn.addEventListener('click', () => togglePin(note.id));
+					headerBtns.appendChild(pinBtn);
+					header.appendChild(headerBtns);
+					card.appendChild(header);
+
+					const meta = createEl('div', 'bunker-meta fs-small mb-3');
+					meta.appendChild(createEl('span', 't-badge bunker-badge bunker-badge-id', `SLUG:${note.slug}`));
+					meta.appendChild(createEl('span', 't-badge bunker-badge bunker-badge-updated', `UPDATED:${new Date(note.updatedAt).toLocaleString()}`));
+					note.tags.forEach(tag => meta.appendChild(createEl('span', 't-badge bunker-badge bunker-badge-tag', `#${tag}`)));
+					card.appendChild(meta);
+
+					renderLinksRow(note, card);
+					renderBacklinksRow(note, card);
+
+					const toc = createEl('div', 'bunker-toc-panel fs-small');
+					renderTocInto(toc, note.content, true);
+					card.appendChild(toc);
+
+					const preview = createEl('div', 'bunker-preview mb-3');
+					preview.innerHTML = renderMarkdown(note.content);
+					card.appendChild(preview);
+
+					const actions = createEl('div', 'bunker-actions');
+					[
+						['[ EDIT ]', () => openEntryModal(note.id)],
+						['[ COPY_MD ]', () => copyText(note.content, 'MARKDOWN COPIED')],
+						['[ EXPORT_MD ]', () => exportSingleMd(note.id)],
+						['[ DELETE ]', () => deleteEntry(note.id)]
+					].forEach(([label, handler]) => {
+						const btn = createEl('button', 't-btn t-btn-sm', label);
+						btn.type = 'button';
+						btn.addEventListener('click', handler);
+						actions.appendChild(btn);
+					});
+					card.appendChild(actions);
 					grid.appendChild(card);
 				});
-				container.appendChild(grid);
+				host.appendChild(grid);
+				updateStatus();
 			}
-
-			function selectedFileNameLabel() {
-				const fileInput = $('importFile');
-				const label = $('importFileName');
+			function focusNote(id) {
+				const note = state.db?.notes.find(item => item.id === id);
+				if (!note) return;
+				state.filter = 'ALL';
+				state.tagFilter = '';
+				qsa('.filter-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.filter === 'ALL'));
+				$('searchInput').value = note.title;
+				renderTagFilters();
+				renderNotes();
+				setTimeout(() => {
+					const el = $(`note-${id}`);
+					if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+				}, 50);
+			}
+			function insertAtCursor(textarea, text) {
+				const start = textarea.selectionStart || 0;
+				const end = textarea.selectionEnd || 0;
+				textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+				textarea.selectionStart = textarea.selectionEnd = start + text.length;
+				textarea.focus();
+				renderEntryPreview();
+			}
+			function insertLink() {
+				const names = (state.db?.notes || []).filter(note => note.id !== state.editingId).map(note => note.title);
+				const target = prompt('Note title to link:', names[0] || 'Note Title');
+				if (!target) return;
+				insertAtCursor($('entryContent'), `[[${target}]]`);
+			}
+			async function selectedFileNameLabel() {
+				const fileInput = document.getElementById('importFile');
+				const label = document.getElementById('importFileName');
 				if (!fileInput || !label) return;
 				const file = fileInput.files && fileInput.files[0];
 				label.textContent = file ? `> SELECTED: ${file.name}` : '> NO FILE SELECTED';
+				await previewImportEnvelope(file);
 			}
 			function setSensitiveInputsHidden() {
 				qsa('[data-eye]').forEach(btn => {
 					const input = $(btn.dataset.eye);
-					if (!input) return;
-					input.type = 'password';
-					btn.textContent = '[ ◉ ]';
-					btn.setAttribute('aria-label', 'Show value');
-					btn.setAttribute('title', 'Show value');
+					if (input) input.type = 'password';
 				});
 			}
 			function bindEyeToggles() {
@@ -735,12 +1226,7 @@
 					btn.addEventListener('click', () => {
 						const input = $(btn.dataset.eye);
 						if (!input) return;
-						const show = input.type === 'password';
-						input.type = show ? 'text' : 'password';
-						btn.textContent = show ? '[ ◌ ]' : '[ ◉ ]';
-						btn.setAttribute('aria-label', show ? 'Hide value' : 'Show value');
-						btn.setAttribute('title', show ? 'Hide value' : 'Show value');
-						input.focus();
+						input.type = input.type === 'password' ? 'text' : 'password';
 					});
 				});
 			}
@@ -748,21 +1234,330 @@
 				$('btnCreate').addEventListener('click', createNewNotes);
 				$('btnImport').addEventListener('click', importNotes);
 				$('importFile').addEventListener('change', selectedFileNameLabel);
-				bindEyeToggles();
-				setSensitiveInputsHidden();
-				$('btnExport').addEventListener('click', exportNotes);
-				$('btnLock').addEventListener('click', () => lockNotes());
 				$('btnAdd').addEventListener('click', () => openEntryModal());
-				$('btnSaveEntry').addEventListener('click', saveEntry);
+				$('btnExport').addEventListener('click', exportNotes);
+				$('btnExportMd').addEventListener('click', exportMdBundle);
+				$('btnLock').addEventListener('click', () => {
+					if (state.dirty && !bunkerCore.confirmDestructive('LOCK_WITH_UNEXPORTED_CHANGES', { phrase: 'LOCK' })) return;
+					lockNotes();
+				});
+				$('btnPanicLock').addEventListener('click', panicLockNotes);
 				$('btnCloseModal').addEventListener('click', closeEntryModal);
 				$('btnCancelModal').addEventListener('click', closeEntryModal);
+				$('btnSaveEntry').addEventListener('click', saveEntry);
 				$('btnRefreshPreview').addEventListener('click', renderEntryPreview);
+				$('btnInsertLink').addEventListener('click', insertLink);
 				$('entryContent').addEventListener('input', renderEntryPreview);
+				$('entryTitle').addEventListener('input', renderEntryPreview);
 				$('searchInput').addEventListener('input', renderNotes);
-				qsa('[data-filter]').forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter, btn)));
+				qsa('.filter-tab').forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter, btn)));
+				document.addEventListener('click', event => {
+					const link = event.target.closest('a[href^="#note:"]');
+					if (!link || !state.unlocked) return;
+					event.preventDefault();
+					const target = decodeURIComponent(link.getAttribute('href').replace('#note:', ''));
+					const note = findNoteByTarget(target);
+					if (note) focusNote(note.id);
+					else toast(`NO NOTE FOUND FOR ${target}`, 'warning');
+				});
+				['click','keydown','mousemove','touchstart'].forEach(evt => document.addEventListener(evt, markActivity, { passive:true }));
+				window.addEventListener('beforeunload', preventDirtyUnload);
 			}
+
+			bindEyeToggles();
 			bindNotes();
-			toast('CRYPTO READY: ARGON2ID + XCHACHA20-POLY1305', 'normal');
+			toast('BUNKER NOTES V2 READY', 'success');
 		</script>
+
+		<script>
+			(() => {
+				const gate = document.getElementById('privacyLockGate');
+				const panel = document.getElementById('unlockPanel');
+				const pane = document.getElementById('paneLocked');
+				const reveal = document.getElementById('btnRevealUnlock');
+				if (!gate || !panel || !pane || !reveal) return;
+
+				function clearLockedPanel() {
+					panel.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });
+					panel.querySelectorAll('input[type="file"]').forEach(input => { input.value = ''; });
+					panel.querySelectorAll('[id$="FileName"]').forEach(label => { label.textContent = '> NO FILE SELECTED'; });
+					const summary = panel.querySelector('#importEnvelopeSummary');
+					if (summary) summary.textContent = '> SELECT A .ENC FILE TO PREVIEW HEADER.';
+				}
+
+				function showPrivacyLock() {
+					gate.classList.remove('bunker-hidden');
+					panel.classList.add('is-hidden');
+					clearLockedPanel();
+				}
+
+				function showUnlockPanel() {
+					gate.classList.add('bunker-hidden');
+					panel.classList.remove('is-hidden');
+					const focusTarget = panel.querySelector('input, button, select, textarea');
+					if (focusTarget) focusTarget.focus({ preventScroll:false });
+				}
+
+				reveal.addEventListener('click', showUnlockPanel);
+				showPrivacyLock();
+
+				new MutationObserver(() => {
+					if (pane.classList.contains('active')) showPrivacyLock();
+				}).observe(pane, { attributes:true, attributeFilter:['class'] });
+			})();
+		</script>
+
+		<script>
+			(() => {
+				const ids = ['newPassword', 'importPassword', 'passphrase'];
+
+				function classFor(level) {
+					if (level === 'success') return 't-alert success bunker-master-warning';
+					if (level === 'danger') return 't-alert danger bunker-master-warning';
+					return 't-alert warning bunker-master-warning';
+				}
+
+				function ensureWarningPanel(input) {
+					if (!input) return null;
+					const panelId = `${input.id}MasterPasswordWarning`;
+					let panel = document.getElementById(panelId);
+					if (panel) return panel;
+					panel = document.createElement('div');
+					panel.id = panelId;
+					panel.className = 't-alert warning bunker-master-warning';
+					panel.setAttribute('aria-live', 'polite');
+					const anchor = input.closest('.bunker-input-group') || input;
+					anchor.insertAdjacentElement('afterend', panel);
+					return panel;
+				}
+
+				function adviceFor(value) {
+					if (window.BunkerCore && typeof window.BunkerCore.masterPasswordAdvice === 'function') {
+						return window.BunkerCore.masterPasswordAdvice(value);
+					}
+					const password = String(value || '');
+					const weak = password.length < 16;
+					return {
+						level: weak ? 'WEAK' : 'STRONG',
+						className: weak ? 'danger' : 'success',
+						lines: weak ? [
+							'> MASTER_PASSWORD: WEAK',
+							'> Use a unique passphrase with 16+ characters for offline .enc storage.'
+						] : [
+							'> MASTER_PASSWORD: STRONG',
+							'> This looks suitable for offline .enc storage.'
+						]
+					};
+				}
+
+				function updateWarning(input) {
+					const panel = ensureWarningPanel(input);
+					if (!panel) return;
+					const advice = adviceFor(input.value);
+					panel.className = classFor(advice.className || 'warning');
+					panel.textContent = Array.isArray(advice.lines) ? advice.lines.join('\n') : String(advice.lines || '> MASTER_PASSWORD: UNKNOWN');
+				}
+
+				function bind() {
+					ids.forEach(id => {
+						const input = document.getElementById(id);
+						if (!input) return;
+						ensureWarningPanel(input);
+						updateWarning(input);
+						input.addEventListener('input', () => updateWarning(input));
+						input.addEventListener('change', () => updateWarning(input));
+					});
+				}
+
+				bind();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				const bar = document.getElementById('mobileActionBar');
+				if (!bar) return;
+
+				const byId = id => document.getElementById(id);
+				const clickFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.click();
+							return true;
+						}
+					}
+					return false;
+				};
+				const focusFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.scrollIntoView({ behavior:'smooth', block:'center' });
+							setTimeout(() => el.focus(), 180);
+							return true;
+						}
+					}
+					return false;
+				};
+				const isHidden = el => !el || el.classList.contains('hidden') || el.classList.contains('bunker-hidden') || el.classList.contains('is-hidden') || el.classList.contains('is-privacy-hidden');
+				const isUnlocked = () => {
+					const paneApp = byId('paneApp');
+					if (paneApp) return paneApp.classList.contains('active') && !isHidden(paneApp);
+					const appPanel = byId('appPanel');
+					if (appPanel) return !isHidden(appPanel);
+					const lockedPanel = byId('lockedPanel') || byId('paneLocked');
+					if (lockedPanel) return isHidden(lockedPanel);
+					return false;
+				};
+				const refreshBar = () => {
+					const mobile = window.matchMedia('(max-width:768px)').matches;
+					const show = mobile && isUnlocked();
+					document.body.classList.toggle('has-mobile-actionbar', show);
+					bar.classList.toggle('is-hidden', !show);
+				};
+
+				byId('mobileBtnNew')?.addEventListener('click', () => {
+					if (clickFirst(['btnAdd'])) return;
+					if (clickFirst(['btnResetCard'])) return focusFirst(['cardTitle']);
+					if (clickFirst(['btnResetItem'])) return focusFirst(['itemTitle']);
+					if (clickFirst(['btnResetSnippet'])) return focusFirst(['snippetTitle']);
+					if (clickFirst(['btnResetBookmark'])) return focusFirst(['bookmarkTitle']);
+					focusFirst(['entryTitle', 'cardTitle', 'itemTitle', 'snippetTitle', 'bookmarkTitle', 'contactName', 'txTitle']);
+				});
+				byId('mobileBtnSearch')?.addEventListener('click', () => focusFirst(['searchInput']));
+				byId('mobileBtnExport')?.addEventListener('click', () => clickFirst(['btnExport']));
+				byId('mobileBtnLock')?.addEventListener('click', () => clickFirst(['btnLock']));
+				byId('mobileBtnPanic')?.addEventListener('click', () => clickFirst(['btnPanicLock']));
+
+				new MutationObserver(refreshBar).observe(document.body, { attributes:true, subtree:true, attributeFilter:['class'] });
+				window.addEventListener('resize', refreshBar, { passive:true });
+				window.addEventListener('orientationchange', refreshBar, { passive:true });
+				setInterval(refreshBar, 1000);
+				refreshBar();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				'use strict';
+				const appTitle = (document.title || 'Bunker App').replace(/\s+v\d+$/i, '');
+				function nounForApp() {
+					const lower = appTitle.toLowerCase();
+					if (lower.includes('auth')) return 'TOTP key';
+					if (lower.includes('board')) return 'card or board item';
+					if (lower.includes('bookmarks')) return 'bookmark';
+					if (lower.includes('contacts')) return 'contact';
+					if (lower.includes('ledger')) return 'transaction';
+					if (lower.includes('notes')) return 'note';
+					if (lower.includes('planner')) return 'planner item';
+					if (lower.includes('snippets')) return 'snippet';
+					if (lower.includes('vault')) return 'vault entry';
+					return 'item';
+				}
+				function escapeHtml(value) {
+					return String(value || '').replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+				}
+				function classify(rawText) {
+					const text = String(rawText || '').replace(/\s+/g, ' ').trim();
+					const upper = text.toUpperCase();
+					const noun = nounForApp();
+					if (upper.includes('NO_BOARD') || upper.includes('NO BOARD')) {
+						return {
+							code: 'NO_BOARD_AVAILABLE',
+							title: 'No board is available yet.',
+							line: 'Create a board first, then add columns and cards.',
+							next: 'After editing, export a fresh .enc file to keep the board.'
+						};
+					}
+					if (upper.includes('NO CARDS')) {
+						return {
+							code: 'COLUMN_EMPTY',
+							title: 'This column has no cards.',
+							line: 'Add a card here or drag an existing card into this column.',
+							next: 'Export a fresh .enc file after changing the board.'
+						};
+					}
+					if (upper.includes('NO_RECURRING')) {
+						return {
+							code: 'NO_RECURRING_TEMPLATE',
+							title: 'No recurring template exists yet.',
+							line: 'Create a recurring template for repeated transactions, tasks, or events.',
+							next: 'Run the generator when you want to create real dated entries.'
+						};
+					}
+					if (upper.includes('NO_ACCOUNTS')) {
+						return {
+							code: 'NO_ACCOUNTS_YET',
+							title: 'No account or wallet exists yet.',
+							line: 'Create an account such as Cash, Bank, Wallet, Savings, or another balance source.',
+							next: 'Export a fresh .enc file after adding account data.'
+						};
+					}
+					if (upper.includes('NO_BUDGETS')) {
+						return {
+							code: 'NO_BUDGETS_YET',
+							title: 'No budget rule exists yet.',
+							line: 'Create a monthly category budget to compare spending against a planned limit.',
+							next: 'Export a fresh .enc file after adding budget data.'
+						};
+					}
+					if (upper.includes('NO_OPEN_DEBT')) {
+						return { code:'NO_OPEN_DEBT', title:'No open debt is currently visible.', line:'Add debt transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_OPEN_LOAN')) {
+						return { code:'NO_OPEN_LOAN', title:'No open loan is currently visible.', line:'Add loan transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_SUMMARY')) {
+						return { code:'NO_SUMMARY_FOR_CURRENT_FILTER', title:'No summary can be calculated for this filter.', line:'Add matching records or adjust the date/type/search filters.', next:'Summary updates automatically after data changes.' };
+					}
+					if (upper.includes('NO ITEM ON SELECTED DATE')) {
+						return { code:'NO_SELECTED_DATE_ITEMS', title:'No item exists on the selected date.', line:'Select another date or create a task/event for this day.', next:'Export a fresh .enc file after editing planner data.' };
+					}
+					if (upper.includes('MATCH') || upper.includes('CURRENT FILTER') || upper.includes('FOUND')) {
+						return {
+							code: 'NO_VISIBLE_RESULTS',
+							title: `No ${noun}s match the current view.`,
+							line: 'Clear search/filter, switch tabs, or create a new item.',
+							next: 'After creating or editing data, export a fresh .enc file before closing.'
+						};
+					}
+					return {
+						code: 'EMPTY_DATASET',
+						title: `No ${noun}s yet.`,
+						line: `Create your first ${noun}, then review it in this list.`,
+						next: 'Export a fresh .enc file after changes so the data is not lost.'
+					};
+				}
+				function enhanceEmptyState(node) {
+					if (!node || node.dataset.bunkerEmptyEnhanced === '1') return;
+					const rawText = node.textContent || '';
+					if (!rawText.trim()) return;
+					const data = classify(rawText);
+					node.dataset.bunkerEmptyEnhanced = '1';
+					node.classList.add('bunker-empty-state');
+					node.innerHTML = [
+						'<div class="bunker-empty-state-icon">[ ∅ ]</div>',
+						`<div class="bunker-empty-state-title">&gt; EMPTY_STATE: ${escapeHtml(data.code)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.title)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.line)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.next)}</div>`
+					].join('');
+				}
+				function enhanceAllEmptyStates() {
+					document.querySelectorAll('.empty-state, .t-empty-state').forEach(enhanceEmptyState);
+				}
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', enhanceAllEmptyStates);
+				} else {
+					enhanceAllEmptyStates();
+				}
+				const observer = new MutationObserver(() => enhanceAllEmptyStates());
+				observer.observe(document.documentElement, { childList:true, subtree:true });
+			})();
+		</script>
+
 	</body>
 </html>

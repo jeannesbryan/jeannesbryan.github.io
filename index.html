@@ -7,11 +7,11 @@
 		<meta name="theme-color" content="#000000">
 		<meta name="robots" content="noindex,nofollow,noarchive">
 		<link rel="manifest" href="./assets/manifest.webmanifest">
-		<link rel="stylesheet" href="./assets/terminal.css">
-		<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+		<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
-		<link rel="icon" type="image/svg+xml" href="./assets/npc-icon.svg">
+		<link rel="stylesheet" href="./assets/terminal.css">
+
 		<style>
 			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
 			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
@@ -31,11 +31,21 @@
 			.app-title { font-size:1.35rem; font-weight:bold; letter-spacing:-.03em; margin-bottom:6px; }
 			.app-desc { color:#00ff41; margin:0; line-height:1.7; }
 			.install-panel { display:none; margin-bottom:20px; }
+			.diagnostics-panel { margin:0 0 24px; }
+			.diagnostics-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+			.diagnostic-row { border:1px dashed #00ff41; padding:10px; min-height:72px; }
+			.diagnostic-label { display:block; font-size:.78rem; opacity:.86; text-transform:uppercase; margin-bottom:8px; }
+			.diagnostic-value { display:block; font-weight:bold; overflow-wrap:anywhere; word-break:break-word; }
+			.asset-status-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:14px; }
+			.asset-status-row { border:1px dashed #00ff41; padding:8px 10px; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+			.asset-status-name { overflow-wrap:anywhere; word-break:break-word; }
+			.asset-status-badge { font-weight:bold; white-space:nowrap; }
+			.diagnostics-note { margin:0 0 14px; line-height:1.7; }
 			.install-panel.is-visible { display:block; }
 			.site-footer { padding:24px 0 0; text-align:center; }
 			.site-footer.fs-small { font-size:clamp(1rem, 2vw, 1.2rem) !important; line-height:1.7; }
 			.copyleft-mark { display:inline-block; transform:scaleX(-1); transform-origin:center; }
-			@media (max-width:768px) { .app-row { align-items:flex-start; flex-direction:column; } .app-row .t-btn { width:100%; } }
+			@media (max-width:768px) { .app-row { align-items:flex-start; flex-direction:column; } .app-row .t-btn { width:100%; } .diagnostics-grid,.asset-status-list { grid-template-columns:1fr; } }
 		</style>
 	</head>
 	<body class="t-crt">
@@ -59,6 +69,34 @@
 				</div>
 			</div>
 
+			<section class="t-card diagnostics-panel" aria-label="PWA diagnostics">
+				<div class="t-card-header">PWA_DIAGNOSTICS</div>
+				<div class="t-card-body">
+					<p class="diagnostics-note">Check install readiness, cache status, offline page, and required local assets before opening encrypted apps.</p>
+					<div class="diagnostics-grid">
+						<div class="diagnostic-row">
+							<span class="diagnostic-label">Service worker</span>
+							<span id="diagServiceWorker" class="diagnostic-value">CHECKING</span>
+						</div>
+						<div class="diagnostic-row">
+							<span class="diagnostic-label">PWA cache</span>
+							<span id="diagCache" class="diagnostic-value">CHECKING</span>
+						</div>
+						<div class="diagnostic-row">
+							<span class="diagnostic-label">Offline page</span>
+							<span id="diagOffline" class="diagnostic-value">CHECKING</span>
+						</div>
+					</div>
+
+					<div class="d-flex gap-2 flex-wrap">
+						<button id="btnCheckAssets" class="t-btn t-btn-sm" type="button">[ CHECK_ASSETS ]</button>
+						<button id="btnUpdateCache" class="t-btn t-btn-sm" type="button">[ UPDATE_CACHE ]</button>
+					</div>
+
+					<div id="assetStatusList" class="asset-status-list" aria-live="polite"></div>
+				</div>
+			</section>
+
 			<section aria-label="Bunker software launcher">
 				<div class="site-section-label">> BUNKER_SOFTWARE</div>
 				<div class="t-alert mb-0">> Bunker is a software label for encrypted, offline-first browser tools stored under the <span class="t-code-inline">/bunker</span> directory.</div>
@@ -66,32 +104,32 @@
 				<div class="app-list">
 					<article class="app-row">
 						<div class="app-copy">
-							<h2 class="app-title">Bunker Vault</h2>
-							<p class="app-desc">Encrypted local vault for logins, private notes, payment cards, and Wi-Fi credentials. Import an .enc file, unlock it in memory, edit entries, then export a new encrypted file.</p>
-						</div>
-						<a href="./bunker/vault.html" class="t-btn">[ OPEN_VAULT ]</a>
-					</article>
-
-					<article class="app-row">
-						<div class="app-copy">
 							<h2 class="app-title">Bunker Auth</h2>
-							<p class="app-desc">Encrypted local TOTP manager for second-factor secrets. Keep auth data separate from the password vault, generate codes locally, and export a protected .enc file.</p>
+							<p class="app-desc">Encrypted local TOTP manager for second-factor secrets. Keep auth data separate from the password vault, generate codes locally, group issuers, import QR images, and export a protected .enc file.</p>
 						</div>
 						<a href="./bunker/auth.html" class="t-btn">[ OPEN_AUTH ]</a>
 					</article>
 
 					<article class="app-row">
 						<div class="app-copy">
-							<h2 class="app-title">Bunker Notes</h2>
-							<p class="app-desc">Encrypted local Markdown notes for private writing, recovery plans, drafts, and personal documentation. Write in Markdown, preview safely in the browser, then export a protected .enc file.</p>
+							<h2 class="app-title">Bunker Board</h2>
+							<p class="app-desc">Encrypted local Kanban board for private projects, swimlanes, card checklists, activity logs, WIP limits, due dates, tags, and offline-first workflows.</p>
 						</div>
-						<a href="./bunker/notes.html" class="t-btn">[ OPEN_NOTES ]</a>
+						<a href="./bunker/board.html" class="t-btn">[ OPEN_BOARD ]</a>
+					</article>
+
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Bookmarks</h2>
+							<p class="app-desc">Encrypted local bookmark vault for private links, research references, documentation, admin panels, onion addresses, read-later queues, and browser bookmark import/export.</p>
+						</div>
+						<a href="./bunker/bookmarks.html" class="t-btn">[ OPEN_BOOKMARKS ]</a>
 					</article>
 
 					<article class="app-row">
 						<div class="app-copy">
 							<h2 class="app-title">Bunker Contacts</h2>
-							<p class="app-desc">Encrypted local address book for private contacts, emergency numbers, work identities, and service records. Store contact data in memory only, then export a protected .enc file.</p>
+							<p class="app-desc">Encrypted local address book for private contacts, relationship fields, badges, birthdays, important dates, and vCard import/export.</p>
 						</div>
 						<a href="./bunker/contacts.html" class="t-btn">[ OPEN_CONTACTS ]</a>
 					</article>
@@ -99,17 +137,41 @@
 					<article class="app-row">
 						<div class="app-copy">
 							<h2 class="app-title">Bunker Ledger</h2>
-							<p class="app-desc">Encrypted local ledger for personal transactions, flexible currencies, categories, accounts, and private financial notes. Track income and expenses locally, then export a protected .enc file.</p>
+							<p class="app-desc">Encrypted local ledger for personal transactions, recurring entries, budgets, account balances, debt/loan tracking, monthly charts, flexible currencies, and CSV export.</p>
 						</div>
 						<a href="./bunker/ledger.html" class="t-btn">[ OPEN_LEDGER ]</a>
 					</article>
 
 					<article class="app-row">
 						<div class="app-copy">
-							<h2 class="app-title">Bunker Board</h2>
-							<p class="app-desc">Encrypted local Kanban board for private projects, tasks, priorities, due dates, tags, and offline-first workflows. Drag cards between columns, then export a protected .enc file.</p>
+							<h2 class="app-title">Bunker Notes</h2>
+							<p class="app-desc">Encrypted local Markdown notes for private writing, linked notes, backlinks, table of contents, recovery plans, drafts, and personal documentation.</p>
 						</div>
-						<a href="./bunker/board.html" class="t-btn">[ OPEN_BOARD ]</a>
+						<a href="./bunker/notes.html" class="t-btn">[ OPEN_NOTES ]</a>
+					</article>
+
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Planner</h2>
+							<p class="app-desc">Encrypted local planner for tasks, calendar events, visual month agenda, recurring generators, dependencies, overdue filters, priorities, tags, and private planning notes.</p>
+						</div>
+						<a href="./bunker/planner.html" class="t-btn">[ OPEN_PLANNER ]</a>
+					</article>
+
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Snippets</h2>
+							<p class="app-desc">Encrypted local pastebin for private code snippets, shell commands, configs, SQL queries, Markdown previews, syntax highlighting, and reusable fragments.</p>
+						</div>
+						<a href="./bunker/snippets.html" class="t-btn">[ OPEN_SNIPPETS ]</a>
+					</article>
+
+					<article class="app-row">
+						<div class="app-copy">
+							<h2 class="app-title">Bunker Vault</h2>
+							<p class="app-desc">Encrypted local vault for logins, private notes, payment cards, Wi-Fi credentials, folder groups, password audit, duplicate detection, and protected .enc export.</p>
+						</div>
+						<a href="./bunker/vault.html" class="t-btn">[ OPEN_VAULT ]</a>
 					</article>
 				</div>
 			</section>
@@ -120,36 +182,6 @@
 		</main>
 
 		<script src="./assets/terminal.js" defer></script>
-		<script>
-			let deferredInstallPrompt = null;
-			const installPanel = document.getElementById('installPanel');
-			const btnInstall = document.getElementById('btnInstall');
-			const btnDismissInstall = document.getElementById('btnDismissInstall');
-
-			if ('serviceWorker' in navigator) {
-				window.addEventListener('load', () => {
-					navigator.serviceWorker.register('./sw.js').catch(error => console.warn('Service worker registration failed:', error));
-				});
-			}
-
-			window.addEventListener('beforeinstallprompt', event => {
-				event.preventDefault();
-				deferredInstallPrompt = event;
-				if (!localStorage.getItem('bunker-install-dismissed')) installPanel.classList.add('is-visible');
-			});
-
-			btnInstall.addEventListener('click', async () => {
-				if (!deferredInstallPrompt) return;
-				deferredInstallPrompt.prompt();
-				await deferredInstallPrompt.userChoice;
-				deferredInstallPrompt = null;
-				installPanel.classList.remove('is-visible');
-			});
-
-			btnDismissInstall.addEventListener('click', () => {
-				localStorage.setItem('bunker-install-dismissed', '1');
-				installPanel.classList.remove('is-visible');
-			});
-		</script>
+		<script src="./assets/bunker-root.js" defer></script>
 	</body>
 </html>

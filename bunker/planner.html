@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Bunker Planner</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#000000">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="stylesheet" href="../assets/terminal.css">
+		<style>
+			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
+			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
+			body.t-crt::after { background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%); background-size:100% 2px; }
+			:is(.t-navbar,.t-btn,.t-alert,.t-statusline,.t-card,.t-card-header,.t-border-top,.t-border-bottom,.text-muted,.text-success,.text-warning,.text-danger,.text-info,.text-white,.form-control,.form-select,input,textarea,select) { background:#000000 !important; color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-btn:hover,.t-btn:focus) { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			::placeholder { color:rgba(0,255,65,.55) !important; }
+			.t-shell { max-width:1500px; }
+			.planner-hero { display:flex; justify-content:space-between; gap:16px; align-items:flex-end; flex-wrap:wrap; margin-bottom:18px; }
+			.planner-grid { display:grid; grid-template-columns:390px minmax(0, 1fr); gap:18px; align-items:start; }
+			.side-stack { display:flex; flex-direction:column; gap:18px; }
+			.control-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+			.control-grid.one { grid-template-columns:1fr; }
+			.control-grid.three { grid-template-columns:1fr 1fr 1fr; }
+			.form-row { display:flex; flex-direction:column; gap:7px; }
+			.form-row label { font-weight:bold; font-size:.82rem; text-transform:uppercase; }
+			.form-actions { display:flex; gap:10px; flex-wrap:wrap; }
+			.status-strip { display:flex; gap:8px; flex-wrap:wrap; }
+			.status-pill { border:1px solid #00ff41; padding:5px 9px; font-size:.78rem; }
+			.view-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+			.view-tabs .t-btn.is-active { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			.planner-list { display:flex; flex-direction:column; gap:12px; }
+			.planner-item { border:1px dashed #00ff41; padding:12px; background:#000000; }
+			.planner-item.is-pinned { border-style:solid; box-shadow:0 0 14px rgba(0,255,65,.18); }
+			.planner-item.is-done { opacity:.72; }
+			.planner-item.is-blocked { border-style:dotted; }
+			.item-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+			.item-title { font-weight:bold; line-height:1.35; word-break:break-word; }
+			.item-meta { font-size:.78rem; line-height:1.55; opacity:.9; margin-top:8px; }
+			.item-notes { white-space:pre-wrap; word-break:break-word; margin-top:8px; line-height:1.55; }
+			.item-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+			.tag-pill, .mini-pill { border:1px solid #00ff41; padding:2px 6px; font-size:.72rem; }
+			.item-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+			.item-actions .t-btn { padding:4px 8px; font-size:.72rem; }
+			.empty-state { border:1px dashed #00ff41; padding:22px; text-align:center; line-height:1.7; }
+			.calendar-tools { display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+			.calendar-grid { display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:6px; }
+			.calendar-head, .calendar-day { border:1px solid #00ff41; padding:8px; min-height:44px; }
+			.calendar-head { min-height:auto; font-weight:bold; text-align:center; font-size:.78rem; }
+			.calendar-day { cursor:pointer; display:flex; flex-direction:column; gap:5px; min-height:118px; text-align:left; }
+			.calendar-day:hover, .calendar-day.is-selected { color:#000000 !important; background:#00ff41 !important; }
+			.calendar-day.is-selected .day-chip, .calendar-day:hover .day-chip { border-color:#000000 !important; color:#000000 !important; }
+			.calendar-day.is-muted { opacity:.45; }
+			.calendar-day.is-today { box-shadow:0 0 12px rgba(0,255,65,.3); }
+			.calendar-day.has-overdue { border-style:dashed; }
+			.day-number { font-weight:bold; }
+			.day-count { font-size:.72rem; }
+			.day-chip { border:1px solid #00ff41; padding:2px 4px; font-size:.66rem; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+			.selected-date-panel { margin-top:14px; }
+			.summary-grid { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:10px; margin-bottom:14px; }
+			.summary-card { border:1px solid #00ff41; padding:10px; }
+			.summary-label { font-size:.72rem; text-transform:uppercase; opacity:.85; }
+			.summary-value { font-size:1.25rem; font-weight:bold; margin-top:4px; }
+			.dependency-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+			.multi-select { min-height:92px; }
+			.recurring-card { border:1px dashed #00ff41; padding:12px; margin-bottom:12px; }
+			.hidden { display:none !important; }
+			.bunker-app-status { margin-bottom:16px; }
+			.bunker-app-status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px; }
+			.bunker-app-status-cell { border:1px dashed #00ff41; padding:8px; font-size:.78rem; line-height:1.55; overflow-wrap:anywhere; word-break:break-word; }
+
+			.bunker-import-summary { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.6; }
+
+			.bunker-lock-gate {
+				max-width:680px;
+				margin:0 auto 18px;
+				text-align:center;
+			}
+			.bunker-lock-gate-title {
+				font-weight:700;
+				letter-spacing:.08em;
+				font-size:clamp(1.35rem,4vw,2rem);
+				margin-bottom:.5rem;
+			}
+			.bunker-lock-gate-text {
+				max-width:560px;
+				margin:.35rem auto 1rem;
+			}
+			.bunker-unlock-panel.is-hidden,
+			.bunker-privacy-context.is-privacy-hidden {
+				display:none !important;
+			}
+
+			@media (max-width:1120px) { .planner-grid { grid-template-columns:1fr; } }
+			.bunker-import-summary { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.6; }
+
+			@media (max-width:760px) { .control-grid, .control-grid.three, .summary-grid { grid-template-columns:1fr; } .calendar-grid { gap:4px; } .calendar-head { padding:6px 2px; font-size:.68rem; } .calendar-day { padding:6px; min-height:92px; } }
+			.bunker-export-warning {
+				margin-top:1rem;
+				border-style:double;
+			}
+			.bunker-export-warning.is-hidden {
+				display:none;
+			}
+			.bunker-export-warning-title {
+				font-weight:700;
+				letter-spacing:.04em;
+			}
+			.bunker-export-warning-meta {
+				margin-top:.35rem;
+			}
+			.t-btn.bunker-export-now {
+				box-shadow:0 0 0 1px currentColor inset;
+				font-weight:700;
+			}
+
+			.t-btn.bunker-panic-btn {
+				border-style:double;
+				font-weight:700;
+			}
+
+					.bunker-master-warning { white-space:pre-wrap; margin-top:8px; margin-bottom:12px; }
+		
+
+			.bunker-mobile-actionbar {
+				display:none;
+			}
+			@media (max-width:768px) {
+				body.has-mobile-actionbar {
+					padding-bottom:86px;
+				}
+				.bunker-mobile-actionbar {
+					position:fixed;
+					left:0;
+					right:0;
+					bottom:0;
+					z-index:9999;
+					display:grid;
+					grid-template-columns:repeat(5,minmax(0,1fr));
+					gap:6px;
+					padding:8px;
+					background:#000000;
+					border-top:1px solid #00ff41;
+					box-shadow:0 -4px 18px rgba(0,255,65,.12);
+				}
+				.bunker-mobile-actionbar.is-hidden {
+					display:none !important;
+				}
+				.bunker-mobile-actionbar .t-btn {
+					font-size:.68rem;
+					padding:.52rem .18rem;
+					min-width:0;
+					white-space:nowrap;
+				}
+			}
+
+			.bunker-badge-row,
+			.bunker-status-row,
+			.bookmark-tags,
+			.snippet-tags,
+			.item-tags,
+			.card-tags,
+			.bunker-tag-row,
+			.mini-list,
+			.status-strip {
+				display:flex;
+				flex-wrap:wrap;
+				gap:6px;
+				align-items:center;
+			}
+			.bunker-badge,
+			.t-badge,
+			.bunker-tag,
+			.tag-pill,
+			.mini-pill,
+			.status-pill,
+			.extension-badge,
+			.day-chip,
+			.day-count {
+				display:inline-flex;
+				align-items:center;
+				max-width:100%;
+				border:1px solid #00ff41 !important;
+				background:#000000 !important;
+				color:#00ff41 !important;
+				padding:2px 7px;
+				font-size:.72rem;
+				line-height:1.35;
+				letter-spacing:.035em;
+				text-transform:uppercase;
+				white-space:nowrap;
+				overflow:hidden;
+				text-overflow:ellipsis;
+			}
+			.bunker-badge-pinned,
+			.bunker-badge-favorite,
+			.bunker-badge-emergency,
+			.bunker-badge-urgent,
+			.bunker-badge-overdue,
+			.bunker-badge-blocked,
+			.bunker-badge-audit,
+			.bunker-badge-dirty,
+			.bunker-badge-archive,
+			.bunker-badge-archived,
+			.bunker-badge-read_later,
+			.bunker-badge-read-later {
+				border-style:double !important;
+				font-weight:700;
+			}
+			.bunker-badge-tag,
+			.bunker-badge-id,
+			.bunker-badge-updated,
+			.bunker-badge-file,
+			.bunker-tag,
+			.tag-pill {
+				border-style:dashed !important;
+			}
+			.bunker-badge-done,
+			.bunker-badge-active,
+			.bunker-badge-open,
+			.bunker-badge-clean {
+				border-style:solid !important;
+			}
+
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">BUNKER_PLANNER</div>
+			<div class="t-nav-links">
+				<a href="../index.html" class="t-nav-link">ROOT</a>
+				<a href="./vault.html" class="t-nav-link">VAULT</a>
+				<a href="./auth.html" class="t-nav-link">AUTH</a>
+				<a href="./notes.html" class="t-nav-link">NOTES</a>
+				<a href="./contacts.html" class="t-nav-link">CONTACTS</a>
+				<a href="./ledger.html" class="t-nav-link">LEDGER</a>
+				<a href="./board.html" class="t-nav-link">BOARD</a>
+			</div>
+		</nav>
+
+		<main class="t-shell">
+
+				<div id="privacyLockGate" class="t-card bunker-lock-gate" role="region" aria-label="Locked privacy screen">
+					<div class="bunker-lock-gate-title">BUNKER LOCKED</div>
+					<div class="bunker-lock-gate-text text-muted">No decrypted data, item counts, filenames, filters, or metadata are shown while this app is locked.</div>
+					<button id="btnRevealUnlock" class="t-btn" type="button">[ UNLOCK ]</button>
+				</div>
+
+			<section class="planner-hero bunker-privacy-context">
+				<div>
+					<h1 class="t-hero-title">BUNKER PLANNER</h1>
+					<p class="t-hero-subtitle">Encrypted local planner for private tasks, calendar events, recurring routines, dependencies, agendas, and offline-first schedules.</p>
+				</div>
+				<div class="status-strip">
+					<span id="lockStatus" class="status-pill">LOCKED</span>
+					<span id="dirtyStatus" class="status-pill">CLEAN</span>
+					<span id="itemStatus" class="status-pill">0 ITEMS</span>
+					<span id="templateStatus" class="status-pill">0 TEMPLATES</span>
+				</div>
+
+				<div id="exportWarning" class="t-alert bunker-export-warning is-hidden" role="alert" aria-live="polite">
+					<div class="bunker-export-warning-title">UNSAVED CHANGES — EXPORT REQUIRED</div>
+					<div>Changes exist only in memory. Export a new <code>.enc</code> file before locking, reloading, closing, or leaving this page.</div>
+					<div class="bunker-export-warning-meta fs-small">DIRTY_SINCE: <strong id="dirtySince">UNKNOWN</strong></div>
+				</div>
+
+			</section>
+
+			<div class="t-card bunker-app-status bunker-privacy-context">
+				<div class="t-card-header">&gt; APP_STATUS</div>
+				<div class="bunker-app-status-grid">
+					<div class="bunker-app-status-cell"><strong>APP</strong><br>Bunker Planner</div>
+					<div class="bunker-app-status-cell"><strong>SCHEMA</strong><br>v2</div>
+					<div class="bunker-app-status-cell"><strong>FORMAT</strong><br>bunker-planner-v2-enc</div>
+					<div class="bunker-app-status-cell"><strong>CRYPTO</strong><br>Argon2id + XChaCha20-Poly1305</div>
+					<div class="bunker-app-status-cell"><strong>STORAGE</strong><br>LOCAL_ONLY / MEMORY_ONLY</div>
+					<div class="bunker-app-status-cell"><strong>EXPORT</strong><br>REQUIRED_AFTER_CHANGES</div>
+				</div>
+			</div>
+
+<section id="lockedPanel" class="t-card bunker-privacy-context">
+				<div class="t-card-header">> UNLOCK_OR_CREATE</div>
+				<div class="t-card-body">
+					<div class="control-grid">
+						<div class="form-row">
+							<label for="passphrase">Passphrase</label>
+							<input id="passphrase" class="form-control" type="password" autocomplete="current-password" placeholder="minimum 8 characters">
+						</div>
+						<div class="form-row">
+							<label for="encFile">Encrypted file</label>
+							<input id="encFile" class="form-control" type="file" accept=".enc,application/json">
+								<div id="importEnvelopeSummary" class="t-alert warning mt-3 bunker-import-summary">&gt; SELECT A .ENC FILE TO PREVIEW HEADER.</div>
+						</div>
+					</div>
+					<div class="form-actions mt-3">
+						<button id="btnUnlock" class="t-btn" type="button">[ UNLOCK_FILE ]</button>
+						<button id="btnCreate" class="t-btn" type="button">[ CREATE_NEW ]</button>
+					</div>
+					<div id="lockMessage" class="t-alert mt-3">> Choose an encrypted planner file or create a new local database.</div>
+				</div>
+			</section>
+
+			<section id="appPanel" class="hidden">
+				<div class="planner-grid">
+					<aside class="side-stack">
+						<section class="t-card">
+							<div class="t-card-header">> DATABASE</div>
+							<div class="t-card-body">
+								<div class="form-actions">
+									<button id="btnExport" class="t-btn" type="button">[ EXPORT_ENC ]</button>
+									<button id="btnExportAgenda" class="t-btn" type="button">[ EXPORT_AGENDA_TXT ]</button>
+									<button id="btnLock" class="t-btn" type="button">[ LOCK ]</button>
+						<button id="btnPanicLock" class="t-btn bunker-panic-btn" type="button">[ PANIC_LOCK ]</button>
+								</div>
+								<div id="appMessage" class="t-alert mt-3">> Planner unlocked in memory only.</div>
+							</div>
+						</section>
+
+						<section class="t-card">
+							<div class="t-card-header">> RECURRING_GENERATOR</div>
+							<div class="t-card-body">
+								<div class="control-grid">
+									<div class="form-row">
+										<label for="generateUntil">Generate until</label>
+										<input id="generateUntil" class="form-control" type="date">
+									</div>
+									<div class="form-row">
+										<label for="maxGenerate">Safety limit</label>
+										<input id="maxGenerate" class="form-control" type="number" min="1" max="500" value="120">
+									</div>
+								</div>
+								<div class="form-actions mt-3">
+									<button id="btnRunRecurring" class="t-btn" type="button">[ RUN_RECURRING ]</button>
+								</div>
+							</div>
+						</section>
+
+						<section class="t-card">
+							<div class="t-card-header">> ITEM_EDITOR</div>
+							<div class="t-card-body">
+								<input id="itemId" type="hidden">
+								<div class="control-grid">
+									<div class="form-row">
+										<label for="itemType">Type</label>
+										<select id="itemType" class="form-select">
+											<option value="TASK">TASK</option>
+											<option value="EVENT">EVENT</option>
+										</select>
+									</div>
+									<div class="form-row">
+										<label for="itemPriority">Priority</label>
+										<select id="itemPriority" class="form-select">
+											<option value="LOW">LOW</option>
+											<option value="MEDIUM" selected>MEDIUM</option>
+											<option value="HIGH">HIGH</option>
+											<option value="URGENT">URGENT</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-row mt-2">
+									<label for="itemTitle">Title</label>
+									<input id="itemTitle" class="form-control" type="text" placeholder="Backup Bunker Vault">
+								</div>
+								<div class="control-grid three mt-2">
+									<div class="form-row">
+										<label for="itemDate">Date</label>
+										<input id="itemDate" class="form-control" type="date">
+									</div>
+									<div class="form-row">
+										<label for="itemStartTime">Start</label>
+										<input id="itemStartTime" class="form-control" type="time">
+									</div>
+									<div class="form-row">
+										<label for="itemEndTime">End</label>
+										<input id="itemEndTime" class="form-control" type="time">
+									</div>
+								</div>
+								<div class="control-grid mt-2">
+									<div class="form-row">
+										<label for="itemTags">Tags</label>
+										<input id="itemTags" class="form-control" type="text" placeholder="backup, security">
+									</div>
+									<div class="form-row">
+										<label for="itemDependsOn">Depends on</label>
+										<select id="itemDependsOn" class="form-select multi-select" multiple></select>
+									</div>
+								</div>
+								<div class="form-row mt-2">
+									<label for="itemNotes">Notes</label>
+									<textarea id="itemNotes" class="form-control" rows="6" placeholder="Private details, checklist, or context."></textarea>
+								</div>
+								<div class="form-actions mt-3">
+									<button id="btnSaveItem" class="t-btn" type="button">[ SAVE_ITEM ]</button>
+									<button id="btnResetItem" class="t-btn" type="button">[ RESET ]</button>
+								</div>
+							</div>
+						</section>
+
+						<section class="t-card">
+							<div class="t-card-header">> RECURRING_TEMPLATE_EDITOR</div>
+							<div class="t-card-body">
+								<input id="recurrenceId" type="hidden">
+								<div class="control-grid">
+									<div class="form-row">
+										<label for="recurrenceType">Type</label>
+										<select id="recurrenceType" class="form-select">
+											<option value="TASK">TASK</option>
+											<option value="EVENT">EVENT</option>
+										</select>
+									</div>
+									<div class="form-row">
+										<label for="recurrencePriority">Priority</label>
+										<select id="recurrencePriority" class="form-select">
+											<option value="LOW">LOW</option>
+											<option value="MEDIUM" selected>MEDIUM</option>
+											<option value="HIGH">HIGH</option>
+											<option value="URGENT">URGENT</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-row mt-2">
+									<label for="recurrenceTitle">Title</label>
+									<input id="recurrenceTitle" class="form-control" type="text" placeholder="Weekly encrypted backup">
+								</div>
+								<div class="control-grid three mt-2">
+									<div class="form-row">
+										<label for="recurrenceStartDate">Start date</label>
+										<input id="recurrenceStartDate" class="form-control" type="date">
+									</div>
+									<div class="form-row">
+										<label for="recurrenceStartTime">Start</label>
+										<input id="recurrenceStartTime" class="form-control" type="time">
+									</div>
+									<div class="form-row">
+										<label for="recurrenceEndTime">End</label>
+										<input id="recurrenceEndTime" class="form-control" type="time">
+									</div>
+								</div>
+								<div class="control-grid three mt-2">
+									<div class="form-row">
+										<label for="recurrenceFrequency">Frequency</label>
+										<select id="recurrenceFrequency" class="form-select">
+											<option value="DAILY">DAILY</option>
+											<option value="WEEKLY" selected>WEEKLY</option>
+											<option value="MONTHLY">MONTHLY</option>
+											<option value="YEARLY">YEARLY</option>
+										</select>
+									</div>
+									<div class="form-row">
+										<label for="recurrenceInterval">Interval</label>
+										<input id="recurrenceInterval" class="form-control" type="number" min="1" max="365" value="1">
+									</div>
+									<div class="form-row">
+										<label for="recurrenceEndDate">End date</label>
+										<input id="recurrenceEndDate" class="form-control" type="date">
+									</div>
+								</div>
+								<div class="form-row mt-2">
+									<label for="recurrenceTags">Tags</label>
+									<input id="recurrenceTags" class="form-control" type="text" placeholder="routine, backup">
+								</div>
+								<div class="form-row mt-2">
+									<label for="recurrenceNotes">Notes</label>
+									<textarea id="recurrenceNotes" class="form-control" rows="4" placeholder="Template details copied into generated items."></textarea>
+								</div>
+								<div class="form-actions mt-3">
+									<button id="btnSaveRecurrence" class="t-btn" type="button">[ SAVE_TEMPLATE ]</button>
+									<button id="btnResetRecurrence" class="t-btn" type="button">[ RESET ]</button>
+								</div>
+							</div>
+						</section>
+
+						<section class="t-card">
+							<div class="t-card-header">> FILTERS</div>
+							<div class="t-card-body">
+								<div class="form-row">
+									<label for="searchInput">Search</label>
+									<input id="searchInput" class="form-control" type="search" placeholder="title, notes, tag, dependency">
+								</div>
+								<div class="control-grid mt-2">
+									<div class="form-row">
+										<label for="typeFilter">Type</label>
+										<select id="typeFilter" class="form-select">
+											<option value="">ALL</option>
+											<option value="TASK">TASK</option>
+											<option value="EVENT">EVENT</option>
+										</select>
+									</div>
+									<div class="form-row">
+										<label for="priorityFilter">Priority</label>
+										<select id="priorityFilter" class="form-select">
+											<option value="">ALL</option>
+											<option value="LOW">LOW</option>
+											<option value="MEDIUM">MEDIUM</option>
+											<option value="HIGH">HIGH</option>
+											<option value="URGENT">URGENT</option>
+										</select>
+									</div>
+								</div>
+								<div class="control-grid mt-2">
+									<div class="form-row">
+										<label for="tagFilter">Tag</label>
+										<select id="tagFilter" class="form-select"><option value="">ALL</option></select>
+									</div>
+									<div class="form-row">
+										<label for="monthInput">Calendar month</label>
+										<input id="monthInput" class="form-control" type="month">
+									</div>
+								</div>
+							</div>
+						</section>
+					</aside>
+
+					<section class="t-card">
+						<div class="t-card-header">> PLANNER_VIEW</div>
+						<div class="t-card-body">
+							<div class="view-tabs">
+								<button class="t-btn is-active" type="button" data-view="today">[ TODAY ]</button>
+								<button class="t-btn" type="button" data-view="upcoming">[ UPCOMING ]</button>
+								<button class="t-btn" type="button" data-view="overdue">[ OVERDUE ]</button>
+								<button class="t-btn" type="button" data-view="calendar">[ CALENDAR ]</button>
+								<button class="t-btn" type="button" data-view="tasks">[ TASKS ]</button>
+								<button class="t-btn" type="button" data-view="archive">[ ARCHIVE ]</button>
+								<button class="t-btn" type="button" data-view="recurring">[ RECURRING ]</button>
+							</div>
+							<div id="summaryGrid" class="summary-grid"></div>
+							<div id="viewTitle" class="t-alert">> TODAY</div>
+							<div id="plannerOutput" class="planner-list mt-3"></div>
+						</div>
+					</section>
+				</div>
+			</section>
+		</main>
+
+
+		<div id="mobileActionBar" class="bunker-mobile-actionbar is-hidden" aria-label="Mobile action bar">
+			<button id="mobileBtnNew" class="t-btn" type="button">[ + ]</button>
+			<button id="mobileBtnSearch" class="t-btn" type="button">[ SEARCH ]</button>
+			<button id="mobileBtnExport" class="t-btn" type="button">[ EXPORT ]</button>
+			<button id="mobileBtnLock" class="t-btn" type="button">[ LOCK ]</button>
+			<button id="mobileBtnPanic" class="t-btn bunker-panic-btn" type="button">[ PANIC ]</button>
+		</div>
+
+		<script src="../assets/terminal.js" defer></script>
+		<script src="../assets/bunker-core.js"></script>
+		<script type="module">
+			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
+			await sodium.ready;
+
+			const APP_KIND = 'planner';
+			const APP_VERSION = 2;
+			const FORMAT = 'bunker-planner-v2-enc';
+			const KDF_OPSLIMIT = 3;
+			const KDF_MEMLIMIT = 67108864;
+			const AUTO_LOCK_MS = 10 * 60 * 1000;
+			const CLIPBOARD_CLEAR_MS = 45 * 1000;
+			const PRIORITY_ORDER = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+			const VALID_VIEWS = ['today', 'upcoming', 'overdue', 'calendar', 'tasks', 'archive', 'recurring'];
+
+			const state = {
+				unlocked: false,
+				dirty: false,
+				passphrase: '',
+				database: null,
+				currentView: 'today',
+				selectedDate: todayLocal(),
+				autoLockTimer: null,
+				clipboardTimer: null
+			};
+
+			const els = {
+				lockStatus: document.getElementById('lockStatus'),
+				dirtyStatus: document.getElementById('dirtyStatus'),
+				itemStatus: document.getElementById('itemStatus'),
+				templateStatus: document.getElementById('templateStatus'),
+				lockedPanel: document.getElementById('lockedPanel'),
+				appPanel: document.getElementById('appPanel'),
+				passphrase: document.getElementById('passphrase'),
+				encFile: document.getElementById('encFile'),
+				btnUnlock: document.getElementById('btnUnlock'),
+				btnCreate: document.getElementById('btnCreate'),
+				btnExport: document.getElementById('btnExport'),
+				btnExportAgenda: document.getElementById('btnExportAgenda'),
+				btnLock: document.getElementById('btnLock'),
+				btnPanicLock: document.getElementById('btnPanicLock'),
+				lockMessage: document.getElementById('lockMessage'),
+				appMessage: document.getElementById('appMessage'),
+				generateUntil: document.getElementById('generateUntil'),
+				maxGenerate: document.getElementById('maxGenerate'),
+				btnRunRecurring: document.getElementById('btnRunRecurring'),
+				itemId: document.getElementById('itemId'),
+				itemType: document.getElementById('itemType'),
+				itemPriority: document.getElementById('itemPriority'),
+				itemTitle: document.getElementById('itemTitle'),
+				itemDate: document.getElementById('itemDate'),
+				itemStartTime: document.getElementById('itemStartTime'),
+				itemEndTime: document.getElementById('itemEndTime'),
+				itemTags: document.getElementById('itemTags'),
+				itemDependsOn: document.getElementById('itemDependsOn'),
+				itemNotes: document.getElementById('itemNotes'),
+				btnSaveItem: document.getElementById('btnSaveItem'),
+				btnResetItem: document.getElementById('btnResetItem'),
+				recurrenceId: document.getElementById('recurrenceId'),
+				recurrenceType: document.getElementById('recurrenceType'),
+				recurrencePriority: document.getElementById('recurrencePriority'),
+				recurrenceTitle: document.getElementById('recurrenceTitle'),
+				recurrenceStartDate: document.getElementById('recurrenceStartDate'),
+				recurrenceStartTime: document.getElementById('recurrenceStartTime'),
+				recurrenceEndTime: document.getElementById('recurrenceEndTime'),
+				recurrenceFrequency: document.getElementById('recurrenceFrequency'),
+				recurrenceInterval: document.getElementById('recurrenceInterval'),
+				recurrenceEndDate: document.getElementById('recurrenceEndDate'),
+				recurrenceTags: document.getElementById('recurrenceTags'),
+				recurrenceNotes: document.getElementById('recurrenceNotes'),
+				btnSaveRecurrence: document.getElementById('btnSaveRecurrence'),
+				btnResetRecurrence: document.getElementById('btnResetRecurrence'),
+				searchInput: document.getElementById('searchInput'),
+				typeFilter: document.getElementById('typeFilter'),
+				priorityFilter: document.getElementById('priorityFilter'),
+				tagFilter: document.getElementById('tagFilter'),
+				monthInput: document.getElementById('monthInput'),
+				summaryGrid: document.getElementById('summaryGrid'),
+				viewTitle: document.getElementById('viewTitle'),
+				plannerOutput: document.getElementById('plannerOutput')
+			};
+
+			const textEncoder = new TextEncoder();
+			const textDecoder = new TextDecoder();
+
+			function nowIso() {
+				return new Date().toISOString();
+			}
+
+			function todayLocal() {
+				return toDateInput(new Date());
+			}
+
+			function toDateInput(date) {
+				const year = date.getFullYear();
+				const month = String(date.getMonth() + 1).padStart(2, '0');
+				const day = String(date.getDate()).padStart(2, '0');
+				return `${year}-${month}-${day}`;
+			}
+
+			function parseLocalDate(value) {
+				const [year, month, day] = String(value || todayLocal()).split('-').map(Number);
+				return new Date(year, (month || 1) - 1, day || 1);
+			}
+
+			function monthLocal() {
+				return todayLocal().slice(0, 7);
+			}
+
+			function addDays(value, days) {
+				const date = parseLocalDate(value);
+				date.setDate(date.getDate() + days);
+				return toDateInput(date);
+			}
+
+			function addMonths(value, months) {
+				const source = parseLocalDate(value);
+				const day = source.getDate();
+				const date = new Date(source.getFullYear(), source.getMonth() + months, 1);
+				const last = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+				date.setDate(Math.min(day, last));
+				return toDateInput(date);
+			}
+
+			function makeId(prefix) {
+				const bytes = sodium.randombytes_buf(8);
+				return `${prefix}_${sodium.to_hex(bytes)}`;
+			}
+
+			function aadFor(kind) {
+				return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`);
+			}
+
+
+			const bunkerCore = window.BunkerCore.create({
+				sodium,
+				appVersion: APP_VERSION,
+				textEncoder,
+				textDecoder,
+				nowIso,
+				kdfOpslimit: typeof KDF_OPSLIMIT === 'undefined' ? undefined : KDF_OPSLIMIT,
+				kdfMemlimit: typeof KDF_MEMLIMIT === 'undefined' ? undefined : KDF_MEMLIMIT
+			});
+			function appNameForKind(kind) { return bunkerCore.appNameForKind(kind); }
+			function expectedEncFormat(kind) { return bunkerCore.expectedEncFormat(kind); }
+			function encB64(bytes) { return bunkerCore.encB64(bytes); }
+			function decB64(value) { return bunkerCore.decB64(value); }
+			function makeEnvelope(kind, source, kdf, salt, nonce, cipher) { return bunkerCore.makeEnvelope(kind, source, kdf, salt, nonce, cipher); }
+			function assertEnvelope(envelope, kind) { return bunkerCore.assertEnvelope(envelope, kind); }
+
+			function bytesToBase64(bytes) {
+				return sodium.to_base64(bytes, sodium.base64_variants.ORIGINAL);
+			}
+
+			function base64ToBytes(value) {
+				return sodium.from_base64(value, sodium.base64_variants.ORIGINAL);
+			}
+
+			function requirePassphrase() {
+				const passphrase = els.passphrase.value;
+				if (!passphrase || passphrase.length < 8) throw new Error('Use a passphrase with at least 8 characters.');
+				return passphrase;
+			}
+
+
+			function getExpectedImportKind() {
+				return typeof APP_KIND !== 'undefined' ? APP_KIND : KIND;
+			}
+			function setImportEnvelopeSummary(level, lines) {
+				const panel = document.getElementById('importEnvelopeSummary');
+				if (!panel) return;
+				panel.className = `t-alert ${level || 'warning'} bunker-import-summary`;
+				panel.textContent = Array.isArray(lines) ? lines.join('\n') : String(lines || '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+			}
+			async function previewImportEnvelope(file) {
+				if (!file) {
+					setImportEnvelopeSummary('warning', '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+					return null;
+				}
+				try {
+					const raw = await file.text();
+					const preview = bunkerCore.inspectEnvelope(raw, getExpectedImportKind());
+					setImportEnvelopeSummary(preview.level, preview.lines);
+					return preview;
+				} catch (error) {
+					setImportEnvelopeSummary('danger', ['> HEADER_PREVIEW: FAILED', error.message || 'Unable to read file header.']);
+					return null;
+				}
+			}
+
+			function deriveKey(passphrase, salt, kdf) {
+				return sodium.crypto_pwhash(
+					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+					passphrase,
+					salt,
+					kdf?.opslimit || KDF_OPSLIMIT,
+					kdf?.memlimit || KDF_MEMLIMIT,
+					sodium.crypto_pwhash_ALG_ARGON2ID13
+				);
+			}
+
+			function sanitizeText(value) {
+				return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim();
+			}
+
+			function escapeHtml(value) {
+				return String(value ?? '').replace(/[&<>'"]/g, char => ({
+					'&': '&amp;',
+					'<': '&lt;',
+					'>': '&gt;',
+					"'": '&#39;',
+					'"': '&quot;'
+				}[char]));
+			}
+
+			function normalizeTags(value) {
+				const raw = Array.isArray(value) ? value.join(',') : String(value || '');
+				return [...new Set(raw.split(',').map(tag => sanitizeText(tag).toLowerCase()).filter(Boolean))].sort();
+			}
+
+			function selectedOptions(select) {
+				return Array.from(select.selectedOptions).map(option => option.value).filter(Boolean);
+			}
+
+			function normalizeDatabase(input) {
+				const stamp = nowIso();
+				const database = input && typeof input === 'object' ? input : {};
+				database.kind = 'planner';
+				database.version = 2;
+				database.createdAt = database.createdAt || stamp;
+				database.updatedAt = database.updatedAt || stamp;
+				database.settings = database.settings && typeof database.settings === 'object' ? database.settings : {};
+				database.settings.defaultView = VALID_VIEWS.includes(database.settings.defaultView) ? database.settings.defaultView : 'today';
+				database.items = Array.isArray(database.items) ? database.items : [];
+				database.recurrences = Array.isArray(database.recurrences) ? database.recurrences : [];
+				database.items.forEach(item => normalizeItem(item, stamp));
+				database.recurrences.forEach(template => normalizeRecurrence(template, stamp));
+				return database;
+			}
+
+			function normalizeItem(item, stamp = nowIso()) {
+				item.id = item.id || makeId('item');
+				item.type = ['TASK', 'EVENT'].includes(item.type) ? item.type : 'TASK';
+				item.title = sanitizeText(item.title || 'Untitled Item');
+				item.date = sanitizeText(item.date || todayLocal());
+				item.startTime = sanitizeText(item.startTime || '');
+				item.endTime = sanitizeText(item.endTime || '');
+				item.priority = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].includes(item.priority) ? item.priority : 'MEDIUM';
+				item.tags = normalizeTags(item.tags);
+				item.notes = sanitizeText(item.notes || '');
+				item.dependsOn = Array.isArray(item.dependsOn) ? item.dependsOn.map(sanitizeText).filter(Boolean).filter(id => id !== item.id) : [];
+				item.sourceRecurringId = sanitizeText(item.sourceRecurringId || '');
+				item.sourceRecurringKey = sanitizeText(item.sourceRecurringKey || '');
+				item.done = Boolean(item.done);
+				item.pinned = Boolean(item.pinned);
+				item.archived = Boolean(item.archived);
+				item.createdAt = item.createdAt || stamp;
+				item.updatedAt = item.updatedAt || stamp;
+				return item;
+			}
+
+			function normalizeRecurrence(template, stamp = nowIso()) {
+				template.id = template.id || makeId('rec');
+				template.type = ['TASK', 'EVENT'].includes(template.type) ? template.type : 'TASK';
+				template.title = sanitizeText(template.title || 'Untitled Recurring Item');
+				template.startDate = sanitizeText(template.startDate || todayLocal());
+				template.endDate = sanitizeText(template.endDate || '');
+				template.startTime = sanitizeText(template.startTime || '');
+				template.endTime = sanitizeText(template.endTime || '');
+				template.frequency = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'].includes(template.frequency) ? template.frequency : 'WEEKLY';
+				template.interval = Math.max(1, Math.min(365, Number(template.interval || 1)));
+				template.priority = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].includes(template.priority) ? template.priority : 'MEDIUM';
+				template.tags = normalizeTags(template.tags);
+				template.notes = sanitizeText(template.notes || '');
+				template.active = template.active !== false;
+				template.createdAt = template.createdAt || stamp;
+				template.updatedAt = template.updatedAt || stamp;
+				return template;
+			}
+
+			function createEmptyDatabase() {
+				const stamp = nowIso();
+				return normalizeDatabase({
+					kind: 'planner',
+					version: 2,
+					createdAt: stamp,
+					updatedAt: stamp,
+					settings: { defaultView: 'today' },
+					items: [],
+					recurrences: []
+				});
+			}
+
+			async function encryptDatabase(database, passphrase) {
+				const salt = sodium.randombytes_buf(16);
+				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+				const kdf = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
+				const key = deriveKey(passphrase, salt, kdf);
+				try {
+					const plaintext = textEncoder.encode(JSON.stringify(database));
+					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(APP_KIND), null, nonce, key);
+					return makeEnvelope(APP_KIND, database, kdf, salt, nonce, cipher);
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+
+			async function decryptEnvelope(envelope, passphrase) {
+				assertEnvelope(envelope, APP_KIND);
+				const salt = decB64(envelope.salt);
+				const nonce = decB64(envelope.nonce);
+				const cipher = decB64(envelope.payload);
+				const key = deriveKey(passphrase, salt, envelope.kdf);
+				try {
+					const plaintext = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(APP_KIND), nonce, key);
+					return normalizeDatabase(JSON.parse(textDecoder.decode(plaintext)));
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+
+			function markDirty() {
+				if (!state.unlocked) return;
+				if (!state.dirty) state.dirtySince = nowIso();
+				state.dirty = true;
+				state.database.updatedAt = nowIso();
+				updateStatus();
+			}
+
+
+			function updateExportWarning() {
+				const panel = document.getElementById('exportWarning');
+				if (!panel) return;
+				const dirty = Boolean(state.dirty);
+				panel.classList.toggle('is-hidden', !dirty);
+				const since = document.getElementById('dirtySince');
+				if (since) since.textContent = dirty ? (state.dirtySince || 'UNKNOWN') : 'CLEAN';
+				if (els.btnExport) {
+					els.btnExport.classList.toggle('bunker-export-now', dirty);
+					els.btnExport.textContent = dirty ? '[ EXPORT_ENC_NOW ]' : '[ EXPORT_ENC ]';
+				}
+			}
+
+			function updateStatus() {
+				const itemCount = state.database ? state.database.items.length : 0;
+				const templateCount = state.database ? state.database.recurrences.length : 0;
+				els.lockStatus.textContent = state.unlocked ? 'UNLOCKED' : 'LOCKED';
+				els.dirtyStatus.textContent = state.dirty ? 'UNSAVED' : 'CLEAN';
+				updateExportWarning();
+				els.itemStatus.textContent = `${itemCount} ITEM${itemCount === 1 ? '' : 'S'}`;
+				els.templateStatus.textContent = `${templateCount} TEMPLATE${templateCount === 1 ? '' : 'S'}`;
+			}
+
+			function showLockMessage(message, isError = false) {
+				els.lockMessage.innerHTML = `> ${escapeHtml(message)}`;
+				els.lockMessage.classList.toggle('text-danger', isError);
+			}
+
+			function showAppMessage(message, isError = false) {
+				els.appMessage.innerHTML = `> ${escapeHtml(message)}`;
+				els.appMessage.classList.toggle('text-danger', isError);
+			}
+
+			function setUnlocked(database, passphrase) {
+				state.unlocked = true;
+				state.database = normalizeDatabase(database);
+				state.passphrase = passphrase;
+				state.currentView = state.database.settings.defaultView || 'today';
+				state.dirty = false;
+				state.dirtySince = '';
+				els.lockedPanel.classList.add('hidden');
+				els.appPanel.classList.remove('hidden');
+				els.itemDate.value = todayLocal();
+				els.recurrenceStartDate.value = todayLocal();
+				els.generateUntil.value = addMonths(todayLocal(), 1);
+				els.monthInput.value = monthLocal();
+				resetItemForm();
+				resetRecurrenceForm();
+				renderAll();
+				resetAutoLock();
+			}
+
+			function lock() {
+				if (state.dirty && !bunkerCore.confirmDestructive('LOCK_WITH_UNEXPORTED_CHANGES', { phrase: 'LOCK' })) return;
+				state.unlocked = false;
+				state.dirty = false;
+				state.dirtySince = '';
+				state.passphrase = '';
+				state.database = null;
+				clearTimeout(state.autoLockTimer);
+				els.passphrase.value = '';
+				els.encFile.value = '';
+				setImportEnvelopeSummary('warning', '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+				els.lockedPanel.classList.remove('hidden');
+				els.appPanel.classList.add('hidden');
+				els.plannerOutput.innerHTML = '';
+				showLockMessage('Session locked.');
+				updateStatus();
+			}
+
+			function panicLock() {
+				state.dirty = false;
+				state.dirtySince = '';
+				if (state.clipboardTimer) {
+					clearTimeout(state.clipboardTimer);
+					state.clipboardTimer = null;
+				}
+				bunkerCore.clearClipboardNow();
+				bunkerCore.scrubSensitiveDom();
+				lock();
+				if (typeof showLockMessage === 'function') showLockMessage('PANIC LOCK: plaintext cleared from memory.');
+			}
+
+			function resetItemForm() {
+				els.itemId.value = '';
+				els.itemType.value = 'TASK';
+				els.itemPriority.value = 'MEDIUM';
+				els.itemTitle.value = '';
+				els.itemDate.value = todayLocal();
+				els.itemStartTime.value = '';
+				els.itemEndTime.value = '';
+				els.itemTags.value = '';
+				els.itemNotes.value = '';
+				els.btnSaveItem.textContent = '[ SAVE_ITEM ]';
+				renderDependencySelect();
+			}
+
+			function resetRecurrenceForm() {
+				els.recurrenceId.value = '';
+				els.recurrenceType.value = 'TASK';
+				els.recurrencePriority.value = 'MEDIUM';
+				els.recurrenceTitle.value = '';
+				els.recurrenceStartDate.value = todayLocal();
+				els.recurrenceStartTime.value = '';
+				els.recurrenceEndTime.value = '';
+				els.recurrenceFrequency.value = 'WEEKLY';
+				els.recurrenceInterval.value = '1';
+				els.recurrenceEndDate.value = '';
+				els.recurrenceTags.value = '';
+				els.recurrenceNotes.value = '';
+				els.btnSaveRecurrence.textContent = '[ SAVE_TEMPLATE ]';
+			}
+
+			function saveItem() {
+				const title = sanitizeText(els.itemTitle.value);
+				if (!title) return alert('Title is required.');
+				const stamp = nowIso();
+				const existingId = els.itemId.value;
+				const payload = {
+					type: els.itemType.value,
+					title,
+					date: sanitizeText(els.itemDate.value || todayLocal()),
+					startTime: sanitizeText(els.itemStartTime.value),
+					endTime: sanitizeText(els.itemEndTime.value),
+					priority: els.itemPriority.value,
+					tags: normalizeTags(els.itemTags.value),
+					notes: sanitizeText(els.itemNotes.value),
+					dependsOn: selectedOptions(els.itemDependsOn).filter(id => id !== existingId),
+					updatedAt: stamp
+				};
+				if (existingId) {
+					const item = findItem(existingId);
+					if (!item) return alert('Item not found.');
+					Object.assign(item, payload);
+					normalizeItem(item, stamp);
+				} else {
+					state.database.items.push(normalizeItem({ id: makeId('item'), ...payload, done: false, pinned: false, archived: false, createdAt: stamp }, stamp));
+				}
+				markDirty();
+				resetItemForm();
+				renderAll();
+				showAppMessage('Item saved. Export to persist changes.');
+			}
+
+			function saveRecurrence() {
+				const title = sanitizeText(els.recurrenceTitle.value);
+				if (!title) return alert('Template title is required.');
+				const stamp = nowIso();
+				const payload = {
+					type: els.recurrenceType.value,
+					title,
+					startDate: sanitizeText(els.recurrenceStartDate.value || todayLocal()),
+					endDate: sanitizeText(els.recurrenceEndDate.value),
+					startTime: sanitizeText(els.recurrenceStartTime.value),
+					endTime: sanitizeText(els.recurrenceEndTime.value),
+					frequency: els.recurrenceFrequency.value,
+					interval: Number(els.recurrenceInterval.value || 1),
+					priority: els.recurrencePriority.value,
+					tags: normalizeTags(els.recurrenceTags.value),
+					notes: sanitizeText(els.recurrenceNotes.value),
+					updatedAt: stamp
+				};
+				const existingId = els.recurrenceId.value;
+				if (existingId) {
+					const template = findRecurrence(existingId);
+					if (!template) return alert('Recurring template not found.');
+					Object.assign(template, payload);
+					normalizeRecurrence(template, stamp);
+				} else {
+					state.database.recurrences.push(normalizeRecurrence({ id: makeId('rec'), ...payload, active: true, createdAt: stamp }, stamp));
+				}
+				markDirty();
+				resetRecurrenceForm();
+				renderAll();
+				showAppMessage('Recurring template saved. Use RUN_RECURRING to create dated items.');
+			}
+
+			function findItem(id) {
+				return state.database?.items.find(item => item.id === id) || null;
+			}
+
+			function findRecurrence(id) {
+				return state.database?.recurrences.find(template => template.id === id) || null;
+			}
+
+			function editItem(id) {
+				const item = findItem(id);
+				if (!item) return;
+				els.itemId.value = item.id;
+				els.itemType.value = item.type;
+				els.itemPriority.value = item.priority;
+				els.itemTitle.value = item.title;
+				els.itemDate.value = item.date || todayLocal();
+				els.itemStartTime.value = item.startTime || '';
+				els.itemEndTime.value = item.endTime || '';
+				els.itemTags.value = item.tags.join(', ');
+				els.itemNotes.value = item.notes || '';
+				els.btnSaveItem.textContent = '[ UPDATE_ITEM ]';
+				renderDependencySelect(item.dependsOn || [], item.id);
+				els.itemTitle.focus();
+			}
+
+			function editRecurrence(id) {
+				const template = findRecurrence(id);
+				if (!template) return;
+				els.recurrenceId.value = template.id;
+				els.recurrenceType.value = template.type;
+				els.recurrencePriority.value = template.priority;
+				els.recurrenceTitle.value = template.title;
+				els.recurrenceStartDate.value = template.startDate || todayLocal();
+				els.recurrenceStartTime.value = template.startTime || '';
+				els.recurrenceEndTime.value = template.endTime || '';
+				els.recurrenceFrequency.value = template.frequency || 'WEEKLY';
+				els.recurrenceInterval.value = String(template.interval || 1);
+				els.recurrenceEndDate.value = template.endDate || '';
+				els.recurrenceTags.value = template.tags.join(', ');
+				els.recurrenceNotes.value = template.notes || '';
+				els.btnSaveRecurrence.textContent = '[ UPDATE_TEMPLATE ]';
+				els.recurrenceTitle.focus();
+			}
+
+			function deleteItem(id) {
+				const item = findItem(id);
+				if (!item || !bunkerCore.confirmDestructive(`DELETE_ITEM ${item.title}`)) return;
+				state.database.items = state.database.items.filter(candidate => candidate.id !== id);
+				state.database.items.forEach(candidate => candidate.dependsOn = candidate.dependsOn.filter(dep => dep !== id));
+				markDirty();
+				renderAll();
+			}
+
+			function deleteRecurrence(id) {
+				const template = findRecurrence(id);
+				if (!template || !bunkerCore.confirmDestructive(`DELETE_RECURRING_TEMPLATE ${template.title}`)) return;
+				state.database.recurrences = state.database.recurrences.filter(candidate => candidate.id !== id);
+				markDirty();
+				renderAll();
+			}
+
+			function isBlocked(item) {
+				return dependencyItems(item).some(dep => !dep.done && !dep.archived);
+			}
+
+			function dependencyItems(item) {
+				return (item.dependsOn || []).map(id => findItem(id)).filter(Boolean);
+			}
+
+			function toggleDone(id) {
+				const item = findItem(id);
+				if (!item) return;
+				if (!item.done && isBlocked(item)) {
+					alert('This item is blocked by unfinished dependencies. Complete dependencies first.');
+					return;
+				}
+				item.done = !item.done;
+				item.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			function togglePin(id) {
+				const item = findItem(id);
+				if (!item) return;
+				item.pinned = !item.pinned;
+				item.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			function toggleArchive(id) {
+				const item = findItem(id);
+				if (!item) return;
+				item.archived = !item.archived;
+				item.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			function toggleRecurrence(id) {
+				const template = findRecurrence(id);
+				if (!template) return;
+				template.active = !template.active;
+				template.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			async function copyItem(id) {
+				const item = findItem(id);
+				if (!item) return;
+				const deps = dependencyItems(item).map(dep => dep.title).join(', ');
+				const text = [
+					`# ${item.title}`,
+					`Type: ${item.type}`,
+					`Date: ${item.date}`,
+					item.startTime ? `Time: ${item.startTime}${item.endTime ? ` - ${item.endTime}` : ''}` : '',
+					`Priority: ${item.priority}`,
+					deps ? `Depends on: ${deps}` : '',
+					item.tags.length ? `Tags: ${item.tags.join(', ')}` : '',
+					'',
+					item.notes || ''
+				].filter(line => line !== '').join('\n');
+				await navigator.clipboard.writeText(text);
+				clearTimeout(state.clipboardTimer);
+				state.clipboardTimer = setTimeout(() => navigator.clipboard.writeText('').catch(() => {}), CLIPBOARD_CLEAR_MS);
+				showAppMessage('Item copied. Clipboard will be cleared in 45 seconds if supported.');
+			}
+
+			function nextRecurrenceDate(value, template) {
+				const interval = Math.max(1, Number(template.interval || 1));
+				if (template.frequency === 'DAILY') return addDays(value, interval);
+				if (template.frequency === 'WEEKLY') return addDays(value, interval * 7);
+				if (template.frequency === 'MONTHLY') return addMonths(value, interval);
+				return addMonths(value, interval * 12);
+			}
+
+			function runRecurringGenerator() {
+				const until = sanitizeText(els.generateUntil.value || addMonths(todayLocal(), 1));
+				const limit = Math.max(1, Math.min(500, Number(els.maxGenerate.value || 120)));
+				let created = 0;
+				const stamp = nowIso();
+				for (const template of state.database.recurrences.filter(rec => rec.active)) {
+					let cursor = template.startDate || todayLocal();
+					let guard = 0;
+					const hardEnd = template.endDate && template.endDate < until ? template.endDate : until;
+					while (cursor <= hardEnd && created < limit && guard < 1000) {
+						const key = `${template.id}:${cursor}`;
+						const exists = state.database.items.some(item => item.sourceRecurringKey === key);
+						if (!exists) {
+							state.database.items.push(normalizeItem({
+								id: makeId('item'),
+								type: template.type,
+								title: template.title,
+								date: cursor,
+								startTime: template.startTime,
+								endTime: template.endTime,
+								priority: template.priority,
+								tags: template.tags,
+								notes: template.notes,
+								dependsOn: [],
+								sourceRecurringId: template.id,
+								sourceRecurringKey: key,
+								done: false,
+								pinned: false,
+								archived: false,
+								createdAt: stamp,
+								updatedAt: stamp
+							}, stamp));
+							created++;
+						}
+						cursor = nextRecurrenceDate(cursor, template);
+						guard++;
+					}
+				}
+				if (created > 0) {
+					markDirty();
+					renderAll();
+				}
+				showAppMessage(`Recurring generator created ${created} item${created === 1 ? '' : 's'}.`);
+			}
+
+			function filteredItems(options = {}) {
+				if (!state.database) return [];
+				const q = sanitizeText(els.searchInput.value).toLowerCase();
+				const type = els.typeFilter.value;
+				const priority = els.priorityFilter.value;
+				const tag = els.tagFilter.value;
+				return state.database.items.filter(item => {
+					const dependencyNames = dependencyItems(item).map(dep => dep.title).join(' ');
+					const haystack = [item.title, item.notes, item.type, item.priority, item.date, item.startTime, item.endTime, item.tags.join(' '), dependencyNames].join(' ').toLowerCase();
+					if (q && !haystack.includes(q)) return false;
+					if (type && item.type !== type) return false;
+					if (priority && item.priority !== priority) return false;
+					if (tag && !item.tags.includes(tag)) return false;
+					if (options.archived !== undefined && item.archived !== options.archived) return false;
+					if (options.type && item.type !== options.type) return false;
+					if (options.date && item.date !== options.date) return false;
+					if (options.from && item.date < options.from) return false;
+					if (options.before && item.date >= options.before) return false;
+					if (options.openOnly && item.done) return false;
+					return true;
+				}).sort(options.overdue ? compareOverdueItems : compareItems);
+			}
+
+			function compareItems(a, b) {
+				if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+				if (a.date !== b.date) return a.date.localeCompare(b.date);
+				const timeA = a.startTime || '99:99';
+				const timeB = b.startTime || '99:99';
+				if (timeA !== timeB) return timeA.localeCompare(timeB);
+				if (PRIORITY_ORDER[a.priority] !== PRIORITY_ORDER[b.priority]) return PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
+				return a.title.localeCompare(b.title);
+			}
+
+			function compareOverdueItems(a, b) {
+				if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+				if (PRIORITY_ORDER[a.priority] !== PRIORITY_ORDER[b.priority]) return PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
+				if (a.date !== b.date) return a.date.localeCompare(b.date);
+				return a.title.localeCompare(b.title);
+			}
+
+			function currentViewItems() {
+				if (state.currentView === 'today') return filteredItems({ archived: false, date: todayLocal() });
+				if (state.currentView === 'upcoming') return filteredItems({ archived: false, from: todayLocal() });
+				if (state.currentView === 'overdue') return filteredItems({ archived: false, before: todayLocal(), openOnly: true, overdue: true });
+				if (state.currentView === 'tasks') return filteredItems({ archived: false, type: 'TASK' });
+				if (state.currentView === 'archive') return filteredItems({ archived: true });
+				if (state.currentView === 'calendar') return filteredItems({ archived: false, date: state.selectedDate });
+				return [];
+			}
+
+			function renderAll() {
+				renderTags();
+				renderDependencySelect(selectedOptions(els.itemDependsOn), els.itemId.value);
+				renderSummary();
+				renderTabs();
+				renderView();
+				updateStatus();
+			}
+
+			function renderTags() {
+				const selected = els.tagFilter.value || '';
+				const tags = new Set();
+				state.database.items.forEach(item => item.tags.forEach(tag => tags.add(tag)));
+				state.database.recurrences.forEach(template => template.tags.forEach(tag => tags.add(tag)));
+				els.tagFilter.innerHTML = '<option value="">ALL</option>' + [...tags].sort().map(tag => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join('');
+				els.tagFilter.value = tags.has(selected) ? selected : '';
+			}
+
+			function renderDependencySelect(selected = [], currentId = '') {
+				if (!state.database) return;
+				const options = state.database.items
+					.filter(item => item.id !== currentId && !item.archived)
+					.sort(compareItems)
+					.map(item => `<option value="${escapeHtml(item.id)}" ${selected.includes(item.id) ? 'selected' : ''}>${escapeHtml(item.date)} · ${escapeHtml(item.title)}</option>`)
+					.join('');
+				els.itemDependsOn.innerHTML = options || '<option value="" disabled>No available dependency</option>';
+			}
+
+			function renderSummary() {
+				const items = state.database.items;
+				const open = items.filter(item => !item.archived && !item.done).length;
+				const today = items.filter(item => !item.archived && item.date === todayLocal()).length;
+				const overdue = items.filter(item => !item.archived && !item.done && item.date < todayLocal()).length;
+				const blocked = items.filter(item => !item.archived && !item.done && isBlocked(item)).length;
+				const templates = state.database.recurrences.filter(template => template.active).length;
+				els.summaryGrid.innerHTML = [
+					['OPEN', open],
+					['TODAY', today],
+					['OVERDUE', overdue],
+					['BLOCKED', blocked],
+					['RECURRING', templates]
+				].map(([label, value]) => `<div class="summary-card"><div class="summary-label">${label}</div><div class="summary-value">${value}</div></div>`).join('');
+			}
+
+			function renderTabs() {
+				document.querySelectorAll('[data-view]').forEach(button => {
+					button.classList.toggle('is-active', button.dataset.view === state.currentView);
+				});
+			}
+
+			function renderView() {
+				if (state.currentView === 'today') return renderListView('> TODAY', filteredItems({ archived: false, date: todayLocal() }));
+				if (state.currentView === 'upcoming') return renderListView('> UPCOMING', filteredItems({ archived: false, from: todayLocal() }));
+				if (state.currentView === 'overdue') return renderListView('> OVERDUE_SMART_FILTER', filteredItems({ archived: false, before: todayLocal(), openOnly: true, overdue: true }));
+				if (state.currentView === 'tasks') return renderListView('> TASKS', filteredItems({ archived: false, type: 'TASK' }));
+				if (state.currentView === 'archive') return renderListView('> ARCHIVE', filteredItems({ archived: true }));
+				if (state.currentView === 'recurring') return renderRecurringView();
+				return renderCalendarView();
+			}
+
+			function renderListView(title, items) {
+				els.viewTitle.innerHTML = title;
+				els.plannerOutput.className = 'planner-list mt-3';
+				els.plannerOutput.innerHTML = items.length ? items.map(renderItem).join('') : '<div class="empty-state">No matching planner items.</div>';
+			}
+
+			function renderCalendarView() {
+				const monthValue = els.monthInput.value || monthLocal();
+				els.viewTitle.innerHTML = `> CALENDAR ${escapeHtml(monthValue)}`;
+				const [year, month] = monthValue.split('-').map(Number);
+				const first = new Date(year, month - 1, 1);
+				const firstCell = new Date(first);
+				firstCell.setDate(first.getDate() - first.getDay());
+				const heads = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(day => `<div class="calendar-head">${day}</div>`).join('');
+				let cells = '';
+				for (let i = 0; i < 42; i++) {
+					const day = new Date(firstCell);
+					day.setDate(firstCell.getDate() + i);
+					const dateKey = toDateInput(day);
+					const items = filteredItems({ archived: false, date: dateKey });
+					const classes = ['calendar-day'];
+					if (day.getMonth() !== month - 1) classes.push('is-muted');
+					if (dateKey === todayLocal()) classes.push('is-today');
+					if (dateKey === state.selectedDate) classes.push('is-selected');
+					if (items.some(item => !item.done && item.date < todayLocal())) classes.push('has-overdue');
+					const chips = items.slice(0, 3).map(item => `<span class="day-chip">${escapeHtml(item.type[0])}:${escapeHtml(item.title)}</span>`).join('');
+					const more = items.length > 3 ? `<span class="day-count">+${items.length - 3} more</span>` : '';
+					cells += `<button class="${classes.join(' ')}" type="button" data-date="${dateKey}"><span class="day-number">${day.getDate()}</span>${chips}${more}</button>`;
+				}
+				const selectedItems = filteredItems({ archived: false, date: state.selectedDate });
+				els.plannerOutput.className = 'mt-3';
+				els.plannerOutput.innerHTML = `
+					<div class="calendar-tools">
+						<button class="t-btn" type="button" data-action="prev-month">[ PREV ]</button>
+						<div>${escapeHtml(monthValue)}</div>
+						<button class="t-btn" type="button" data-action="next-month">[ NEXT ]</button>
+					</div>
+					<div class="calendar-grid">${heads}${cells}</div>
+					<div class="selected-date-panel">
+						<div class="t-alert">> SELECTED_DATE ${escapeHtml(state.selectedDate)}</div>
+						<div class="planner-list mt-3">${selectedItems.length ? selectedItems.map(renderItem).join('') : '<div class="empty-state">No item on selected date.</div>'}</div>
+					</div>`;
+			}
+
+			function renderRecurringView() {
+				els.viewTitle.innerHTML = '> RECURRING_TEMPLATES';
+				els.plannerOutput.className = 'planner-list mt-3';
+				els.plannerOutput.innerHTML = state.database.recurrences.length ? state.database.recurrences.map(renderRecurrence).join('') : '<div class="empty-state">No recurring templates yet.</div>';
+			}
+
+			function renderItem(item) {
+				const tags = item.tags.map(tag => `<span class="tag-pill bunker-badge-tag">#${escapeHtml(tag)}</span>`).join('');
+				const notes = item.notes ? `<div class="item-notes">${escapeHtml(item.notes)}</div>` : '';
+				const time = item.startTime ? `${item.startTime}${item.endTime ? `-${item.endTime}` : ''}` : 'NO TIME';
+				const blocked = isBlocked(item);
+				const deps = dependencyItems(item);
+				const dependencyMarkup = deps.length ? `<div class="dependency-list">${deps.map(dep => `<span class="mini-pill">DEP: ${escapeHtml(dep.done ? 'DONE' : 'OPEN')} · ${escapeHtml(dep.title)}</span>`).join('')}</div>` : '';
+				const generated = item.sourceRecurringId ? ' · GENERATED' : '';
+				const status = item.archived ? 'ARCHIVED' : item.done ? 'DONE' : blocked ? 'BLOCKED' : 'OPEN';
+				const overdue = !item.archived && !item.done && item.date < todayLocal();
+				const itemBadges = [
+					item.pinned ? '<span class="bunker-badge bunker-badge-pinned">PINNED</span>' : '',
+					`<span class="bunker-badge bunker-badge-type">${escapeHtml(item.type)}</span>`,
+					`<span class="bunker-badge bunker-badge-${escapeHtml(item.priority).toLowerCase()}">${escapeHtml(item.priority)}</span>`,
+					`<span class="bunker-badge bunker-badge-${escapeHtml(status).toLowerCase()}">${escapeHtml(status)}</span>`,
+					overdue ? '<span class="bunker-badge bunker-badge-overdue">OVERDUE</span>' : '',
+					item.sourceRecurringId ? '<span class="bunker-badge bunker-badge-generated">GENERATED</span>' : ''
+				].filter(Boolean).join('');
+				return `
+					<div class="planner-item ${item.pinned ? 'is-pinned' : ''} ${item.done ? 'is-done' : ''} ${blocked ? 'is-blocked' : ''}" data-item-id="${escapeHtml(item.id)}">
+						<div class="item-top">
+							<div class="item-title">${escapeHtml(item.title)}</div>
+							<div class="bunker-badge-row">${itemBadges}</div>
+						</div>
+						<div class="item-meta">${escapeHtml(item.date)} · ${escapeHtml(time)}<br>ID ${escapeHtml(item.id)}<br>UPDATED ${escapeHtml(formatDate(item.updatedAt))}</div>
+						${notes}
+						${dependencyMarkup}
+						${tags ? `<div class="item-tags">${tags}</div>` : ''}
+						<div class="item-actions">
+							<button class="t-btn" type="button" data-action="edit-item" data-item-id="${escapeHtml(item.id)}">[ EDIT ]</button>
+							<button class="t-btn" type="button" data-action="toggle-done" data-item-id="${escapeHtml(item.id)}">[ ${item.done ? 'OPEN' : 'DONE'} ]</button>
+							<button class="t-btn" type="button" data-action="toggle-pin" data-item-id="${escapeHtml(item.id)}">[ PIN ]</button>
+							<button class="t-btn" type="button" data-action="copy-item" data-item-id="${escapeHtml(item.id)}">[ COPY ]</button>
+							<button class="t-btn" type="button" data-action="toggle-archive" data-item-id="${escapeHtml(item.id)}">[ ${item.archived ? 'RESTORE' : 'ARCHIVE'} ]</button>
+							<button class="t-btn" type="button" data-action="delete-item" data-item-id="${escapeHtml(item.id)}">[ DELETE ]</button>
+						</div>
+					</div>`;
+			}
+
+			function renderRecurrence(template) {
+				const tags = template.tags.map(tag => `<span class="tag-pill bunker-badge-tag">#${escapeHtml(tag)}</span>`).join('');
+				const until = template.endDate ? ` · UNTIL ${template.endDate}` : '';
+				return `
+					<div class="recurring-card" data-recurrence-id="${escapeHtml(template.id)}">
+						<div class="item-top">
+							<div class="item-title">${escapeHtml(template.title)}</div>
+							<div class="bunker-badge-row"><span class="bunker-badge bunker-badge-${template.active ? 'active' : 'paused'}">${escapeHtml(template.active ? 'ACTIVE' : 'PAUSED')}</span></div>
+						</div>
+						<div class="item-meta">${escapeHtml(template.type)} · ${escapeHtml(template.frequency)} / ${escapeHtml(template.interval)} · START ${escapeHtml(template.startDate)}${until}<br>${escapeHtml(template.priority)} · ID ${escapeHtml(template.id)}</div>
+						${template.notes ? `<div class="item-notes">${escapeHtml(template.notes)}</div>` : ''}
+						${tags ? `<div class="item-tags">${tags}</div>` : ''}
+						<div class="item-actions">
+							<button class="t-btn" type="button" data-action="edit-recurrence" data-recurrence-id="${escapeHtml(template.id)}">[ EDIT ]</button>
+							<button class="t-btn" type="button" data-action="toggle-recurrence" data-recurrence-id="${escapeHtml(template.id)}">[ ${template.active ? 'PAUSE' : 'RESUME'} ]</button>
+							<button class="t-btn" type="button" data-action="delete-recurrence" data-recurrence-id="${escapeHtml(template.id)}">[ DELETE ]</button>
+						</div>
+					</div>`;
+			}
+
+			function formatDate(value) {
+				if (!value) return '-';
+				const date = new Date(value);
+				if (Number.isNaN(date.getTime())) return value;
+				return date.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+			}
+
+			function shiftMonth(delta) {
+				const [year, month] = (els.monthInput.value || monthLocal()).split('-').map(Number);
+				const next = new Date(year, month - 1 + delta, 1);
+				els.monthInput.value = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`;
+				renderAll();
+			}
+
+			function downloadFile(filename, data, type) {
+				const blob = new Blob([data], { type });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				URL.revokeObjectURL(url);
+			}
+
+			function downloadJson(filename, data) {
+				downloadFile(filename, JSON.stringify(data, null, '\t'), 'application/json');
+			}
+
+			function exportFilename() {
+				const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+				return `bunker-planner-v2-${stamp}.enc`;
+			}
+
+			function agendaFilename() {
+				const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+				return `bunker-planner-agenda-${state.currentView}-${stamp}.txt`;
+			}
+
+			function exportAgenda() {
+				const items = currentViewItems();
+				const lines = [
+					`Bunker Planner Agenda`,
+					`View: ${state.currentView.toUpperCase()}`,
+					`Exported: ${new Date().toISOString()}`,
+					`Items: ${items.length}`,
+					''
+				];
+				items.forEach((item, index) => {
+					const deps = dependencyItems(item).map(dep => dep.title).join(', ');
+					lines.push(`${index + 1}. ${item.title}`);
+					lines.push(`   Type: ${item.type}`);
+					lines.push(`   Date: ${item.date}`);
+					lines.push(`   Time: ${item.startTime || '-'}${item.endTime ? ` - ${item.endTime}` : ''}`);
+					lines.push(`   Priority: ${item.priority}`);
+					lines.push(`   Status: ${item.archived ? 'ARCHIVED' : item.done ? 'DONE' : isBlocked(item) ? 'BLOCKED' : 'OPEN'}`);
+					if (deps) lines.push(`   Depends on: ${deps}`);
+					if (item.tags.length) lines.push(`   Tags: ${item.tags.join(', ')}`);
+					if (item.notes) lines.push(`   Notes: ${item.notes.replace(/\n/g, '\n          ')}`);
+					lines.push('');
+				});
+				downloadFile(agendaFilename(), lines.join('\n'), 'text/plain');
+				showAppMessage(`Agenda exported with ${items.length} item${items.length === 1 ? '' : 's'}.`);
+			}
+
+			async function unlockFromFile() {
+				try {
+					const passphrase = requirePassphrase();
+					const file = els.encFile.files[0];
+					if (!file) throw new Error('Choose a .enc file first.');
+					const envelope = JSON.parse(await file.text());
+					const database = await decryptEnvelope(envelope, passphrase);
+					setUnlocked(database, passphrase);
+					showAppMessage('Planner v2 file unlocked.');
+				} catch (error) {
+					showLockMessage(error.message || 'Failed to unlock file.', true);
+				}
+			}
+
+			function createNew() {
+				try {
+					const passphrase = requirePassphrase();
+					setUnlocked(createEmptyDatabase(), passphrase);
+					if (!state.dirty) state.dirtySince = nowIso();
+					state.dirty = true;
+					showAppMessage('New planner v2 database created. Export to save the first encrypted file.');
+				} catch (error) {
+					showLockMessage(error.message || 'Failed to create database.', true);
+				}
+			}
+
+			async function exportEncrypted() {
+				try {
+					const envelope = await encryptDatabase(state.database, state.passphrase);
+					downloadJson(exportFilename(), envelope);
+					state.dirty = false;
+					state.dirtySince = '';
+					updateStatus();
+					showAppMessage('Encrypted planner v2 exported.');
+				} catch (error) {
+					showAppMessage(error.message || 'Export failed.', true);
+				}
+			}
+
+			function resetAutoLock() {
+				clearTimeout(state.autoLockTimer);
+				if (!state.unlocked) return;
+				state.autoLockTimer = setTimeout(() => {
+					state.dirty = false;
+					state.dirtySince = '';
+					lock();
+				}, AUTO_LOCK_MS);
+			}
+
+			function handleActivity() {
+				if (state.unlocked) resetAutoLock();
+			}
+
+			els.encFile.addEventListener('change', async () => {
+				const file = els.encFile.files && els.encFile.files[0];
+				await previewImportEnvelope(file);
+			});
+
+			els.btnUnlock.addEventListener('click', unlockFromFile);
+			els.btnCreate.addEventListener('click', createNew);
+			els.btnExport.addEventListener('click', exportEncrypted);
+			els.btnExportAgenda.addEventListener('click', exportAgenda);
+			els.btnLock.addEventListener('click', lock);
+			els.btnPanicLock.addEventListener('click', panicLock);
+			els.btnRunRecurring.addEventListener('click', runRecurringGenerator);
+			els.btnSaveItem.addEventListener('click', saveItem);
+			els.btnResetItem.addEventListener('click', resetItemForm);
+			els.btnSaveRecurrence.addEventListener('click', saveRecurrence);
+			els.btnResetRecurrence.addEventListener('click', resetRecurrenceForm);
+			[els.searchInput, els.typeFilter, els.priorityFilter, els.tagFilter, els.monthInput].forEach(el => el.addEventListener('input', renderAll));
+			els.monthInput.addEventListener('change', renderAll);
+			document.querySelectorAll('[data-view]').forEach(button => {
+				button.addEventListener('click', () => {
+					state.currentView = button.dataset.view;
+					state.database.settings.defaultView = state.currentView;
+					renderAll();
+				});
+			});
+
+			document.addEventListener('click', event => {
+				const button = event.target.closest('[data-action], .calendar-day');
+				if (!button || !state.unlocked) return;
+				if (button.classList.contains('calendar-day')) {
+					state.selectedDate = button.dataset.date;
+					renderAll();
+					return;
+				}
+				const id = button.dataset.itemId;
+				const recurrenceId = button.dataset.recurrenceId;
+				const action = button.dataset.action;
+				if (action === 'edit-item') editItem(id);
+				if (action === 'toggle-done') toggleDone(id);
+				if (action === 'toggle-pin') togglePin(id);
+				if (action === 'copy-item') copyItem(id);
+				if (action === 'toggle-archive') toggleArchive(id);
+				if (action === 'delete-item') deleteItem(id);
+				if (action === 'edit-recurrence') editRecurrence(recurrenceId);
+				if (action === 'toggle-recurrence') toggleRecurrence(recurrenceId);
+				if (action === 'delete-recurrence') deleteRecurrence(recurrenceId);
+				if (action === 'prev-month') shiftMonth(-1);
+				if (action === 'next-month') shiftMonth(1);
+			});
+
+			['click', 'keydown', 'mousemove', 'touchstart'].forEach(name => document.addEventListener(name, handleActivity, { passive: true }));
+			window.addEventListener('beforeunload', event => {
+				if (!state.dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			});
+
+			els.itemDate.value = todayLocal();
+			els.recurrenceStartDate.value = todayLocal();
+			els.generateUntil.value = addMonths(todayLocal(), 1);
+			els.monthInput.value = monthLocal();
+			updateStatus();
+		</script>
+
+		<script>
+			(() => {
+				const gate = document.getElementById('privacyLockGate');
+				const lockedPanel = document.getElementById('lockedPanel');
+				const appPanel = document.getElementById('appPanel');
+				const reveal = document.getElementById('btnRevealUnlock');
+				const contexts = Array.from(document.querySelectorAll('.bunker-privacy-context'));
+				if (!gate || !lockedPanel || !appPanel || !reveal) return;
+				let revealed = false;
+
+				function isUnlocked() {
+					return !appPanel.classList.contains('hidden');
+				}
+
+				function clearLockedPanel() {
+					lockedPanel.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });
+					lockedPanel.querySelectorAll('input[type="file"]').forEach(input => { input.value = ''; });
+					lockedPanel.querySelectorAll('[id$="FileName"]').forEach(label => { label.textContent = '> NO FILE SELECTED'; });
+					const summary = lockedPanel.querySelector('#importEnvelopeSummary');
+					if (summary) summary.textContent = '> SELECT A .ENC FILE TO PREVIEW HEADER.';
+				}
+
+				function showPrivacyLock() {
+					if (isUnlocked()) return showUnlockedChrome();
+					revealed = false;
+					gate.classList.remove('hidden');
+					contexts.forEach(node => node.classList.add('is-privacy-hidden'));
+					lockedPanel.classList.add('hidden');
+					clearLockedPanel();
+				}
+
+				function showUnlockPanel() {
+					revealed = true;
+					gate.classList.add('hidden');
+					contexts.forEach(node => node.classList.remove('is-privacy-hidden'));
+					lockedPanel.classList.remove('hidden');
+					const focusTarget = lockedPanel.querySelector('input, button, select, textarea');
+					if (focusTarget) focusTarget.focus({ preventScroll:false });
+				}
+
+				function showUnlockedChrome() {
+					revealed = false;
+					gate.classList.add('hidden');
+					contexts.forEach(node => node.classList.remove('is-privacy-hidden'));
+					lockedPanel.classList.add('hidden');
+				}
+
+				function syncPrivacy() {
+					if (isUnlocked()) return showUnlockedChrome();
+					if (!revealed) showPrivacyLock();
+				}
+
+				reveal.addEventListener('click', showUnlockPanel);
+				showPrivacyLock();
+				const observer = new MutationObserver(syncPrivacy);
+				observer.observe(appPanel, { attributes:true, attributeFilter:['class'] });
+				observer.observe(lockedPanel, { attributes:true, attributeFilter:['class'] });
+			})();
+		</script>
+
+		<script>
+			(() => {
+				const ids = ['newPassword', 'importPassword', 'passphrase'];
+
+				function classFor(level) {
+					if (level === 'success') return 't-alert success bunker-master-warning';
+					if (level === 'danger') return 't-alert danger bunker-master-warning';
+					return 't-alert warning bunker-master-warning';
+				}
+
+				function ensureWarningPanel(input) {
+					if (!input) return null;
+					const panelId = `${input.id}MasterPasswordWarning`;
+					let panel = document.getElementById(panelId);
+					if (panel) return panel;
+					panel = document.createElement('div');
+					panel.id = panelId;
+					panel.className = 't-alert warning bunker-master-warning';
+					panel.setAttribute('aria-live', 'polite');
+					const anchor = input.closest('.bunker-input-group') || input;
+					anchor.insertAdjacentElement('afterend', panel);
+					return panel;
+				}
+
+				function adviceFor(value) {
+					if (window.BunkerCore && typeof window.BunkerCore.masterPasswordAdvice === 'function') {
+						return window.BunkerCore.masterPasswordAdvice(value);
+					}
+					const password = String(value || '');
+					const weak = password.length < 16;
+					return {
+						level: weak ? 'WEAK' : 'STRONG',
+						className: weak ? 'danger' : 'success',
+						lines: weak ? [
+							'> MASTER_PASSWORD: WEAK',
+							'> Use a unique passphrase with 16+ characters for offline .enc storage.'
+						] : [
+							'> MASTER_PASSWORD: STRONG',
+							'> This looks suitable for offline .enc storage.'
+						]
+					};
+				}
+
+				function updateWarning(input) {
+					const panel = ensureWarningPanel(input);
+					if (!panel) return;
+					const advice = adviceFor(input.value);
+					panel.className = classFor(advice.className || 'warning');
+					panel.textContent = Array.isArray(advice.lines) ? advice.lines.join('\n') : String(advice.lines || '> MASTER_PASSWORD: UNKNOWN');
+				}
+
+				function bind() {
+					ids.forEach(id => {
+						const input = document.getElementById(id);
+						if (!input) return;
+						ensureWarningPanel(input);
+						updateWarning(input);
+						input.addEventListener('input', () => updateWarning(input));
+						input.addEventListener('change', () => updateWarning(input));
+					});
+				}
+
+				bind();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				const bar = document.getElementById('mobileActionBar');
+				if (!bar) return;
+
+				const byId = id => document.getElementById(id);
+				const clickFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.click();
+							return true;
+						}
+					}
+					return false;
+				};
+				const focusFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.scrollIntoView({ behavior:'smooth', block:'center' });
+							setTimeout(() => el.focus(), 180);
+							return true;
+						}
+					}
+					return false;
+				};
+				const isHidden = el => !el || el.classList.contains('hidden') || el.classList.contains('bunker-hidden') || el.classList.contains('is-hidden') || el.classList.contains('is-privacy-hidden');
+				const isUnlocked = () => {
+					const paneApp = byId('paneApp');
+					if (paneApp) return paneApp.classList.contains('active') && !isHidden(paneApp);
+					const appPanel = byId('appPanel');
+					if (appPanel) return !isHidden(appPanel);
+					const lockedPanel = byId('lockedPanel') || byId('paneLocked');
+					if (lockedPanel) return isHidden(lockedPanel);
+					return false;
+				};
+				const refreshBar = () => {
+					const mobile = window.matchMedia('(max-width:768px)').matches;
+					const show = mobile && isUnlocked();
+					document.body.classList.toggle('has-mobile-actionbar', show);
+					bar.classList.toggle('is-hidden', !show);
+				};
+
+				byId('mobileBtnNew')?.addEventListener('click', () => {
+					if (clickFirst(['btnAdd'])) return;
+					if (clickFirst(['btnResetCard'])) return focusFirst(['cardTitle']);
+					if (clickFirst(['btnResetItem'])) return focusFirst(['itemTitle']);
+					if (clickFirst(['btnResetSnippet'])) return focusFirst(['snippetTitle']);
+					if (clickFirst(['btnResetBookmark'])) return focusFirst(['bookmarkTitle']);
+					focusFirst(['entryTitle', 'cardTitle', 'itemTitle', 'snippetTitle', 'bookmarkTitle', 'contactName', 'txTitle']);
+				});
+				byId('mobileBtnSearch')?.addEventListener('click', () => focusFirst(['searchInput']));
+				byId('mobileBtnExport')?.addEventListener('click', () => clickFirst(['btnExport']));
+				byId('mobileBtnLock')?.addEventListener('click', () => clickFirst(['btnLock']));
+				byId('mobileBtnPanic')?.addEventListener('click', () => clickFirst(['btnPanicLock']));
+
+				new MutationObserver(refreshBar).observe(document.body, { attributes:true, subtree:true, attributeFilter:['class'] });
+				window.addEventListener('resize', refreshBar, { passive:true });
+				window.addEventListener('orientationchange', refreshBar, { passive:true });
+				setInterval(refreshBar, 1000);
+				refreshBar();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				'use strict';
+				const appTitle = (document.title || 'Bunker App').replace(/\s+v\d+$/i, '');
+				function nounForApp() {
+					const lower = appTitle.toLowerCase();
+					if (lower.includes('auth')) return 'TOTP key';
+					if (lower.includes('board')) return 'card or board item';
+					if (lower.includes('bookmarks')) return 'bookmark';
+					if (lower.includes('contacts')) return 'contact';
+					if (lower.includes('ledger')) return 'transaction';
+					if (lower.includes('notes')) return 'note';
+					if (lower.includes('planner')) return 'planner item';
+					if (lower.includes('snippets')) return 'snippet';
+					if (lower.includes('vault')) return 'vault entry';
+					return 'item';
+				}
+				function escapeHtml(value) {
+					return String(value || '').replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+				}
+				function classify(rawText) {
+					const text = String(rawText || '').replace(/\s+/g, ' ').trim();
+					const upper = text.toUpperCase();
+					const noun = nounForApp();
+					if (upper.includes('NO_BOARD') || upper.includes('NO BOARD')) {
+						return {
+							code: 'NO_BOARD_AVAILABLE',
+							title: 'No board is available yet.',
+							line: 'Create a board first, then add columns and cards.',
+							next: 'After editing, export a fresh .enc file to keep the board.'
+						};
+					}
+					if (upper.includes('NO CARDS')) {
+						return {
+							code: 'COLUMN_EMPTY',
+							title: 'This column has no cards.',
+							line: 'Add a card here or drag an existing card into this column.',
+							next: 'Export a fresh .enc file after changing the board.'
+						};
+					}
+					if (upper.includes('NO_RECURRING')) {
+						return {
+							code: 'NO_RECURRING_TEMPLATE',
+							title: 'No recurring template exists yet.',
+							line: 'Create a recurring template for repeated transactions, tasks, or events.',
+							next: 'Run the generator when you want to create real dated entries.'
+						};
+					}
+					if (upper.includes('NO_ACCOUNTS')) {
+						return {
+							code: 'NO_ACCOUNTS_YET',
+							title: 'No account or wallet exists yet.',
+							line: 'Create an account such as Cash, Bank, Wallet, Savings, or another balance source.',
+							next: 'Export a fresh .enc file after adding account data.'
+						};
+					}
+					if (upper.includes('NO_BUDGETS')) {
+						return {
+							code: 'NO_BUDGETS_YET',
+							title: 'No budget rule exists yet.',
+							line: 'Create a monthly category budget to compare spending against a planned limit.',
+							next: 'Export a fresh .enc file after adding budget data.'
+						};
+					}
+					if (upper.includes('NO_OPEN_DEBT')) {
+						return { code:'NO_OPEN_DEBT', title:'No open debt is currently visible.', line:'Add debt transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_OPEN_LOAN')) {
+						return { code:'NO_OPEN_LOAN', title:'No open loan is currently visible.', line:'Add loan transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_SUMMARY')) {
+						return { code:'NO_SUMMARY_FOR_CURRENT_FILTER', title:'No summary can be calculated for this filter.', line:'Add matching records or adjust the date/type/search filters.', next:'Summary updates automatically after data changes.' };
+					}
+					if (upper.includes('NO ITEM ON SELECTED DATE')) {
+						return { code:'NO_SELECTED_DATE_ITEMS', title:'No item exists on the selected date.', line:'Select another date or create a task/event for this day.', next:'Export a fresh .enc file after editing planner data.' };
+					}
+					if (upper.includes('MATCH') || upper.includes('CURRENT FILTER') || upper.includes('FOUND')) {
+						return {
+							code: 'NO_VISIBLE_RESULTS',
+							title: `No ${noun}s match the current view.`,
+							line: 'Clear search/filter, switch tabs, or create a new item.',
+							next: 'After creating or editing data, export a fresh .enc file before closing.'
+						};
+					}
+					return {
+						code: 'EMPTY_DATASET',
+						title: `No ${noun}s yet.`,
+						line: `Create your first ${noun}, then review it in this list.`,
+						next: 'Export a fresh .enc file after changes so the data is not lost.'
+					};
+				}
+				function enhanceEmptyState(node) {
+					if (!node || node.dataset.bunkerEmptyEnhanced === '1') return;
+					const rawText = node.textContent || '';
+					if (!rawText.trim()) return;
+					const data = classify(rawText);
+					node.dataset.bunkerEmptyEnhanced = '1';
+					node.classList.add('bunker-empty-state');
+					node.innerHTML = [
+						'<div class="bunker-empty-state-icon">[ ∅ ]</div>',
+						`<div class="bunker-empty-state-title">&gt; EMPTY_STATE: ${escapeHtml(data.code)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.title)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.line)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.next)}</div>`
+					].join('');
+				}
+				function enhanceAllEmptyStates() {
+					document.querySelectorAll('.empty-state, .t-empty-state').forEach(enhanceEmptyState);
+				}
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', enhanceAllEmptyStates);
+				} else {
+					enhanceAllEmptyStates();
+				}
+				const observer = new MutationObserver(() => enhanceAllEmptyStates());
+				observer.observe(document.documentElement, { childList:true, subtree:true });
+			})();
+		</script>
+
+	</body>
+</html>

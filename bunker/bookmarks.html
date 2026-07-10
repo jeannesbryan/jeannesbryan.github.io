@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Bunker Bookmarks v2</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#000000">
+		<meta name="robots" content="noindex,nofollow,noarchive">
+		<link rel="stylesheet" href="../assets/terminal.css">
+		<style>
+			:root, html { --bg-base:#000000 !important; --bg-surface:#000000 !important; --t-green:#00ff41 !important; --t-green-dim:#00ff41 !important; --t-white:#00ff41 !important; --t-muted:#00ff41 !important; --t-shadow-soft:rgba(0,255,65,.16) !important; --t-shadow-strong:rgba(0,255,65,.34) !important; }
+			body { background:#000000 !important; background-image:none !important; color:#00ff41 !important; }
+			body.t-crt::after { background:linear-gradient(rgba(0,0,0,0) 50%, rgba(0,255,65,.045) 50%); background-size:100% 2px; }
+			:is(.t-navbar,.t-btn,.t-alert,.t-statusline,.t-card,.t-card-header,.t-border-top,.t-border-bottom,.text-muted,.text-success,.text-warning,.text-danger,.text-info,.text-white,.form-control,.form-select,input,textarea,select) { background:#000000 !important; color:#00ff41 !important; border-color:#00ff41 !important; }
+			:is(.t-btn:hover,.t-btn:focus) { color:#000000 !important; background:#00ff41 !important; box-shadow:0 0 10px #00ff41 !important; }
+			::placeholder { color:rgba(0,255,65,.55) !important; }
+			.t-shell { max-width:1450px; }
+			.bookmarks-hero { display:flex; justify-content:space-between; gap:16px; align-items:flex-end; flex-wrap:wrap; margin-bottom:18px; }
+			.bookmarks-grid { display:grid; grid-template-columns:390px minmax(0, 1fr); gap:18px; align-items:start; }
+			.side-stack { display:flex; flex-direction:column; gap:18px; }
+			.control-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+			.control-grid.one { grid-template-columns:1fr; }
+			.control-grid.three { grid-template-columns:1fr 1fr 1fr; }
+			.form-row { display:flex; flex-direction:column; gap:7px; }
+			.form-row label { font-weight:bold; font-size:.82rem; text-transform:uppercase; }
+			.form-actions { display:flex; gap:10px; flex-wrap:wrap; }
+			.status-strip { display:flex; gap:8px; flex-wrap:wrap; }
+			.status-pill { border:1px solid #00ff41; padding:5px 9px; font-size:.78rem; }
+			.summary-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:10px; margin-bottom:14px; }
+			.summary-card { border:1px solid #00ff41; padding:10px; }
+			.summary-label { font-size:.72rem; text-transform:uppercase; opacity:.85; }
+			.summary-value { font-size:1.25rem; font-weight:bold; margin-top:4px; }
+			.bookmark-list { display:flex; flex-direction:column; gap:12px; }
+			.bookmark-group { display:flex; flex-direction:column; gap:12px; }
+			.bookmark-group-title { border:1px solid #00ff41; padding:8px 10px; font-weight:bold; text-transform:uppercase; }
+			.bookmark-card { border:1px dashed #00ff41; padding:12px; background:#000000; }
+			.bookmark-card.is-pinned { border-style:solid; box-shadow:0 0 14px rgba(0,255,65,.18); }
+			.bookmark-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+			.bookmark-title { font-weight:bold; line-height:1.35; word-break:break-word; }
+			.bookmark-url { margin-top:7px; line-height:1.5; word-break:break-all; }
+			.bookmark-url a { color:#00ff41 !important; text-decoration:underline; }
+			.bookmark-meta { font-size:.78rem; line-height:1.55; opacity:.9; margin-top:8px; }
+			.bookmark-note { white-space:pre-wrap; word-break:break-word; margin-top:8px; line-height:1.55; }
+			.bookmark-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+			.tag-pill { border:1px solid #00ff41; padding:2px 6px; font-size:.72rem; }
+			.bookmark-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+			.bookmark-actions .t-btn { padding:4px 8px; font-size:.72rem; }
+			.empty-state { border:1px dashed #00ff41; padding:22px; text-align:center; line-height:1.7; }
+			.checkbox-row { display:flex; align-items:center; gap:8px; margin-top:10px; }
+			.checkbox-row input { width:auto; }
+			.hidden { display:none !important; }
+			.bunker-app-status { margin-bottom:16px; }
+			.bunker-app-status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px; }
+			.bunker-app-status-cell { border:1px dashed #00ff41; padding:8px; font-size:.78rem; line-height:1.55; overflow-wrap:anywhere; word-break:break-word; }
+
+			.bunker-import-summary { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.6; }
+
+			.bunker-lock-gate {
+				max-width:680px;
+				margin:0 auto 18px;
+				text-align:center;
+			}
+			.bunker-lock-gate-title {
+				font-weight:700;
+				letter-spacing:.08em;
+				font-size:clamp(1.35rem,4vw,2rem);
+				margin-bottom:.5rem;
+			}
+			.bunker-lock-gate-text {
+				max-width:560px;
+				margin:.35rem auto 1rem;
+			}
+			.bunker-unlock-panel.is-hidden,
+			.bunker-privacy-context.is-privacy-hidden {
+				display:none !important;
+			}
+
+			@media (max-width:1100px) { .bookmarks-grid { grid-template-columns:1fr; } }
+			.bunker-import-summary { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; line-height:1.6; }
+
+			@media (max-width:680px) { .control-grid, .control-grid.three, .summary-grid { grid-template-columns:1fr; } }
+			.bunker-export-warning {
+				margin-top:1rem;
+				border-style:double;
+			}
+			.bunker-export-warning.is-hidden {
+				display:none;
+			}
+			.bunker-export-warning-title {
+				font-weight:700;
+				letter-spacing:.04em;
+			}
+			.bunker-export-warning-meta {
+				margin-top:.35rem;
+			}
+			.t-btn.bunker-export-now {
+				box-shadow:0 0 0 1px currentColor inset;
+				font-weight:700;
+			}
+
+			.t-btn.bunker-panic-btn {
+				border-style:double;
+				font-weight:700;
+			}
+
+					.bunker-master-warning { white-space:pre-wrap; margin-top:8px; margin-bottom:12px; }
+		
+
+			.bunker-mobile-actionbar {
+				display:none;
+			}
+			@media (max-width:768px) {
+				body.has-mobile-actionbar {
+					padding-bottom:86px;
+				}
+				.bunker-mobile-actionbar {
+					position:fixed;
+					left:0;
+					right:0;
+					bottom:0;
+					z-index:9999;
+					display:grid;
+					grid-template-columns:repeat(5,minmax(0,1fr));
+					gap:6px;
+					padding:8px;
+					background:#000000;
+					border-top:1px solid #00ff41;
+					box-shadow:0 -4px 18px rgba(0,255,65,.12);
+				}
+				.bunker-mobile-actionbar.is-hidden {
+					display:none !important;
+				}
+				.bunker-mobile-actionbar .t-btn {
+					font-size:.68rem;
+					padding:.52rem .18rem;
+					min-width:0;
+					white-space:nowrap;
+				}
+			}
+
+			.bunker-badge-row,
+			.bunker-status-row,
+			.bookmark-tags,
+			.snippet-tags,
+			.item-tags,
+			.card-tags,
+			.bunker-tag-row,
+			.mini-list,
+			.status-strip {
+				display:flex;
+				flex-wrap:wrap;
+				gap:6px;
+				align-items:center;
+			}
+			.bunker-badge,
+			.t-badge,
+			.bunker-tag,
+			.tag-pill,
+			.mini-pill,
+			.status-pill,
+			.extension-badge,
+			.day-chip,
+			.day-count {
+				display:inline-flex;
+				align-items:center;
+				max-width:100%;
+				border:1px solid #00ff41 !important;
+				background:#000000 !important;
+				color:#00ff41 !important;
+				padding:2px 7px;
+				font-size:.72rem;
+				line-height:1.35;
+				letter-spacing:.035em;
+				text-transform:uppercase;
+				white-space:nowrap;
+				overflow:hidden;
+				text-overflow:ellipsis;
+			}
+			.bunker-badge-pinned,
+			.bunker-badge-favorite,
+			.bunker-badge-emergency,
+			.bunker-badge-urgent,
+			.bunker-badge-overdue,
+			.bunker-badge-blocked,
+			.bunker-badge-audit,
+			.bunker-badge-dirty,
+			.bunker-badge-archive,
+			.bunker-badge-archived,
+			.bunker-badge-read_later,
+			.bunker-badge-read-later {
+				border-style:double !important;
+				font-weight:700;
+			}
+			.bunker-badge-tag,
+			.bunker-badge-id,
+			.bunker-badge-updated,
+			.bunker-badge-file,
+			.bunker-tag,
+			.tag-pill {
+				border-style:dashed !important;
+			}
+			.bunker-badge-done,
+			.bunker-badge-active,
+			.bunker-badge-open,
+			.bunker-badge-clean {
+				border-style:solid !important;
+			}
+
+		</style>
+	</head>
+	<body class="t-crt">
+		<nav class="t-navbar">
+			<div class="t-nav-brand">BUNKER_BOOKMARKS</div>
+			<div class="t-nav-links">
+				<a href="../index.html" class="t-nav-link">ROOT</a>
+				<a href="./vault.html" class="t-nav-link">VAULT</a>
+				<a href="./auth.html" class="t-nav-link">AUTH</a>
+				<a href="./notes.html" class="t-nav-link">NOTES</a>
+				<a href="./contacts.html" class="t-nav-link">CONTACTS</a>
+				<a href="./ledger.html" class="t-nav-link">LEDGER</a>
+				<a href="./board.html" class="t-nav-link">BOARD</a>
+				<a href="./planner.html" class="t-nav-link">PLANNER</a>
+				<a href="./snippets.html" class="t-nav-link">SNIPPETS</a>
+			</div>
+		</nav>
+
+		<main class="t-shell">
+
+				<div id="privacyLockGate" class="t-card bunker-lock-gate" role="region" aria-label="Locked privacy screen">
+					<div class="bunker-lock-gate-title">BUNKER LOCKED</div>
+					<div class="bunker-lock-gate-text text-muted">No decrypted data, item counts, filenames, filters, or metadata are shown while this app is locked.</div>
+					<button id="btnRevealUnlock" class="t-btn" type="button">[ UNLOCK ]</button>
+				</div>
+
+			<section class="bookmarks-hero bunker-privacy-context">
+				<div>
+					<h1 class="t-hero-title">BUNKER BOOKMARKS</h1>
+					<p class="t-hero-subtitle">Encrypted local bookmark vault with browser bookmark import/export, domain grouping, read-later queue, and private web trails.</p>
+				</div>
+				<div class="status-strip">
+					<span id="lockStatus" class="status-pill">LOCKED</span>
+					<span id="dirtyStatus" class="status-pill">CLEAN</span>
+					<span id="bookmarkStatus" class="status-pill">0 BOOKMARKS</span>
+				</div>
+
+				<div id="exportWarning" class="t-alert bunker-export-warning is-hidden" role="alert" aria-live="polite">
+					<div class="bunker-export-warning-title">UNSAVED CHANGES — EXPORT REQUIRED</div>
+					<div>Changes exist only in memory. Export a new <code>.enc</code> file before locking, reloading, closing, or leaving this page.</div>
+					<div class="bunker-export-warning-meta fs-small">DIRTY_SINCE: <strong id="dirtySince">UNKNOWN</strong></div>
+				</div>
+
+			</section>
+
+			<div class="t-card bunker-app-status bunker-privacy-context">
+				<div class="t-card-header">&gt; APP_STATUS</div>
+				<div class="bunker-app-status-grid">
+					<div class="bunker-app-status-cell"><strong>APP</strong><br>Bunker Bookmarks</div>
+					<div class="bunker-app-status-cell"><strong>SCHEMA</strong><br>v2</div>
+					<div class="bunker-app-status-cell"><strong>FORMAT</strong><br>bunker-bookmarks-v2-enc</div>
+					<div class="bunker-app-status-cell"><strong>CRYPTO</strong><br>Argon2id + XChaCha20-Poly1305</div>
+					<div class="bunker-app-status-cell"><strong>STORAGE</strong><br>LOCAL_ONLY / MEMORY_ONLY</div>
+					<div class="bunker-app-status-cell"><strong>EXPORT</strong><br>REQUIRED_AFTER_CHANGES</div>
+				</div>
+			</div>
+
+<section id="lockedPanel" class="t-card bunker-privacy-context">
+				<div class="t-card-header">> UNLOCK_OR_CREATE</div>
+				<div class="t-card-body">
+					<div class="control-grid">
+						<div class="form-row">
+							<label for="passphrase">Passphrase</label>
+							<input id="passphrase" class="form-control" type="password" autocomplete="current-password" placeholder="minimum 8 characters">
+						</div>
+						<div class="form-row">
+							<label for="encFile">Encrypted file</label>
+							<input id="encFile" class="form-control" type="file" accept=".enc,application/json">
+								<div id="importEnvelopeSummary" class="t-alert warning mt-3 bunker-import-summary">&gt; SELECT A .ENC FILE TO PREVIEW HEADER.</div>
+						</div>
+					</div>
+					<div class="form-actions mt-3">
+						<button id="btnUnlock" class="t-btn" type="button">[ UNLOCK_FILE ]</button>
+						<button id="btnCreate" class="t-btn" type="button">[ CREATE_NEW ]</button>
+					</div>
+					<div id="lockMessage" class="t-alert mt-3">> Choose an encrypted bookmarks file or create a new local database.</div>
+				</div>
+			</section>
+
+			<section id="appPanel" class="hidden">
+				<div class="bookmarks-grid">
+					<aside class="side-stack">
+						<section class="t-card">
+							<div class="t-card-header">> DATABASE</div>
+							<div class="t-card-body">
+								<div class="form-actions">
+									<button id="btnExport" class="t-btn" type="button">[ EXPORT_ENC ]</button>
+									<button id="btnExportBrowser" class="t-btn" type="button">[ EXPORT_BROWSER_HTML ]</button>
+									<button id="btnLock" class="t-btn" type="button">[ LOCK ]</button>
+						<button id="btnPanicLock" class="t-btn bunker-panic-btn" type="button">[ PANIC_LOCK ]</button>
+								</div>
+								<div class="form-row mt-3">
+									<label for="browserBookmarksFile">Browser bookmarks HTML</label>
+									<input id="browserBookmarksFile" class="form-control" type="file" accept=".html,.htm,text/html">
+								</div>
+								<div class="form-actions mt-2">
+									<button id="btnImportBrowser" class="t-btn" type="button">[ IMPORT_BROWSER_HTML ]</button>
+								</div>
+								<div id="appMessage" class="t-alert mt-3">> Bookmarks unlocked in memory only.</div>
+							</div>
+						</section>
+
+						<section class="t-card">
+							<div class="t-card-header">> BOOKMARK_EDITOR</div>
+							<div class="t-card-body">
+								<input id="bookmarkId" type="hidden">
+								<div class="form-row">
+									<label for="bookmarkTitle">Title</label>
+									<input id="bookmarkTitle" class="form-control" type="text" placeholder="Private dashboard">
+								</div>
+								<div class="form-row mt-2">
+									<label for="bookmarkUrl">URL</label>
+									<input id="bookmarkUrl" class="form-control" type="url" placeholder="https://example.com/private-reference">
+								</div>
+								<div class="control-grid mt-2">
+									<div class="form-row">
+										<label for="bookmarkCategory">Category</label>
+										<input id="bookmarkCategory" class="form-control" type="text" placeholder="docs, admin, research">
+									</div>
+									<div class="form-row">
+										<label for="bookmarkStatusSelect">Status</label>
+										<select id="bookmarkStatusSelect" class="form-select">
+											<option value="ACTIVE">ACTIVE</option>
+											<option value="READ_LATER">READ_LATER</option>
+											<option value="REFERENCE">REFERENCE</option>
+											<option value="ARCHIVED">ARCHIVED</option>
+											<option value="BROKEN">BROKEN</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-row mt-2">
+									<label for="bookmarkTags">Tags</label>
+									<input id="bookmarkTags" class="form-control" type="text" placeholder="security, docs, server">
+								</div>
+								<div class="form-row mt-2">
+									<label for="bookmarkNote">Notes</label>
+									<textarea id="bookmarkNote" class="form-control" rows="7" placeholder="Why this link matters, login context, restore note, warning, or research summary."></textarea>
+								</div>
+								<label class="checkbox-row" for="bookmarkPinned">
+									<input id="bookmarkPinned" type="checkbox">
+									<span>PIN_BOOKMARK</span>
+								</label>
+								<label class="checkbox-row" for="bookmarkFavorite">
+									<input id="bookmarkFavorite" type="checkbox">
+									<span>FAVORITE</span>
+								</label>
+								<div class="form-actions mt-3">
+									<button id="btnSaveBookmark" class="t-btn" type="button">[ SAVE_BOOKMARK ]</button>
+									<button id="btnResetBookmark" class="t-btn" type="button">[ RESET ]</button>
+								</div>
+							</div>
+						</section>
+					</aside>
+
+					<section class="side-stack">
+						<section class="t-card">
+							<div class="t-card-header">> FILTERS</div>
+							<div class="t-card-body">
+								<div class="control-grid three">
+									<div class="form-row">
+										<label for="searchInput">Search</label>
+										<input id="searchInput" class="form-control" type="search" placeholder="title, url, note, tag">
+									</div>
+									<div class="form-row">
+										<label for="categoryFilter">Category</label>
+										<select id="categoryFilter" class="form-select"><option value="">ALL</option></select>
+									</div>
+									<div class="form-row">
+										<label for="statusFilter">Status</label>
+										<select id="statusFilter" class="form-select"><option value="">ALL</option></select>
+									</div>
+								</div>
+								<div class="control-grid three mt-2">
+									<div class="form-row">
+										<label for="tagFilter">Tag</label>
+										<select id="tagFilter" class="form-select"><option value="">ALL</option></select>
+									</div>
+									<div class="form-row">
+										<label for="domainFilter">Domain</label>
+										<select id="domainFilter" class="form-select"><option value="">ALL</option></select>
+									</div>
+									<div class="form-row">
+										<label for="quickFilter">Quick</label>
+										<select id="quickFilter" class="form-select">
+											<option value="">ALL</option>
+											<option value="read_later">READ_LATER</option>
+											<option value="pinned">PINNED</option>
+											<option value="favorite">FAVORITE</option>
+											<option value="archived">ARCHIVED</option>
+										</select>
+									</div>
+								</div>
+								<div class="control-grid mt-2">
+									<div class="form-row">
+										<label for="groupMode">Group Display</label>
+										<select id="groupMode" class="form-select">
+											<option value="">NONE</option>
+											<option value="domain">DOMAIN</option>
+											<option value="category">CATEGORY</option>
+											<option value="status">STATUS</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</section>
+
+						<section id="summaryGrid" class="summary-grid" aria-label="Bookmarks summary"></section>
+
+						<section class="t-card">
+							<div class="t-card-header">> BOOKMARKS</div>
+							<div class="t-card-body">
+								<div id="bookmarkOutput" class="bookmark-list"></div>
+							</div>
+						</section>
+					</section>
+				</div>
+			</section>
+		</main>
+
+
+		<div id="mobileActionBar" class="bunker-mobile-actionbar is-hidden" aria-label="Mobile action bar">
+			<button id="mobileBtnNew" class="t-btn" type="button">[ + ]</button>
+			<button id="mobileBtnSearch" class="t-btn" type="button">[ SEARCH ]</button>
+			<button id="mobileBtnExport" class="t-btn" type="button">[ EXPORT ]</button>
+			<button id="mobileBtnLock" class="t-btn" type="button">[ LOCK ]</button>
+			<button id="mobileBtnPanic" class="t-btn bunker-panic-btn" type="button">[ PANIC ]</button>
+		</div>
+
+		<script src="../assets/terminal.js" defer></script>
+		<script src="../assets/bunker-core.js"></script>
+		<script type="module">
+			import sodium from '../assets/libsodium-wrappers-sumo+esm.js';
+			await sodium.ready;
+
+			const APP_KIND = 'bookmarks';
+			const APP_VERSION = 2;
+			const FORMAT = 'bunker-bookmarks-v2-enc';
+			const KDF_OPSLIMIT = 3;
+			const KDF_MEMLIMIT = 67108864;
+			const AUTO_LOCK_MS = 10 * 60 * 1000;
+			const CLIPBOARD_CLEAR_MS = 45 * 1000;
+			const VALID_STATUSES = new Set(['ACTIVE', 'READ_LATER', 'REFERENCE', 'ARCHIVED', 'BROKEN']);
+
+			const state = {
+				unlocked: false,
+				dirty: false,
+				database: null,
+				passphrase: '',
+				autoLockTimer: null,
+				clipboardTimer: null
+			};
+
+			const els = {
+				lockStatus: document.getElementById('lockStatus'),
+				dirtyStatus: document.getElementById('dirtyStatus'),
+				bookmarkStatus: document.getElementById('bookmarkStatus'),
+				lockedPanel: document.getElementById('lockedPanel'),
+				appPanel: document.getElementById('appPanel'),
+				passphrase: document.getElementById('passphrase'),
+				encFile: document.getElementById('encFile'),
+				btnUnlock: document.getElementById('btnUnlock'),
+				btnCreate: document.getElementById('btnCreate'),
+				lockMessage: document.getElementById('lockMessage'),
+				btnExport: document.getElementById('btnExport'),
+				btnExportBrowser: document.getElementById('btnExportBrowser'),
+				btnImportBrowser: document.getElementById('btnImportBrowser'),
+				browserBookmarksFile: document.getElementById('browserBookmarksFile'),
+				btnLock: document.getElementById('btnLock'),
+				btnPanicLock: document.getElementById('btnPanicLock'),
+				appMessage: document.getElementById('appMessage'),
+				bookmarkId: document.getElementById('bookmarkId'),
+				bookmarkTitle: document.getElementById('bookmarkTitle'),
+				bookmarkUrl: document.getElementById('bookmarkUrl'),
+				bookmarkCategory: document.getElementById('bookmarkCategory'),
+				bookmarkStatusSelect: document.getElementById('bookmarkStatusSelect'),
+				bookmarkTags: document.getElementById('bookmarkTags'),
+				bookmarkNote: document.getElementById('bookmarkNote'),
+				bookmarkPinned: document.getElementById('bookmarkPinned'),
+				bookmarkFavorite: document.getElementById('bookmarkFavorite'),
+				btnSaveBookmark: document.getElementById('btnSaveBookmark'),
+				btnResetBookmark: document.getElementById('btnResetBookmark'),
+				searchInput: document.getElementById('searchInput'),
+				categoryFilter: document.getElementById('categoryFilter'),
+				statusFilter: document.getElementById('statusFilter'),
+				tagFilter: document.getElementById('tagFilter'),
+				domainFilter: document.getElementById('domainFilter'),
+				quickFilter: document.getElementById('quickFilter'),
+				groupMode: document.getElementById('groupMode'),
+				summaryGrid: document.getElementById('summaryGrid'),
+				bookmarkOutput: document.getElementById('bookmarkOutput')
+			};
+
+			const textEncoder = new TextEncoder();
+			const textDecoder = new TextDecoder();
+
+			function nowIso() {
+				return new Date().toISOString();
+			}
+
+			function makeId(prefix) {
+				const bytes = sodium.randombytes_buf(8);
+				return `${prefix}_${sodium.to_hex(bytes)}`;
+			}
+
+			function aadFor(kind) {
+				return textEncoder.encode(`BUNKER|${kind}|v${APP_VERSION}`);
+			}
+
+
+			const bunkerCore = window.BunkerCore.create({
+				sodium,
+				appVersion: APP_VERSION,
+				textEncoder,
+				textDecoder,
+				nowIso,
+				kdfOpslimit: typeof KDF_OPSLIMIT === 'undefined' ? undefined : KDF_OPSLIMIT,
+				kdfMemlimit: typeof KDF_MEMLIMIT === 'undefined' ? undefined : KDF_MEMLIMIT
+			});
+			function appNameForKind(kind) { return bunkerCore.appNameForKind(kind); }
+			function expectedEncFormat(kind) { return bunkerCore.expectedEncFormat(kind); }
+			function encB64(bytes) { return bunkerCore.encB64(bytes); }
+			function decB64(value) { return bunkerCore.decB64(value); }
+			function makeEnvelope(kind, source, kdf, salt, nonce, cipher) { return bunkerCore.makeEnvelope(kind, source, kdf, salt, nonce, cipher); }
+			function assertEnvelope(envelope, kind) { return bunkerCore.assertEnvelope(envelope, kind); }
+
+			function bytesToBase64(bytes) {
+				return sodium.to_base64(bytes, sodium.base64_variants.ORIGINAL);
+			}
+
+			function base64ToBytes(value) {
+				return sodium.from_base64(value, sodium.base64_variants.ORIGINAL);
+			}
+
+			function requirePassphrase() {
+				const passphrase = els.passphrase.value;
+				if (!passphrase || passphrase.length < 8) throw new Error('Use a passphrase with at least 8 characters.');
+				return passphrase;
+			}
+
+
+			function getExpectedImportKind() {
+				return typeof APP_KIND !== 'undefined' ? APP_KIND : KIND;
+			}
+			function setImportEnvelopeSummary(level, lines) {
+				const panel = document.getElementById('importEnvelopeSummary');
+				if (!panel) return;
+				panel.className = `t-alert ${level || 'warning'} bunker-import-summary`;
+				panel.textContent = Array.isArray(lines) ? lines.join('\n') : String(lines || '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+			}
+			async function previewImportEnvelope(file) {
+				if (!file) {
+					setImportEnvelopeSummary('warning', '> SELECT A .ENC FILE TO PREVIEW HEADER.');
+					return null;
+				}
+				try {
+					const raw = await file.text();
+					const preview = bunkerCore.inspectEnvelope(raw, getExpectedImportKind());
+					setImportEnvelopeSummary(preview.level, preview.lines);
+					return preview;
+				} catch (error) {
+					setImportEnvelopeSummary('danger', ['> HEADER_PREVIEW: FAILED', error.message || 'Unable to read file header.']);
+					return null;
+				}
+			}
+
+			function deriveKey(passphrase, salt, kdf) {
+				return sodium.crypto_pwhash(
+					sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+					passphrase,
+					salt,
+					kdf?.opslimit || KDF_OPSLIMIT,
+					kdf?.memlimit || KDF_MEMLIMIT,
+					sodium.crypto_pwhash_ALG_ARGON2ID13
+				);
+			}
+
+			function sanitizeText(value) {
+				return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim();
+			}
+
+			function sanitizeNote(value) {
+				return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim();
+			}
+
+			function escapeHtml(value) {
+				return String(value ?? '').replace(/[&<>'"]/g, char => ({
+					'&': '&amp;',
+					'<': '&lt;',
+					'>': '&gt;',
+					"'": '&#39;',
+					'"': '&quot;'
+				}[char]));
+			}
+
+			function normalizeTags(value) {
+				const raw = Array.isArray(value) ? value.join(',') : String(value || '');
+				return [...new Set(raw.split(',').map(tag => sanitizeText(tag).toLowerCase()).filter(Boolean))].sort();
+			}
+
+			function normalizeUrl(value) {
+				const url = sanitizeText(value);
+				if (!url) return '';
+				try {
+					const parsed = new URL(url);
+					if (!['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) throw new Error('Unsupported URL protocol.');
+					return parsed.href;
+				} catch {
+					throw new Error('Use a valid URL starting with http://, https://, mailto:, or tel:.');
+				}
+			}
+
+			function domainFromUrl(value) {
+				try {
+					const parsed = new URL(value);
+					if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.hostname.replace(/^www\./i, '').toLowerCase();
+					if (parsed.protocol === 'mailto:') return 'mailto';
+					if (parsed.protocol === 'tel:') return 'tel';
+					return parsed.protocol.replace(':', '').toLowerCase();
+				} catch {
+					return '';
+				}
+			}
+
+			function toBookmarkDate(value) {
+				const stamp = Number(value || 0);
+				if (!Number.isFinite(stamp) || stamp <= 0) return nowIso();
+				return new Date(stamp * 1000).toISOString();
+			}
+
+			function normalizeDatabase(input) {
+				const stamp = nowIso();
+				const database = input && typeof input === 'object' ? input : {};
+				database.kind = 'bookmarks';
+				database.version = 2;
+				database.createdAt = database.createdAt || stamp;
+				database.updatedAt = database.updatedAt || stamp;
+				database.settings = database.settings && typeof database.settings === 'object' ? database.settings : {};
+				database.bookmarks = Array.isArray(database.bookmarks) ? database.bookmarks : [];
+				database.bookmarks = database.bookmarks.map(bookmark => normalizeBookmark(bookmark, stamp)).filter(Boolean);
+				return database;
+			}
+
+			function normalizeBookmark(bookmark, stamp = nowIso()) {
+				try {
+					bookmark.id = bookmark.id || makeId('bookmark');
+					bookmark.title = sanitizeText(bookmark.title || 'Untitled Bookmark');
+					bookmark.url = normalizeUrl(bookmark.url || '');
+					bookmark.category = sanitizeText(bookmark.category || '');
+					bookmark.status = sanitizeText(bookmark.status || 'ACTIVE').toUpperCase();
+					if (!VALID_STATUSES.has(bookmark.status)) bookmark.status = 'ACTIVE';
+					bookmark.tags = normalizeTags(bookmark.tags);
+					bookmark.domain = domainFromUrl(bookmark.url);
+					bookmark.note = sanitizeNote(bookmark.note || bookmark.notes || '');
+					bookmark.pinned = Boolean(bookmark.pinned);
+					bookmark.favorite = Boolean(bookmark.favorite);
+					bookmark.lastOpenedAt = bookmark.lastOpenedAt || '';
+					bookmark.createdAt = bookmark.createdAt || stamp;
+					bookmark.updatedAt = bookmark.updatedAt || stamp;
+					return bookmark;
+				} catch {
+					return null;
+				}
+			}
+
+			function createEmptyDatabase() {
+				const stamp = nowIso();
+				return normalizeDatabase({
+					kind: 'bookmarks',
+					version: 2,
+					createdAt: stamp,
+					updatedAt: stamp,
+					settings: {},
+					bookmarks: []
+				});
+			}
+
+			async function encryptDatabase(database, passphrase) {
+				const salt = sodium.randombytes_buf(16);
+				const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+				const kdf = { name: 'argon2id', opslimit: KDF_OPSLIMIT, memlimit: KDF_MEMLIMIT, alg: 'argon2id13' };
+				const key = deriveKey(passphrase, salt, kdf);
+				try {
+					const plaintext = textEncoder.encode(JSON.stringify(database));
+					const cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(plaintext, aadFor(APP_KIND), null, nonce, key);
+					return makeEnvelope(APP_KIND, database, kdf, salt, nonce, cipher);
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+
+			async function decryptEnvelope(envelope, passphrase) {
+				assertEnvelope(envelope, APP_KIND);
+				const salt = decB64(envelope.salt);
+				const nonce = decB64(envelope.nonce);
+				const cipher = decB64(envelope.payload);
+				const key = deriveKey(passphrase, salt, envelope.kdf);
+				try {
+					const plaintext = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, cipher, aadFor(APP_KIND), nonce, key);
+					return normalizeDatabase(JSON.parse(textDecoder.decode(plaintext)));
+				} finally {
+					if (key && key.fill) key.fill(0);
+				}
+			}
+
+			function markDirty() {
+				if (!state.unlocked) return;
+				if (!state.dirty) state.dirtySince = nowIso();
+				state.dirty = true;
+				state.database.updatedAt = nowIso();
+				updateStatus();
+			}
+
+
+			function updateExportWarning() {
+				const panel = document.getElementById('exportWarning');
+				if (!panel) return;
+				const dirty = Boolean(state.dirty);
+				panel.classList.toggle('is-hidden', !dirty);
+				const since = document.getElementById('dirtySince');
+				if (since) since.textContent = dirty ? (state.dirtySince || 'UNKNOWN') : 'CLEAN';
+				if (els.btnExport) {
+					els.btnExport.classList.toggle('bunker-export-now', dirty);
+					els.btnExport.textContent = dirty ? '[ EXPORT_ENC_NOW ]' : '[ EXPORT_ENC ]';
+				}
+			}
+
+			function updateStatus() {
+				const count = state.database ? state.database.bookmarks.length : 0;
+				els.lockStatus.textContent = state.unlocked ? 'UNLOCKED' : 'LOCKED';
+				els.dirtyStatus.textContent = state.dirty ? 'UNSAVED' : 'CLEAN';
+				updateExportWarning();
+				els.bookmarkStatus.textContent = `${count} BOOKMARK${count === 1 ? '' : 'S'}`;
+			}
+
+			function showLockMessage(message, isError = false) {
+				els.lockMessage.innerHTML = `> ${escapeHtml(message)}`;
+				els.lockMessage.classList.toggle('text-danger', isError);
+			}
+
+			function showAppMessage(message, isError = false) {
+				els.appMessage.innerHTML = `> ${escapeHtml(message)}`;
+				els.appMessage.classList.toggle('text-danger', isError);
+			}
+
+			function setUnlocked(database, passphrase) {
+				state.unlocked = true;
+				state.database = normalizeDatabase(database);
+				state.passphrase = passphrase;
+				state.dirty = false;
+				state.dirtySince = '';
+				els.lockedPanel.classList.add('hidden');
+				els.appPanel.classList.remove('hidden');
+				resetBookmarkForm();
+				renderAll();
+				resetAutoLock();
+			}
+
+			function lock() {
+				if (state.dirty && !bunkerCore.confirmDestructive('LOCK_WITH_UNEXPORTED_CHANGES', { phrase: 'LOCK' })) return;
+				state.unlocked = false;
+				state.dirty = false;
+				state.dirtySince = '';
+				state.passphrase = '';
+				state.database = null;
+				clearTimeout(state.autoLockTimer);
+				els.passphrase.value = '';
+				els.encFile.value = '';
+				els.lockedPanel.classList.remove('hidden');
+				els.appPanel.classList.add('hidden');
+				els.bookmarkOutput.innerHTML = '';
+				showLockMessage('Session locked.');
+				updateStatus();
+			}
+
+			function panicLock() {
+				state.dirty = false;
+				state.dirtySince = '';
+				if (state.clipboardTimer) {
+					clearTimeout(state.clipboardTimer);
+					state.clipboardTimer = null;
+				}
+				bunkerCore.clearClipboardNow();
+				bunkerCore.scrubSensitiveDom();
+				lock();
+				if (typeof showLockMessage === 'function') showLockMessage('PANIC LOCK: plaintext cleared from memory.');
+			}
+
+			function resetBookmarkForm() {
+				els.bookmarkId.value = '';
+				els.bookmarkTitle.value = '';
+				els.bookmarkUrl.value = '';
+				els.bookmarkCategory.value = '';
+				els.bookmarkStatusSelect.value = 'ACTIVE';
+				els.bookmarkTags.value = '';
+				els.bookmarkNote.value = '';
+				els.bookmarkPinned.checked = false;
+				els.bookmarkFavorite.checked = false;
+				els.btnSaveBookmark.textContent = '[ SAVE_BOOKMARK ]';
+			}
+
+			function saveBookmark() {
+				try {
+					const title = sanitizeText(els.bookmarkTitle.value);
+					const url = normalizeUrl(els.bookmarkUrl.value);
+					if (!title) return alert('Title is required.');
+					if (!url) return alert('URL is required.');
+
+					const existingId = els.bookmarkId.value;
+					const duplicate = state.database.bookmarks.find(bookmark => bookmark.id !== existingId && bookmark.url.toLowerCase() === url.toLowerCase());
+					if (duplicate && !confirm(`Another bookmark already uses this URL: "${duplicate.title}". Save anyway?`)) return;
+
+					const stamp = nowIso();
+					const payload = {
+						title,
+						url,
+						category: sanitizeText(els.bookmarkCategory.value),
+						status: sanitizeText(els.bookmarkStatusSelect.value || 'ACTIVE').toUpperCase(),
+						tags: normalizeTags(els.bookmarkTags.value),
+						note: sanitizeNote(els.bookmarkNote.value),
+						pinned: els.bookmarkPinned.checked,
+						favorite: els.bookmarkFavorite.checked,
+						updatedAt: stamp
+					};
+
+					if (existingId) {
+						const bookmark = findBookmark(existingId);
+						if (!bookmark) return alert('Bookmark not found.');
+						Object.assign(bookmark, payload);
+					} else {
+						state.database.bookmarks.push(normalizeBookmark({
+							id: makeId('bookmark'),
+							...payload,
+							createdAt: stamp
+						}, stamp));
+					}
+					markDirty();
+					resetBookmarkForm();
+					renderAll();
+					showAppMessage('Bookmark saved. Export to persist changes.');
+				} catch (error) {
+					alert(error.message || 'Save failed.');
+				}
+			}
+
+			function findBookmark(id) {
+				return state.database?.bookmarks.find(bookmark => bookmark.id === id) || null;
+			}
+
+			function editBookmark(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark) return;
+				els.bookmarkId.value = bookmark.id;
+				els.bookmarkTitle.value = bookmark.title;
+				els.bookmarkUrl.value = bookmark.url;
+				els.bookmarkCategory.value = bookmark.category || '';
+				els.bookmarkStatusSelect.value = VALID_STATUSES.has(bookmark.status) ? bookmark.status : 'ACTIVE';
+				els.bookmarkTags.value = bookmark.tags.join(', ');
+				els.bookmarkNote.value = bookmark.note || '';
+				els.bookmarkPinned.checked = bookmark.pinned;
+				els.bookmarkFavorite.checked = bookmark.favorite;
+				els.btnSaveBookmark.textContent = '[ UPDATE_BOOKMARK ]';
+				els.bookmarkTitle.focus();
+			}
+
+			function deleteBookmark(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark || !bunkerCore.confirmDestructive(`DELETE_BOOKMARK ${bookmark.title}`)) return;
+				state.database.bookmarks = state.database.bookmarks.filter(candidate => candidate.id !== id);
+				markDirty();
+				renderAll();
+			}
+
+			function togglePin(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark) return;
+				bookmark.pinned = !bookmark.pinned;
+				bookmark.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			function toggleFavorite(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark) return;
+				bookmark.favorite = !bookmark.favorite;
+				bookmark.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			function toggleReadLater(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark) return;
+				bookmark.status = bookmark.status === 'READ_LATER' ? 'ACTIVE' : 'READ_LATER';
+				bookmark.updatedAt = nowIso();
+				markDirty();
+				renderAll();
+			}
+
+			async function copyText(text, label = 'Text') {
+				await navigator.clipboard.writeText(text);
+				clearTimeout(state.clipboardTimer);
+				state.clipboardTimer = setTimeout(() => navigator.clipboard.writeText('').catch(() => {}), CLIPBOARD_CLEAR_MS);
+				showAppMessage(`${label} copied. Clipboard will be cleared in 45 seconds if supported.`);
+			}
+
+			async function copyUrl(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark) return;
+				await copyText(bookmark.url, 'Bookmark URL');
+			}
+
+			async function copyFull(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark) return;
+				const text = [
+					`# ${bookmark.title}`,
+					`URL: ${bookmark.url}`,
+					bookmark.category ? `Category: ${bookmark.category}` : '',
+					bookmark.status ? `Status: ${bookmark.status}` : '',
+					bookmark.tags.length ? `Tags: ${bookmark.tags.join(', ')}` : '',
+					bookmark.note ? `Notes: ${bookmark.note}` : ''
+				].filter(line => line !== '').join('\n');
+				await copyText(text, 'Bookmark summary');
+			}
+
+			function openBookmark(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark) return;
+				bookmark.lastOpenedAt = nowIso();
+				bookmark.updatedAt = bookmark.updatedAt || bookmark.lastOpenedAt;
+				window.open(bookmark.url, '_blank', 'noopener,noreferrer');
+				renderAll();
+			}
+
+			function downloadBookmark(id) {
+				const bookmark = findBookmark(id);
+				if (!bookmark) return;
+				const text = `[InternetShortcut]\nURL=${bookmark.url}\n`;
+				downloadText(`${slugify(bookmark.title)}.url`, text);
+			}
+
+			function slugify(value) {
+				return sanitizeText(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'bookmark';
+			}
+
+			function filteredBookmarks() {
+				if (!state.database) return [];
+				const q = sanitizeText(els.searchInput.value).toLowerCase();
+				const category = els.categoryFilter.value;
+				const status = els.statusFilter.value;
+				const tag = els.tagFilter.value;
+				const domain = els.domainFilter.value;
+				const quick = els.quickFilter.value;
+				return state.database.bookmarks.filter(bookmark => {
+					const haystack = [bookmark.title, bookmark.url, bookmark.category, bookmark.status, bookmark.note, bookmark.tags.join(' ')].join(' ').toLowerCase();
+					if (q && !haystack.includes(q)) return false;
+					if (category && bookmark.category !== category) return false;
+					if (status && bookmark.status !== status) return false;
+					if (tag && !bookmark.tags.includes(tag)) return false;
+					if (domain && domainFromUrl(bookmark.url) !== domain) return false;
+					if (quick === 'read_later' && bookmark.status !== 'READ_LATER') return false;
+					if (quick === 'pinned' && !bookmark.pinned) return false;
+					if (quick === 'favorite' && !bookmark.favorite) return false;
+					if (quick === 'archived' && bookmark.status !== 'ARCHIVED') return false;
+					return true;
+				}).sort(compareBookmarks);
+			}
+
+			function compareBookmarks(a, b) {
+				if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+				if (a.favorite !== b.favorite) return a.favorite ? -1 : 1;
+				return b.updatedAt.localeCompare(a.updatedAt);
+			}
+
+			function renderAll() {
+				renderFilters();
+				renderSummary();
+				renderBookmarks();
+				updateStatus();
+			}
+
+			function renderFilters() {
+				const selectedCategory = els.categoryFilter.value || '';
+				const selectedStatus = els.statusFilter.value || '';
+				const selectedTag = els.tagFilter.value || '';
+				const selectedDomain = els.domainFilter.value || '';
+				const categories = new Set();
+				const statuses = new Set();
+				const tags = new Set();
+				const domains = new Set();
+				state.database.bookmarks.forEach(bookmark => {
+					if (bookmark.category) categories.add(bookmark.category);
+					statuses.add(bookmark.status || 'ACTIVE');
+					if (domainFromUrl(bookmark.url)) domains.add(domainFromUrl(bookmark.url));
+					bookmark.tags.forEach(tag => tags.add(tag));
+				});
+				els.categoryFilter.innerHTML = '<option value="">ALL</option>' + [...categories].sort().map(category => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+				els.statusFilter.innerHTML = '<option value="">ALL</option>' + [...statuses].sort().map(status => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join('');
+				els.tagFilter.innerHTML = '<option value="">ALL</option>' + [...tags].sort().map(tag => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join('');
+				els.domainFilter.innerHTML = '<option value="">ALL</option>' + [...domains].sort().map(domain => `<option value="${escapeHtml(domain)}">${escapeHtml(domain)}</option>`).join('');
+				els.categoryFilter.value = categories.has(selectedCategory) ? selectedCategory : '';
+				els.statusFilter.value = statuses.has(selectedStatus) ? selectedStatus : '';
+				els.tagFilter.value = tags.has(selectedTag) ? selectedTag : '';
+				els.domainFilter.value = domains.has(selectedDomain) ? selectedDomain : '';
+			}
+
+			function renderSummary() {
+				const bookmarks = state.database.bookmarks;
+				const pinned = bookmarks.filter(bookmark => bookmark.pinned).length;
+				const favorites = bookmarks.filter(bookmark => bookmark.favorite).length;
+				const categories = new Set(bookmarks.map(bookmark => bookmark.category).filter(Boolean));
+				const domains = new Set(bookmarks.map(bookmark => domainFromUrl(bookmark.url)).filter(Boolean));
+				const readLater = bookmarks.filter(bookmark => bookmark.status === 'READ_LATER').length;
+				els.summaryGrid.innerHTML = [
+					['BOOKMARKS', bookmarks.length],
+					['READ LATER', readLater],
+					['PINNED', pinned],
+					['FAVORITES', favorites],
+					['CATEGORIES', categories.size],
+					['DOMAINS', domains.size]
+				].map(([label, value]) => `<div class="summary-card"><div class="summary-label">${label}</div><div class="summary-value">${value}</div></div>`).join('');
+			}
+
+			function renderBookmarks() {
+				const bookmarks = filteredBookmarks();
+				if (!bookmarks.length) {
+					els.bookmarkOutput.innerHTML = '<div class="empty-state">No matching bookmarks.</div>';
+					return;
+				}
+				const mode = els.groupMode.value;
+				if (!mode) {
+					els.bookmarkOutput.innerHTML = bookmarks.map(renderBookmark).join('');
+					return;
+				}
+				const groups = new Map();
+				bookmarks.forEach(bookmark => {
+					let key = 'UNGROUPED';
+					if (mode === 'domain') key = domainFromUrl(bookmark.url) || 'NO_DOMAIN';
+					if (mode === 'category') key = bookmark.category || 'UNCATEGORIZED';
+					if (mode === 'status') key = bookmark.status || 'ACTIVE';
+					if (!groups.has(key)) groups.set(key, []);
+					groups.get(key).push(bookmark);
+				});
+				els.bookmarkOutput.innerHTML = [...groups.keys()].sort().map(key => `
+					<div class="bookmark-group">
+						<div class="bookmark-group-title">> ${escapeHtml(mode.toUpperCase())}: ${escapeHtml(key)} (${groups.get(key).length})</div>
+						${groups.get(key).map(renderBookmark).join('')}
+					</div>
+				`).join('');
+			}
+
+			function renderBookmark(bookmark) {
+				const domain = domainFromUrl(bookmark.url);
+				const badgeRow = [
+					bookmark.pinned ? '<span class="bunker-badge bunker-badge-pinned">PINNED</span>' : '',
+					bookmark.favorite ? '<span class="bunker-badge bunker-badge-favorite">FAVORITE</span>' : '',
+					`<span class="bunker-badge bunker-badge-${escapeHtml(bookmark.status).toLowerCase()}">${escapeHtml(bookmark.status)}</span>`,
+					bookmark.category ? `<span class="bunker-badge bunker-badge-category">${escapeHtml(bookmark.category)}</span>` : '',
+					domain ? `<span class="bunker-badge bunker-badge-domain">${escapeHtml(domain)}</span>` : ''
+				].filter(Boolean).join('');
+				return `
+					<article class="bookmark-card ${bookmark.pinned ? 'is-pinned' : ''}" data-id="${escapeHtml(bookmark.id)}">
+						<div class="bookmark-top">
+							<div>
+								<div class="bookmark-title">${escapeHtml(bookmark.title)}</div>
+								<div class="bookmark-url"><a href="${escapeHtml(bookmark.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(bookmark.url)}</a></div>
+								<div class="bunker-badge-row">${badgeRow}</div>
+								<div class="bookmark-meta">Updated ${escapeHtml(new Date(bookmark.updatedAt).toLocaleString())}${bookmark.lastOpenedAt ? ` • Last opened ${escapeHtml(new Date(bookmark.lastOpenedAt).toLocaleString())}` : ''}</div>
+							</div>
+						</div>
+						${bookmark.tags.length ? `<div class="bookmark-tags">${bookmark.tags.map(tag => `<span class="tag-pill bunker-badge-tag">#${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+						${bookmark.note ? `<div class="bookmark-note">${escapeHtml(bookmark.note)}</div>` : ''}
+						<div class="bookmark-actions">
+							<button class="t-btn" type="button" data-action="open" data-id="${escapeHtml(bookmark.id)}">[ OPEN ]</button>
+							<button class="t-btn" type="button" data-action="edit" data-id="${escapeHtml(bookmark.id)}">[ EDIT ]</button>
+							<button class="t-btn" type="button" data-action="pin" data-id="${escapeHtml(bookmark.id)}">[ ${bookmark.pinned ? 'UNPIN' : 'PIN'} ]</button>
+							<button class="t-btn" type="button" data-action="favorite" data-id="${escapeHtml(bookmark.id)}">[ ${bookmark.favorite ? 'UNFAV' : 'FAV'} ]</button>
+							<button class="t-btn" type="button" data-action="read-later" data-id="${escapeHtml(bookmark.id)}">[ ${bookmark.status === 'READ_LATER' ? 'MARK_ACTIVE' : 'READ_LATER'} ]</button>
+							<button class="t-btn" type="button" data-action="copy-url" data-id="${escapeHtml(bookmark.id)}">[ COPY_URL ]</button>
+							<button class="t-btn" type="button" data-action="copy-full" data-id="${escapeHtml(bookmark.id)}">[ COPY_FULL ]</button>
+							<button class="t-btn" type="button" data-action="download" data-id="${escapeHtml(bookmark.id)}">[ DOWNLOAD_URL ]</button>
+							<button class="t-btn" type="button" data-action="delete" data-id="${escapeHtml(bookmark.id)}">[ DELETE ]</button>
+						</div>
+					</article>
+				`;
+			}
+
+
+			function directChild(node, tagName) {
+				return Array.from(node.children || []).find(child => child.tagName === tagName) || null;
+			}
+
+			function collectBrowserBookmarks(htmlText) {
+				const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+				const root = doc.querySelector('body > dl') || doc.querySelector('dl') || doc.body;
+				const records = [];
+
+				function walk(container, path) {
+					const children = Array.from(container.children || []);
+					for (let index = 0; index < children.length; index += 1) {
+						const child = children[index];
+						if (child.tagName === 'DT') {
+							const folderNode = directChild(child, 'H3');
+							const linkNode = directChild(child, 'A');
+							if (linkNode) {
+								const maybeDescription = children[index + 1]?.tagName === 'DD' ? sanitizeNote(children[index + 1].textContent || '') : '';
+								records.push({
+									title: sanitizeText(linkNode.textContent || linkNode.getAttribute('href') || 'Untitled Bookmark'),
+									url: linkNode.getAttribute('href') || '',
+									category: path.join(' / '),
+									status: /read\s*later/i.test(path.join(' ')) ? 'READ_LATER' : 'REFERENCE',
+									tags: ['imported'],
+									note: maybeDescription,
+									createdAt: toBookmarkDate(linkNode.getAttribute('ADD_DATE') || linkNode.getAttribute('add_date')),
+									updatedAt: toBookmarkDate(linkNode.getAttribute('LAST_MODIFIED') || linkNode.getAttribute('last_modified') || linkNode.getAttribute('ADD_DATE') || linkNode.getAttribute('add_date'))
+								});
+							}
+							if (folderNode) {
+								const folderName = sanitizeText(folderNode.textContent || 'Folder');
+								const siblingDl = children[index + 1]?.tagName === 'DL' ? children[index + 1] : null;
+								const nestedDl = directChild(child, 'DL');
+								if (siblingDl) {
+									walk(siblingDl, path.concat(folderName));
+									index += 1;
+								} else if (nestedDl) {
+									walk(nestedDl, path.concat(folderName));
+								}
+							} else {
+								const nestedDl = directChild(child, 'DL');
+								if (nestedDl) walk(nestedDl, path);
+							}
+						} else if (child.tagName === 'DL') {
+							walk(child, path);
+						}
+					}
+				}
+
+				walk(root, []);
+				if (!records.length) {
+					doc.querySelectorAll('a[href]').forEach(link => records.push({
+						title: sanitizeText(link.textContent || link.getAttribute('href') || 'Untitled Bookmark'),
+						url: link.getAttribute('href') || '',
+						category: 'Imported',
+						status: 'REFERENCE',
+						tags: ['imported'],
+						note: '',
+						createdAt: toBookmarkDate(link.getAttribute('ADD_DATE') || link.getAttribute('add_date')),
+						updatedAt: toBookmarkDate(link.getAttribute('LAST_MODIFIED') || link.getAttribute('last_modified') || link.getAttribute('ADD_DATE') || link.getAttribute('add_date'))
+					}));
+				}
+				return records;
+			}
+
+			async function importBrowserBookmarks() {
+				try {
+					const file = els.browserBookmarksFile.files[0];
+					if (!file) return alert('Choose a browser bookmarks HTML file first.');
+					const records = collectBrowserBookmarks(await file.text());
+					const knownUrls = new Set(state.database.bookmarks.map(bookmark => bookmark.url.toLowerCase()));
+					let added = 0;
+					let duplicates = 0;
+					let skipped = 0;
+
+					records.forEach(record => {
+						try {
+							const normalized = normalizeBookmark({
+								id: makeId('bookmark'),
+								title: record.title,
+								url: record.url,
+								category: record.category || 'Imported',
+								status: record.status || 'REFERENCE',
+								tags: record.tags || ['imported'],
+								note: record.note || '',
+								createdAt: record.createdAt || nowIso(),
+								updatedAt: record.updatedAt || nowIso()
+							});
+							if (!normalized) {
+								skipped += 1;
+								return;
+							}
+							const key = normalized.url.toLowerCase();
+							if (knownUrls.has(key)) {
+								duplicates += 1;
+								return;
+							}
+							knownUrls.add(key);
+							state.database.bookmarks.push(normalized);
+							added += 1;
+						} catch {
+							skipped += 1;
+						}
+					});
+
+					if (added) markDirty();
+					renderAll();
+					showAppMessage(`Browser import complete. Added ${added}, duplicate ${duplicates}, skipped ${skipped}. Export .enc to persist.`);
+				} catch (error) {
+					showAppMessage(error.message || 'Browser import failed.', true);
+				}
+			}
+
+			function bookmarksHtmlFilename() {
+				const date = new Date();
+				const stamp = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
+				return `bunker-bookmarks-browser-${stamp}.html`;
+			}
+
+			function exportBrowserBookmarksHtml() {
+				const groups = new Map();
+				state.database.bookmarks.forEach(bookmark => {
+					const key = bookmark.category || 'Bunker Bookmarks';
+					if (!groups.has(key)) groups.set(key, []);
+					groups.get(key).push(bookmark);
+				});
+				const lines = [
+					'<!DOCTYPE NETSCAPE-Bookmark-file-1>',
+					'<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">',
+					'<TITLE>Bunker Bookmarks Export</TITLE>',
+					'<H1>Bunker Bookmarks Export</H1>',
+					'<DL><p>'
+				];
+				[...groups.keys()].sort().forEach(group => {
+					lines.push(`\t<DT><H3>${escapeHtml(group)}</H3>`);
+					lines.push('\t<DL><p>');
+					groups.get(group).sort(compareBookmarks).forEach(bookmark => {
+						const created = Math.floor(new Date(bookmark.createdAt || nowIso()).getTime() / 1000) || '';
+						const updated = Math.floor(new Date(bookmark.updatedAt || nowIso()).getTime() / 1000) || '';
+						const tags = bookmark.tags.length ? ` TAGS="${escapeHtml(bookmark.tags.join(','))}"` : '';
+						lines.push(`\t\t<DT><A HREF="${escapeHtml(bookmark.url)}" ADD_DATE="${created}" LAST_MODIFIED="${updated}"${tags}>${escapeHtml(bookmark.title)}</A>`);
+						const details = [bookmark.status ? `Status: ${bookmark.status}` : '', bookmark.favorite ? 'Favorite: yes' : '', bookmark.note || ''].filter(Boolean).join(' | ');
+						if (details) lines.push(`\t\t<DD>${escapeHtml(details)}`);
+					});
+					lines.push('\t</DL><p>');
+				});
+				lines.push('</DL><p>');
+				downloadText(bookmarksHtmlFilename(), lines.join('\n'));
+				showAppMessage('Browser-compatible bookmarks HTML exported.');
+			}
+
+			function exportFilename() {
+				const date = new Date();
+				const stamp = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
+				return `bunker-bookmarks-${stamp}.enc`;
+			}
+
+			function downloadJson(filename, data) {
+				downloadText(filename, JSON.stringify(data, null, '\t'));
+			}
+
+			function downloadText(filename, text) {
+				const blob = new Blob([text], { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				URL.revokeObjectURL(url);
+			}
+
+			function resetAutoLock() {
+				if (!state.unlocked) return;
+				clearTimeout(state.autoLockTimer);
+				state.autoLockTimer = setTimeout(() => {
+					if (!state.unlocked) return;
+					state.dirty = false;
+					state.dirtySince = '';
+					lock();
+				}, AUTO_LOCK_MS);
+			}
+
+			async function handleUnlock() {
+				try {
+					const passphrase = requirePassphrase();
+					const file = els.encFile.files[0];
+					if (!file) throw new Error('Choose a .enc file first.');
+					const envelope = JSON.parse(await file.text());
+					const database = await decryptEnvelope(envelope, passphrase);
+					setUnlocked(database, passphrase);
+					showAppMessage('Bookmarks unlocked in memory only.');
+				} catch (error) {
+					showLockMessage(error.message || 'Unlock failed.', true);
+				}
+			}
+
+			function handleCreate() {
+				try {
+					const passphrase = requirePassphrase();
+					setUnlocked(createEmptyDatabase(), passphrase);
+					if (!state.dirty) state.dirtySince = nowIso();
+					state.dirty = true;
+					showAppMessage('New bookmarks database created. Export to save the first encrypted file.');
+					updateStatus();
+				} catch (error) {
+					showLockMessage(error.message || 'Create failed.', true);
+				}
+			}
+
+			async function handleExport() {
+				try {
+					const envelope = await encryptDatabase(state.database, state.passphrase);
+					downloadJson(exportFilename(), envelope);
+					state.dirty = false;
+					state.dirtySince = '';
+					updateStatus();
+					showAppMessage('Encrypted bookmarks file exported.');
+				} catch (error) {
+					showAppMessage(error.message || 'Export failed.', true);
+				}
+			}
+
+			function handleBookmarkActions(event) {
+				const button = event.target.closest('button[data-action]');
+				if (!button) return;
+				const id = button.dataset.id;
+				const action = button.dataset.action;
+				if (action === 'open') openBookmark(id);
+				if (action === 'edit') editBookmark(id);
+				if (action === 'pin') togglePin(id);
+				if (action === 'favorite') toggleFavorite(id);
+				if (action === 'read-later') toggleReadLater(id);
+				if (action === 'copy-url') copyUrl(id).catch(error => showAppMessage(error.message || 'Copy failed.', true));
+				if (action === 'copy-full') copyFull(id).catch(error => showAppMessage(error.message || 'Copy failed.', true));
+				if (action === 'download') downloadBookmark(id);
+				if (action === 'delete') deleteBookmark(id);
+			}
+
+			['pointerdown', 'keydown', 'input'].forEach(type => {
+				window.addEventListener(type, resetAutoLock, { passive: true });
+			});
+
+			els.encFile.addEventListener('change', async () => {
+				const file = els.encFile.files && els.encFile.files[0];
+				await previewImportEnvelope(file);
+			});
+
+			els.btnUnlock.addEventListener('click', handleUnlock);
+			els.btnCreate.addEventListener('click', handleCreate);
+			els.btnExport.addEventListener('click', handleExport);
+			els.btnExportBrowser.addEventListener('click', exportBrowserBookmarksHtml);
+			els.btnImportBrowser.addEventListener('click', importBrowserBookmarks);
+			els.btnLock.addEventListener('click', lock);
+			els.btnPanicLock.addEventListener('click', panicLock);
+			els.btnSaveBookmark.addEventListener('click', saveBookmark);
+			els.btnResetBookmark.addEventListener('click', resetBookmarkForm);
+			els.searchInput.addEventListener('input', renderBookmarks);
+			els.categoryFilter.addEventListener('change', renderBookmarks);
+			els.statusFilter.addEventListener('change', renderBookmarks);
+			els.tagFilter.addEventListener('change', renderBookmarks);
+			els.domainFilter.addEventListener('change', renderBookmarks);
+			els.quickFilter.addEventListener('change', renderBookmarks);
+			els.groupMode.addEventListener('change', renderBookmarks);
+			els.bookmarkOutput.addEventListener('click', handleBookmarkActions);
+
+			window.addEventListener('beforeunload', event => {
+				if (!state.dirty) return;
+				event.preventDefault();
+				event.returnValue = '';
+			});
+
+			updateStatus();
+		</script>
+
+		<script>
+			(() => {
+				const gate = document.getElementById('privacyLockGate');
+				const lockedPanel = document.getElementById('lockedPanel');
+				const appPanel = document.getElementById('appPanel');
+				const reveal = document.getElementById('btnRevealUnlock');
+				const contexts = Array.from(document.querySelectorAll('.bunker-privacy-context'));
+				if (!gate || !lockedPanel || !appPanel || !reveal) return;
+				let revealed = false;
+
+				function isUnlocked() {
+					return !appPanel.classList.contains('hidden');
+				}
+
+				function clearLockedPanel() {
+					lockedPanel.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });
+					lockedPanel.querySelectorAll('input[type="file"]').forEach(input => { input.value = ''; });
+					lockedPanel.querySelectorAll('[id$="FileName"]').forEach(label => { label.textContent = '> NO FILE SELECTED'; });
+					const summary = lockedPanel.querySelector('#importEnvelopeSummary');
+					if (summary) summary.textContent = '> SELECT A .ENC FILE TO PREVIEW HEADER.';
+				}
+
+				function showPrivacyLock() {
+					if (isUnlocked()) return showUnlockedChrome();
+					revealed = false;
+					gate.classList.remove('hidden');
+					contexts.forEach(node => node.classList.add('is-privacy-hidden'));
+					lockedPanel.classList.add('hidden');
+					clearLockedPanel();
+				}
+
+				function showUnlockPanel() {
+					revealed = true;
+					gate.classList.add('hidden');
+					contexts.forEach(node => node.classList.remove('is-privacy-hidden'));
+					lockedPanel.classList.remove('hidden');
+					const focusTarget = lockedPanel.querySelector('input, button, select, textarea');
+					if (focusTarget) focusTarget.focus({ preventScroll:false });
+				}
+
+				function showUnlockedChrome() {
+					revealed = false;
+					gate.classList.add('hidden');
+					contexts.forEach(node => node.classList.remove('is-privacy-hidden'));
+					lockedPanel.classList.add('hidden');
+				}
+
+				function syncPrivacy() {
+					if (isUnlocked()) return showUnlockedChrome();
+					if (!revealed) showPrivacyLock();
+				}
+
+				reveal.addEventListener('click', showUnlockPanel);
+				showPrivacyLock();
+				const observer = new MutationObserver(syncPrivacy);
+				observer.observe(appPanel, { attributes:true, attributeFilter:['class'] });
+				observer.observe(lockedPanel, { attributes:true, attributeFilter:['class'] });
+			})();
+		</script>
+
+		<script>
+			(() => {
+				const ids = ['newPassword', 'importPassword', 'passphrase'];
+
+				function classFor(level) {
+					if (level === 'success') return 't-alert success bunker-master-warning';
+					if (level === 'danger') return 't-alert danger bunker-master-warning';
+					return 't-alert warning bunker-master-warning';
+				}
+
+				function ensureWarningPanel(input) {
+					if (!input) return null;
+					const panelId = `${input.id}MasterPasswordWarning`;
+					let panel = document.getElementById(panelId);
+					if (panel) return panel;
+					panel = document.createElement('div');
+					panel.id = panelId;
+					panel.className = 't-alert warning bunker-master-warning';
+					panel.setAttribute('aria-live', 'polite');
+					const anchor = input.closest('.bunker-input-group') || input;
+					anchor.insertAdjacentElement('afterend', panel);
+					return panel;
+				}
+
+				function adviceFor(value) {
+					if (window.BunkerCore && typeof window.BunkerCore.masterPasswordAdvice === 'function') {
+						return window.BunkerCore.masterPasswordAdvice(value);
+					}
+					const password = String(value || '');
+					const weak = password.length < 16;
+					return {
+						level: weak ? 'WEAK' : 'STRONG',
+						className: weak ? 'danger' : 'success',
+						lines: weak ? [
+							'> MASTER_PASSWORD: WEAK',
+							'> Use a unique passphrase with 16+ characters for offline .enc storage.'
+						] : [
+							'> MASTER_PASSWORD: STRONG',
+							'> This looks suitable for offline .enc storage.'
+						]
+					};
+				}
+
+				function updateWarning(input) {
+					const panel = ensureWarningPanel(input);
+					if (!panel) return;
+					const advice = adviceFor(input.value);
+					panel.className = classFor(advice.className || 'warning');
+					panel.textContent = Array.isArray(advice.lines) ? advice.lines.join('\n') : String(advice.lines || '> MASTER_PASSWORD: UNKNOWN');
+				}
+
+				function bind() {
+					ids.forEach(id => {
+						const input = document.getElementById(id);
+						if (!input) return;
+						ensureWarningPanel(input);
+						updateWarning(input);
+						input.addEventListener('input', () => updateWarning(input));
+						input.addEventListener('change', () => updateWarning(input));
+					});
+				}
+
+				bind();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				const bar = document.getElementById('mobileActionBar');
+				if (!bar) return;
+
+				const byId = id => document.getElementById(id);
+				const clickFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.click();
+							return true;
+						}
+					}
+					return false;
+				};
+				const focusFirst = ids => {
+					for (const id of ids) {
+						const el = byId(id);
+						if (el) {
+							el.scrollIntoView({ behavior:'smooth', block:'center' });
+							setTimeout(() => el.focus(), 180);
+							return true;
+						}
+					}
+					return false;
+				};
+				const isHidden = el => !el || el.classList.contains('hidden') || el.classList.contains('bunker-hidden') || el.classList.contains('is-hidden') || el.classList.contains('is-privacy-hidden');
+				const isUnlocked = () => {
+					const paneApp = byId('paneApp');
+					if (paneApp) return paneApp.classList.contains('active') && !isHidden(paneApp);
+					const appPanel = byId('appPanel');
+					if (appPanel) return !isHidden(appPanel);
+					const lockedPanel = byId('lockedPanel') || byId('paneLocked');
+					if (lockedPanel) return isHidden(lockedPanel);
+					return false;
+				};
+				const refreshBar = () => {
+					const mobile = window.matchMedia('(max-width:768px)').matches;
+					const show = mobile && isUnlocked();
+					document.body.classList.toggle('has-mobile-actionbar', show);
+					bar.classList.toggle('is-hidden', !show);
+				};
+
+				byId('mobileBtnNew')?.addEventListener('click', () => {
+					if (clickFirst(['btnAdd'])) return;
+					if (clickFirst(['btnResetCard'])) return focusFirst(['cardTitle']);
+					if (clickFirst(['btnResetItem'])) return focusFirst(['itemTitle']);
+					if (clickFirst(['btnResetSnippet'])) return focusFirst(['snippetTitle']);
+					if (clickFirst(['btnResetBookmark'])) return focusFirst(['bookmarkTitle']);
+					focusFirst(['entryTitle', 'cardTitle', 'itemTitle', 'snippetTitle', 'bookmarkTitle', 'contactName', 'txTitle']);
+				});
+				byId('mobileBtnSearch')?.addEventListener('click', () => focusFirst(['searchInput']));
+				byId('mobileBtnExport')?.addEventListener('click', () => clickFirst(['btnExport']));
+				byId('mobileBtnLock')?.addEventListener('click', () => clickFirst(['btnLock']));
+				byId('mobileBtnPanic')?.addEventListener('click', () => clickFirst(['btnPanicLock']));
+
+				new MutationObserver(refreshBar).observe(document.body, { attributes:true, subtree:true, attributeFilter:['class'] });
+				window.addEventListener('resize', refreshBar, { passive:true });
+				window.addEventListener('orientationchange', refreshBar, { passive:true });
+				setInterval(refreshBar, 1000);
+				refreshBar();
+			})();
+		</script>
+
+
+		<script>
+			(() => {
+				'use strict';
+				const appTitle = (document.title || 'Bunker App').replace(/\s+v\d+$/i, '');
+				function nounForApp() {
+					const lower = appTitle.toLowerCase();
+					if (lower.includes('auth')) return 'TOTP key';
+					if (lower.includes('board')) return 'card or board item';
+					if (lower.includes('bookmarks')) return 'bookmark';
+					if (lower.includes('contacts')) return 'contact';
+					if (lower.includes('ledger')) return 'transaction';
+					if (lower.includes('notes')) return 'note';
+					if (lower.includes('planner')) return 'planner item';
+					if (lower.includes('snippets')) return 'snippet';
+					if (lower.includes('vault')) return 'vault entry';
+					return 'item';
+				}
+				function escapeHtml(value) {
+					return String(value || '').replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+				}
+				function classify(rawText) {
+					const text = String(rawText || '').replace(/\s+/g, ' ').trim();
+					const upper = text.toUpperCase();
+					const noun = nounForApp();
+					if (upper.includes('NO_BOARD') || upper.includes('NO BOARD')) {
+						return {
+							code: 'NO_BOARD_AVAILABLE',
+							title: 'No board is available yet.',
+							line: 'Create a board first, then add columns and cards.',
+							next: 'After editing, export a fresh .enc file to keep the board.'
+						};
+					}
+					if (upper.includes('NO CARDS')) {
+						return {
+							code: 'COLUMN_EMPTY',
+							title: 'This column has no cards.',
+							line: 'Add a card here or drag an existing card into this column.',
+							next: 'Export a fresh .enc file after changing the board.'
+						};
+					}
+					if (upper.includes('NO_RECURRING')) {
+						return {
+							code: 'NO_RECURRING_TEMPLATE',
+							title: 'No recurring template exists yet.',
+							line: 'Create a recurring template for repeated transactions, tasks, or events.',
+							next: 'Run the generator when you want to create real dated entries.'
+						};
+					}
+					if (upper.includes('NO_ACCOUNTS')) {
+						return {
+							code: 'NO_ACCOUNTS_YET',
+							title: 'No account or wallet exists yet.',
+							line: 'Create an account such as Cash, Bank, Wallet, Savings, or another balance source.',
+							next: 'Export a fresh .enc file after adding account data.'
+						};
+					}
+					if (upper.includes('NO_BUDGETS')) {
+						return {
+							code: 'NO_BUDGETS_YET',
+							title: 'No budget rule exists yet.',
+							line: 'Create a monthly category budget to compare spending against a planned limit.',
+							next: 'Export a fresh .enc file after adding budget data.'
+						};
+					}
+					if (upper.includes('NO_OPEN_DEBT')) {
+						return { code:'NO_OPEN_DEBT', title:'No open debt is currently visible.', line:'Add debt transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_OPEN_LOAN')) {
+						return { code:'NO_OPEN_LOAN', title:'No open loan is currently visible.', line:'Add loan transactions or change the active filter.', next:'Export a fresh .enc file after changing ledger data.' };
+					}
+					if (upper.includes('NO_SUMMARY')) {
+						return { code:'NO_SUMMARY_FOR_CURRENT_FILTER', title:'No summary can be calculated for this filter.', line:'Add matching records or adjust the date/type/search filters.', next:'Summary updates automatically after data changes.' };
+					}
+					if (upper.includes('NO ITEM ON SELECTED DATE')) {
+						return { code:'NO_SELECTED_DATE_ITEMS', title:'No item exists on the selected date.', line:'Select another date or create a task/event for this day.', next:'Export a fresh .enc file after editing planner data.' };
+					}
+					if (upper.includes('MATCH') || upper.includes('CURRENT FILTER') || upper.includes('FOUND')) {
+						return {
+							code: 'NO_VISIBLE_RESULTS',
+							title: `No ${noun}s match the current view.`,
+							line: 'Clear search/filter, switch tabs, or create a new item.',
+							next: 'After creating or editing data, export a fresh .enc file before closing.'
+						};
+					}
+					return {
+						code: 'EMPTY_DATASET',
+						title: `No ${noun}s yet.`,
+						line: `Create your first ${noun}, then review it in this list.`,
+						next: 'Export a fresh .enc file after changes so the data is not lost.'
+					};
+				}
+				function enhanceEmptyState(node) {
+					if (!node || node.dataset.bunkerEmptyEnhanced === '1') return;
+					const rawText = node.textContent || '';
+					if (!rawText.trim()) return;
+					const data = classify(rawText);
+					node.dataset.bunkerEmptyEnhanced = '1';
+					node.classList.add('bunker-empty-state');
+					node.innerHTML = [
+						'<div class="bunker-empty-state-icon">[ ∅ ]</div>',
+						`<div class="bunker-empty-state-title">&gt; EMPTY_STATE: ${escapeHtml(data.code)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.title)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.line)}</div>`,
+						`<div class="bunker-empty-state-line">${escapeHtml(data.next)}</div>`
+					].join('');
+				}
+				function enhanceAllEmptyStates() {
+					document.querySelectorAll('.empty-state, .t-empty-state').forEach(enhanceEmptyState);
+				}
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', enhanceAllEmptyStates);
+				} else {
+					enhanceAllEmptyStates();
+				}
+				const observer = new MutationObserver(() => enhanceAllEmptyStates());
+				observer.observe(document.documentElement, { childList:true, subtree:true });
+			})();
+		</script>
+
+	</body>
+</html>

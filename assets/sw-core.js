@@ -1,19 +1,25 @@
-const CACHE_NAME = 'jeannes-bryan-bunker-v3';
+const CACHE_NAME = 'jeannes-bryan-bunker-v28';
 const ASSETS = [
 	'/',
 	'/index.html',
-	'/bunker/vault.html',
 	'/bunker/auth.html',
-	'/bunker/notes.html',
+	'/bunker/board.html',
+	'/bunker/bookmarks.html',
 	'/bunker/contacts.html',
 	'/bunker/ledger.html',
-	'/bunker/board.html',
+	'/bunker/notes.html',
+	'/bunker/planner.html',
+	'/bunker/snippets.html',
+	'/bunker/vault.html',
 	'/assets/terminal.css',
 	'/assets/terminal.js',
+	'/assets/bunker-root.js',
+	'/assets/bunker-core.js',
 	'/assets/libsodium-wrappers-sumo+esm.js',
 	'/assets/markdown-it.min.js',
 	'/assets/purify.min.js',
 	'/assets/Sortable.min.js',
+	'/assets/prism.min.js',
 	'/assets/manifest.webmanifest',
 	'/assets/npc-icon.svg',
 	'/assets/favicon-16x16.png',
@@ -43,6 +49,12 @@ self.addEventListener('activate', event => {
 			.then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
 			.then(() => self.clients.claim())
 	);
+});
+
+self.addEventListener('message', event => {
+	if (!event.data || typeof event.data !== 'object') return;
+	if (event.data.type === 'SKIP_WAITING') self.skipWaiting();
+	if (event.data.type === 'GET_CACHE_NAME' && event.source) event.source.postMessage({ type: 'CACHE_NAME', cacheName: CACHE_NAME });
 });
 
 self.addEventListener('fetch', event => {
